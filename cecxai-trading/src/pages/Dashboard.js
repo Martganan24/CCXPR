@@ -13,7 +13,7 @@ function Dashboard() {
     const token = localStorage.getItem("authToken"); // Check if token exists
     if (!token) {
       // If no token, redirect to login page
-      navigate("/login"); // Use navigate instead of history.push
+      navigate("/"); // Redirect to the front page, not login page
     }
   }, [navigate]); // Only run when the component is mounted
 
