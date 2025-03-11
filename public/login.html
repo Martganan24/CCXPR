@@ -78,7 +78,7 @@
 
         .btn {
             width: 100%;
-            padding: 12px;
+            padding: 5px;
             background-color: #20D466;
             color: black;
             border: none;
@@ -128,7 +128,7 @@
             <img src="./assets/Logo.png" alt="CECXAI Logo" class="logo">
         </a>
         
-        <div class="login-box">
+        <div class="login-box" id="login-box">
             <h2>Login</h2>
             <form id="login-form">
                 <div class="input-group">
@@ -142,10 +142,25 @@
                 <button type="submit" class="btn">Submit</button>
                 <p class="error-message" id="error-message">Invalid email or password. Please try again.</p>
                 <div class="links">
-                    <a href="#">Forgot Password?</a>
+                    <a href="#" id="forgot-password-link">Forgot Password?</a>
                     <a href="register.html">Register</a>
                 </div>
             </form>
+        </div>
+
+        <!-- Forgot Password Form -->
+        <div id="forgot-password-form" style="display: none;">
+            <div class="input-group">
+                <label for="forgot-email">Email</label>
+                <input type="email" id="forgot-email" name="forgot-email" required>
+            </div>
+            <div class="input-group">
+                <label for="forgot-fullname">Full Name</label>
+                <input type="text" id="forgot-fullname" name="forgot-fullname" required>
+            </div>
+            <button id="submit-forgot-password" class="btn">Submit</button>
+            <button id="cancel-forgot-password" class="btn" style="background-color: red;">Cancel</button>
+            <p id="forgot-password-message" style="color:red;"></p>
         </div>
     </div>
 
@@ -160,13 +175,12 @@
             try {
                 // ✅ Send Login Request to Your Backend
                 const response = await fetch("https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/login", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
-});
-
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email, password })
+                });
 
                 const data = await response.json();
 
@@ -188,13 +202,55 @@
             }
         });
 
-        // ✅ Restrict Dashboard Access
-        function checkAuth() {
-            const token = localStorage.getItem("authToken");
-            if (!token) {
-                window.location.href = "https://ceccxai-frontend-b334232d6e3e.herokuapp.com/login";
+        // ✅ Show Forgot Password Form
+        document.getElementById("forgot-password-link").addEventListener("click", function(event) {
+            event.preventDefault();
+            document.getElementById("login-box").style.display = "none";
+            document.getElementById("forgot-password-form").style.display = "block";
+        });
+
+        // ✅ Cancel Forgot Password Form
+        document.getElementById("cancel-forgot-password").addEventListener("click", function() {
+            document.getElementById("forgot-password-form").style.display = "none";
+            document.getElementById("login-box").style.display = "block";
+        });
+
+        // ✅ Handle Forgot Password Submission
+        document.getElementById("submit-forgot-password").addEventListener("click", async function() {
+            const email = document.getElementById("forgot-email").value;
+            const fullName = document.getElementById("forgot-fullname").value;
+            const messageElement = document.getElementById("forgot-password-message");
+
+            try {
+                // Send Forgot Password Request to Backend
+                const response = await fetch("https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/forgot-password", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email, fullName })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageElement.style.color = "green";
+                    messageElement.innerText = "Password reset successful. Redirecting to login...";
+
+                    // Redirect back to login after success
+                    setTimeout(function() {
+                        window.location.href = "https://ceccxai-frontend-b334232d6e3e.herokuapp.com/login";
+                    }, 2000);
+                } else {
+                    messageElement.style.color = "red";
+                    messageElement.innerText = data.message || "Failed to reset password.";
+                }
+            } catch (error) {
+                console.error("Forgot password error:", error);
+                messageElement.style.color = "red";
+                messageElement.innerText = "Error connecting to the server. Please try again.";
             }
-        }
+        });
     </script>
 </body>
 </html>
