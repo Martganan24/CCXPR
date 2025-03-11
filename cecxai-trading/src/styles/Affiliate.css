@@ -1,0 +1,97 @@
+.affiliate-container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .affiliate-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .affiliate-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .affiliate-box {
+    background: #1e1e1e;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 150px;
+    text-align: center;
+  }
+  
+  .balance,
+  .referral-count,
+  .commission-rate {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .referral-section {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .referral-input {
+    background: #2a2a2a;
+    color: white;
+    border: none;
+    padding: 8px;
+    width: 250px;
+    text-align: center;
+    border-radius: 5px;
+  }
+  
+  .copy-btn {
+    background: #ff9900;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .copy-btn:hover {
+    background: #e68900;
+  }
+  
+  .leaderboard {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 10px;
+    width: 300px;
+    margin: 0 auto;
+  }
+  
+  .leaderboard h2 {
+    margin-bottom: 10px;
+  }
+  
+  .leaderboard ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .leaderboard li {
+    background: #2a2a2a;
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+  }
+  
+  .leaderboard li span {
+    font-weight: bold;
+    color: gold;
+  }
+  

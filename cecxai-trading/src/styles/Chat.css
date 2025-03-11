@@ -1,0 +1,77 @@
+.chat-container {
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .chat-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  /* ✅ Reduced Chat Width by 40% */
+  .chat-box {
+    background: #1e1e1e;
+    width: 60%; /* ✅ Now it's 40% smaller */
+    height: 300px;
+    overflow-y: auto;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .chat-message {
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+  
+  .chat-message.user {
+    background: #008cba;
+    color: white;
+    align-self: flex-end;
+  }
+  
+  .chat-message.bot {
+    background: #2a2a2a;
+    color: white;
+    align-self: flex-start;
+  }
+  
+  /* ✅ Centered Input Box */
+  .chat-input {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    width: 60%; /* ✅ Matches Chat Box Width */
+  }
+  
+  .chat-input input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    background: #2a2a2a;
+    color: white;
+  }
+  
+  .chat-input button {
+    background: #ff9900;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .chat-input button:hover {
+    background: #e68900;
+  }
+  
