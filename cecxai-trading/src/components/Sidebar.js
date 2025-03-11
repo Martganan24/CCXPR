@@ -14,6 +14,14 @@ function Sidebar() {
   const [isOpen, setIsOpen] = useState(false); // ✅ Sidebar State
   const navigate = useNavigate(); // ✅ Initialize Navigation
 
+  const handleLogout = () => {
+    // ✅ Remove token from local storage (to log the user out)
+    localStorage.removeItem("authToken");
+
+    // ✅ Redirect user to main front page
+    window.location.href = "https://ceccxai-frontend-b334232d6e3e.herokuapp.com/";
+  };
+
   return (
     <>
       {/* ✅ Toggle Button (Always Visible & Clickable) */}
@@ -39,7 +47,7 @@ function Sidebar() {
         </button>
 
         {/* ✅ Logout is Now Directly Under Settings */}
-        <button className="sidebar-btn logout">
+        <button className="sidebar-btn logout" onClick={handleLogout}>
           <FaSignOutAlt className="icon" /> Logout
         </button>
       </div>

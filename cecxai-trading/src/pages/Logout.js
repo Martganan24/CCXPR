@@ -5,8 +5,11 @@ function Logout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Clear user session (Example: localStorage.removeItem("user"))
-    navigate("/login"); // Redirect to login page
+    // Clear the token or any session data
+    localStorage.removeItem("authToken"); // ✅ Remove token to log the user out
+
+    // Redirect to the main frontend page
+    window.location.href = "https://ceccxai-frontend-b334232d6e3e.herokuapp.com/"; // Redirect to main page
   }, [navigate]);
 
   return <h1>Logging out...</h1>;
