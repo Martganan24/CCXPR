@@ -16,4 +16,3 @@ function Logout() {
 }
 
 export default Logout;
-c
