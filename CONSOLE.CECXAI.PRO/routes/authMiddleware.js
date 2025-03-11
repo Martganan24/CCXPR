@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+// ✅ Middleware to verify JWT
 const authMiddleware = (req, res, next) => {
     const token = req.header("Authorization");
 
@@ -16,4 +17,12 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
-module.exports = authMiddleware;
+// ✅ Middleware to check if user is a "god_developer"
+const godDeveloperMiddleware = (req, res, next) => {
+    if (req.user.role !== "god_developer") {
+        return res.status(403).json({ message: "Access denied. You are not authorized." });
+    }
+    next();
+};
+
+module.exports = { authMiddleware, godDeveloperMiddleware };

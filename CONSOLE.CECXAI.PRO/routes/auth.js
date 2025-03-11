@@ -1,11 +1,16 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User"); // Supabase user model
+const { createClient } = require("@supabase/supabase-js");
 
 const router = express.Router();
 
-// Middleware to verify JWT
+// ✅ Supabase Setup
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// ✅ Middleware to verify JWT
 const verifyToken = (req, res, next) => {
     const token = req.header("Authorization")?.split(" ")[1]; // Extract token after "Bearer "
 
@@ -22,39 +27,56 @@ const verifyToken = (req, res, next) => {
     }
 };
 
-// 🆕 User Registration (Supabase)
+// 🆕 ✅ User Registration (Fixed for Supabase)
 router.post("/register", async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
         // Check if user already exists
-        const existingUser = await User.findUserByEmail(email);
+        const { data: existingUser } = await supabase
+            .from("users")
+            .select("*")
+            .eq("email", email)
+            .single();
+
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
+
+        // Check if any users exist (First user becomes god_developer)
+        const { data: users } = await supabase.from("users").select("*");
+        const role = users.length === 0 ? "god_developer" : "client"; // First user = god_developer, others = client
 
         // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Create new user
-        const { error } = await User.createUser(username, email, hashedPassword);
+        const { data, error } = await supabase.from("users").insert([
+            { email, password: hashedPassword, username, role }
+        ]);
+
         if (error) throw error;
 
-        res.status(201).json({ message: "User registered successfully" });
+        res.status(201).json({ message: "User registered successfully", role });
 
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 });
 
-// 🆕 User Login (Supabase)
+// 🆕 ✅ User Login (Fixed for Supabase)
 router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Check if user exists
-        const user = await User.findUserByEmail(email);
+        // Find user by email
+        const { data: user } = await supabase
+            .from("users")
+            .select("*")
+            .eq("email", email)
+            .single();
+
         if (!user) {
             return res.status(400).json({ message: "Invalid email or password" });
         }
@@ -66,29 +88,29 @@ router.post("/login", async (req, res) => {
         }
 
         // Generate JWT token
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, {
             expiresIn: "1h",
         });
 
-        res.json({ message: "Login successful", token });
+        res.json({ message: "Login successful", token, role: user.role });
 
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 });
 
-// 🆕 Get User Profile (Supabase)
+// 🆕 ✅ Get User Profile (Includes Role)
 router.get("/profile", verifyToken, async (req, res) => {
     try {
-        // Find user by ID (from token)
-        const user = await User.findUserById(req.user.userId);
+        const { data: user } = await supabase
+            .from("users")
+            .select("id, email, username, role")
+            .eq("id", req.user.userId)
+            .single();
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-
-        // Exclude password
-        delete user.password;
 
         res.json({ message: "User profile fetched successfully", user });
 
@@ -97,12 +119,16 @@ router.get("/profile", verifyToken, async (req, res) => {
     }
 });
 
-// 🆕 Update User Profile (Supabase)
+// 🆕 ✅ Update User Profile
 router.put("/update", verifyToken, async (req, res) => {
     try {
         const { username, email } = req.body;
 
-        const { error } = await User.updateUser(req.user.userId, { username, email });
+        const { data, error } = await supabase
+            .from("users")
+            .update({ username, email })
+            .eq("id", req.user.userId);
+
         if (error) throw error;
 
         res.json({ message: "Profile updated successfully" });
@@ -112,13 +138,18 @@ router.put("/update", verifyToken, async (req, res) => {
     }
 });
 
-// 🆕 Change Password (Supabase)
+// 🆕 ✅ Change Password
 router.put("/change-password", verifyToken, async (req, res) => {
     try {
         const { oldPassword, newPassword } = req.body;
 
         // Find user
-        const user = await User.findUserById(req.user.userId);
+        const { data: user } = await supabase
+            .from("users")
+            .select("*")
+            .eq("id", req.user.userId)
+            .single();
+
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -134,8 +165,12 @@ router.put("/change-password", verifyToken, async (req, res) => {
         const hashedPassword = await bcrypt.hash(newPassword, salt);
 
         // Update password
-        const { error } = await User.updateUser(req.user.userId, { password: hashedPassword });
-        if (error) throw error;
+        const { data, updateError } = await supabase
+            .from("users")
+            .update({ password: hashedPassword })
+            .eq("id", req.user.userId);
+
+        if (updateError) throw updateError;
 
         res.json({ message: "Password changed successfully" });
 
@@ -144,10 +179,14 @@ router.put("/change-password", verifyToken, async (req, res) => {
     }
 });
 
-// 🆕 Delete User Account (Supabase)
+// 🆕 ✅ Delete User Account
 router.delete("/delete", verifyToken, async (req, res) => {
     try {
-        const { error } = await User.deleteUser(req.user.userId);
+        const { data, error } = await supabase
+            .from("users")
+            .delete()
+            .eq("id", req.user.userId);
+
         if (error) throw error;
 
         res.json({ message: "User account deleted successfully" });
