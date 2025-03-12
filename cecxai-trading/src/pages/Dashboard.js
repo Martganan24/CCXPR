@@ -5,7 +5,7 @@ import TradingChart from "../components/TradingChart"; // ✅ Import Trading Cha
 import OrderForm from "../components/OrderForm"; // ✅ Import Order Form
 import TradingHistory from "../components/TradingHistory"; // ✅ Import Trading History
 import { useNavigate } from "react-router-dom"; // ✅ Import React Router
-import jwtDecode from "jwt-decode"; // ✅ Import JWT Decoder
+import { jwtDecode } from "jwt-decode"; // ✅ Import JWT Decoder
 
 function Dashboard() {
   const navigate = useNavigate(); // ✅ Navigation Hook
