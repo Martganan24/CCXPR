@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // ✅ Import Navigation Hook
 import {
-  FaTachometerAlt, // ✅ Dashboard Icon
   FaChartLine,
   FaWallet,
   FaUsers,
@@ -31,11 +30,7 @@ function Sidebar() {
       </button>
 
       <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
-        {/* ✅ Added Dashboard Button */}
-        <button className="sidebar-btn" onClick={() => navigate("/dashboard")}>
-          <FaTachometerAlt className="icon" /> Dashboard
-        </button>
-        <button className="sidebar-btn" onClick={() => navigate("/trade")}>
+        <button className="sidebar-btn" onClick={() => navigate("/")}>
           <FaChartLine className="icon" /> Trade
         </button>
         <button className="sidebar-btn" onClick={() => navigate("/wallet")}>
