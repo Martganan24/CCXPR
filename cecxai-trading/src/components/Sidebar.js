@@ -24,13 +24,11 @@ function Sidebar() {
 
       <div className="sidebar">
         {/* ✅ Show User Info */}
-        {user ? (
+        {user && (
           <div className="sidebar-user-info">
             <p>👤 {user.username}</p>
             <p>💰 ${user.balance}</p>
           </div>
-        ) : (
-          <p>Loading...</p>
         )}
 
         <button className="sidebar-btn" onClick={() => navigate("/")}>
