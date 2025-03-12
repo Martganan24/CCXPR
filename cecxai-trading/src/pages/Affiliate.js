@@ -1,16 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import "../styles/Affiliate.css"; // ✅ Ensure this file exists
+import { useUser } from "../context/UserContext"; // ✅ Import UserContext
 
 function Affiliate() {
-  const [referralLink] = useState("https://cecxai.com/ref=123456"); // Example referral link
+  const { user } = useUser(); // ✅ Get User Data from Context
   const [copied, setCopied] = useState(false);
+  const [leaderboard, setLeaderboard] = useState([]); // Optional leaderboard state
+
+  const referralLink = user ? `https://cecxai.com/ref=${user.referral_code}` : ""; // Dynamic referral link
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500); // Reset after 1.5s
   };
+
+  // ✅ Fetch leaderboard data (Optional)
+  useEffect(() => {
+    fetch("https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/leaderboard")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setLeaderboard(data.leaderboard); // ✅ Set leaderboard data
+        } else {
+          console.error("Error fetching leaderboard:", data.message);
+        }
+      })
+      .catch((error) => console.error("Error fetching leaderboard:", error));
+  }, []);
 
   return (
     <motion.div
@@ -29,7 +47,7 @@ function Affiliate() {
           transition={{ duration: 0.3 }}
         >
           <h2>Total Earnings</h2>
-          <p className="balance">$1,234.56</p>
+          <p className="balance">{user ? `$${user.earnings}` : "Loading..."}</p> {/* Dynamic earnings */}
         </motion.div>
 
         <motion.div
@@ -38,7 +56,7 @@ function Affiliate() {
           transition={{ duration: 0.3 }}
         >
           <h2>Total Referrals</h2>
-          <p className="referral-count">58</p>
+          <p className="referral-count">{user ? user.referral_count : "Loading..."}</p> {/* Dynamic referrals */}
         </motion.div>
 
         <motion.div
@@ -47,7 +65,7 @@ function Affiliate() {
           transition={{ duration: 0.3 }}
         >
           <h2>Commission Rate</h2>
-          <p className="commission-rate">3%</p>
+          <p className="commission-rate">{user ? `${user.commission_rate}%` : "Loading..."}</p> {/* Dynamic commission */}
         </motion.div>
       </div>
 
@@ -59,7 +77,7 @@ function Affiliate() {
         </button>
       </div>
 
-      {/* ✅ Leaderboard */}
+      {/* ✅ Leaderboard (Optional) */}
       <motion.div
         className="leaderboard"
         initial={{ opacity: 0 }}
@@ -68,15 +86,15 @@ function Affiliate() {
       >
         <h2>Top Affiliates</h2>
         <ul>
-          <li>
-            <span>#1</span> User123 - <b>$5,678</b>
-          </li>
-          <li>
-            <span>#2</span> CryptoKing - <b>$4,321</b>
-          </li>
-          <li>
-            <span>#3</span> TradeMaster - <b>$3,210</b>
-          </li>
+          {leaderboard.length > 0 ? (
+            leaderboard.map((user, index) => (
+              <li key={user.id}>
+                <span>#{index + 1}</span> {user.name} - <b>${user.total_earnings}</b>
+              </li>
+            ))
+          ) : (
+            <li>No leaderboard data available.</li>
+          )}
         </ul>
       </motion.div>
     </motion.div>
