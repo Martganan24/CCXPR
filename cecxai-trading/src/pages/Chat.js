@@ -4,8 +4,8 @@ import "../styles/Chat.css"; // ✅ Ensure this file exists
 
 function Chat() {
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "Welcome to the chat! 🎉" },
-    { sender: "user", text: "Hello! How's the market today?" },
+    { sender: "bot", text: "Welcome to CECXAI Chat Support! 🎉" },
+    { sender: "user", text: "Hello! What can I do for you?" },
   ]);
   const [input, setInput] = useState("");
 
@@ -16,7 +16,7 @@ function Chat() {
       setTimeout(() => {
         setMessages((prev) => [
           ...prev,
-          { sender: "bot", text: "I'm just a bot, but the market is always exciting! 🚀" },
+          { sender: "Admin", text: "Thank you! for reaching out to us. We have received your message and one of our team members will get in touch with you as soon as possible. We appreciate your patience and look forward to assisting you.! 🚀" },
         ]);
       }, 1000); // Simulated bot reply after 1 sec
     }
