@@ -1,8 +1,8 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 
 // ✅ Create Context
-export const UserContext = createContext();
+const UserContext = createContext();
 
 // ✅ UserContext Provider (Wraps the Whole App)
 export const UserProvider = ({ children }) => {
@@ -33,9 +33,18 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("authToken");
+    window.location.href = "https://ceccxai-frontend-b334232d6e3e.herokuapp.com/"; // ✅ Redirect to Frontend
+  };
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, logout }}>
       {children}
     </UserContext.Provider>
   );
 };
+
+// ✅ Fix: Export `useUser` Hook
+export const useUser = () => useContext(UserContext);
