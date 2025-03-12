@@ -10,6 +10,7 @@ import { jwtDecode } from "jwt-decode"; // ✅ Import JWT Decoder
 function Dashboard() {
   const navigate = useNavigate(); // ✅ Navigation Hook
   const [user, setUser] = useState(null); // ✅ Store User Data
+  const [loading, setLoading] = useState(true); // ✅ Loading State
 
   useEffect(() => {
     const token = localStorage.getItem("authToken"); // ✅ Get Auth Token
@@ -19,7 +20,7 @@ function Dashboard() {
     }
 
     try {
-      // ✅ Decode JWT Token to Get userId
+      // ✅ Decode JWT Token to Get User ID
       const decoded = jwtDecode(token);
       const userId = decoded.userId; // 🔥 Extract userId
 
@@ -27,13 +28,14 @@ function Dashboard() {
       fetch(`https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/user/${userId}`)
         .then((res) => res.json())
         .then((data) => {
-          if (data.success) {
+          if (data.success && data.user) {
             setUser(data.user); // ✅ Store User Data in State
           } else {
             console.error("Error fetching user:", data.message);
           }
         })
-        .catch((error) => console.error("Error fetching user:", error));
+        .catch((error) => console.error("Error fetching user:", error))
+        .finally(() => setLoading(false)); // ✅ Stop loading after request
     } catch (error) {
       console.error("Invalid token:", error);
       navigate("/"); // ❌ Redirect if Token is Invalid
@@ -46,15 +48,23 @@ function Dashboard() {
       <Sidebar /> {/* 🔥 Sidebar */}
 
       {/* ✅ Show User Info on Dashboard */}
-      {user ? (
-        <div className="user-info">
-          <h2>Welcome, {user.username}!</h2>
-          <p>Email: {user.email}</p>
-          <p>Balance: ${user.balance}</p>
-        </div>
-      ) : (
-        <p>Loading user data...</p>
-      )}
+      <div className="user-info">
+        {loading ? (
+          <p>Loading user data...</p>
+        ) : user ? (
+          <>
+            <h2>Welcome, {user.username}!</h2>
+            <p>Email: {user.email}</p>
+            <p>Balance: ${user.balance}</p>
+            <p>Commission Balance: ${user.commission_balance}</p>
+            <p>Total Referrals: {user.total_referrals}</p>
+            <p>Commission Rate: {user.commission_rate}%</p>
+            <p>Total Earnings: ${user.total_earnings}</p>
+          </>
+        ) : (
+          <p>Error fetching user data.</p>
+        )}
+      </div>
 
       {/* 🔥 Trading Sections */}
       <div style={{ height: "2px" }}></div>
