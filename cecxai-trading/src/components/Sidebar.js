@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // ✅ Import Navigation Hook
-import { useUser } from "../context/UserContext"; // ✅ Import User Context
 import {
   FaChartLine,
   FaWallet,
@@ -12,25 +11,25 @@ import {
 } from "react-icons/fa"; // ✅ Sidebar Icons
 
 function Sidebar() {
-  const { user, logout } = useUser(); // ✅ Get User Data from Context
+  const [isOpen, setIsOpen] = useState(false); // ✅ Sidebar State
   const navigate = useNavigate(); // ✅ Initialize Navigation
+
+  const handleLogout = () => {
+    // ✅ Remove token from local storage (to log the user out)
+    localStorage.removeItem("authToken");
+
+    // ✅ Redirect user to main front page
+    window.location.href = "https://ceccxai-frontend-b334232d6e3e.herokuapp.com/";
+  };
 
   return (
     <>
-      {/* ✅ Toggle Button */}
-      <button className="toggle-btn">
+      {/* ✅ Toggle Button (Always Visible & Clickable) */}
+      <button className="toggle-btn" onClick={() => setIsOpen(!isOpen)}>
         <FaBars />
       </button>
 
-      <div className="sidebar">
-        {/* ✅ Show User Info */}
-        {user && (
-          <div className="sidebar-user-info">
-            <p>👤 {user.username}</p>
-            <p>💰 ${user.balance}</p>
-          </div>
-        )}
-
+      <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
         <button className="sidebar-btn" onClick={() => navigate("/")}>
           <FaChartLine className="icon" /> Trade
         </button>
@@ -47,8 +46,8 @@ function Sidebar() {
           <FaCog className="icon" /> Settings
         </button>
 
-        {/* ✅ Logout Button */}
-        <button className="sidebar-btn logout" onClick={logout}>
+        {/* ✅ Logout is Now Directly Under Settings */}
+        <button className="sidebar-btn logout" onClick={handleLogout}>
           <FaSignOutAlt className="icon" /> Logout
         </button>
       </div>
