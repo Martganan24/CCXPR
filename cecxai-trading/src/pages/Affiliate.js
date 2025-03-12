@@ -3,12 +3,26 @@ import { motion } from "framer-motion";
 import "../styles/Affiliate.css"; // ✅ Ensure this file exists
 import { useUser } from "../context/UserContext"; // ✅ Import UserContext
 
+// Function to generate random names
+const generateRandomName = () => {
+  const names = [
+    "John Doe", "Jane Smith", "Mike Johnson", "Emily Davis", "David Wilson",
+    "Sarah Brown", "Chris Lee", "Jessica White", "Matthew Harris", "Amanda Clark"
+  ];
+  return names[Math.floor(Math.random() * names.length)];
+};
+
+// Function to generate random earnings in the range
+const generateRandomEarnings = () => {
+  return (Math.random() * (100000 - 8000) + 8000).toFixed(2); // Random between $8,000 and $100,000
+};
+
 function Affiliate() {
   const { user } = useUser(); // ✅ Get User Data from Context
   const [copied, setCopied] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]); // Optional leaderboard state
 
-  const referralLink = user ? `https://cecxai.com/ref=${user.referral_code}` : ""; // Dynamic referral link
+  const referralLink = user ? user.referral_code : ""; // Dynamic referral code (already system-generated)
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
@@ -18,16 +32,26 @@ function Affiliate() {
 
   // ✅ Fetch leaderboard data (Optional)
   useEffect(() => {
-    fetch("https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/leaderboard")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setLeaderboard(data.leaderboard); // ✅ Set leaderboard data
-        } else {
-          console.error("Error fetching leaderboard:", data.message);
-        }
-      })
-      .catch((error) => console.error("Error fetching leaderboard:", error));
+    const generateLeaderboard = () => {
+      const newLeaderboard = Array.from({ length: 5 }).map((_, index) => ({
+        id: index + 1,
+        name: generateRandomName(),
+        total_earnings: generateRandomEarnings(),
+      }));
+
+      // Sort to ensure the top earner is first
+      newLeaderboard.sort((a, b) => b.total_earnings - a.total_earnings);
+
+      setLeaderboard(newLeaderboard); // ✅ Set leaderboard data
+    };
+
+    generateLeaderboard(); // Initial leaderboard generation
+
+    const interval = setInterval(() => {
+      generateLeaderboard(); // Update leaderboard daily
+    }, 86400000); // 1 day in milliseconds
+
+    return () => clearInterval(interval); // Cleanup interval when component unmounts
   }, []);
 
   return (
@@ -47,7 +71,7 @@ function Affiliate() {
           transition={{ duration: 0.3 }}
         >
           <h2>Total Earnings</h2>
-          <p className="balance">{user ? `$${user.earnings}` : "Loading..."}</p> {/* Dynamic earnings */}
+          <p className="balance">{user ? `$${user.earnings || 0}` : "Loading..."}</p> {/* Dynamic earnings */}
         </motion.div>
 
         <motion.div
@@ -56,7 +80,7 @@ function Affiliate() {
           transition={{ duration: 0.3 }}
         >
           <h2>Total Referrals</h2>
-          <p className="referral-count">{user ? user.referral_count : "Loading..."}</p> {/* Dynamic referrals */}
+          <p className="referral-count">{user ? user.referral_count || 0 : "Loading..."}</p> {/* Dynamic referrals */}
         </motion.div>
 
         <motion.div
@@ -69,15 +93,15 @@ function Affiliate() {
         </motion.div>
       </div>
 
-      {/* ✅ Referral Link with Copy Button */}
+      {/* ✅ Referral Code with Copy Button */}
       <div className="referral-section">
         <input type="text" value={referralLink} readOnly className="referral-input" />
         <button className="copy-btn" onClick={copyToClipboard}>
-          {copied ? "Copied!" : "Copy Link"}
+          {copied ? "Copied!" : "Copy Code"}
         </button>
       </div>
 
-      {/* ✅ Leaderboard (Optional) */}
+      {/* ✅ Leaderboard */}
       <motion.div
         className="leaderboard"
         initial={{ opacity: 0 }}
