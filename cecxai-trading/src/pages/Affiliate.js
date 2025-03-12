@@ -66,7 +66,9 @@ function Affiliate() {
           transition={{ duration: 0.3 }}
         >
           <h2>Total Earnings</h2>
-          <p className="balance">{user ? `$${user.earnings || 0}` : "Loading..."}</p> {/* Dynamic earnings */}
+          <p className="balance">
+            {user ? `$${(user.earnings || 0).toFixed(2)}` : "Loading..."} {/* Dynamic earnings with 2 decimals */}
+          </p>
         </motion.div>
 
         <motion.div
@@ -108,7 +110,7 @@ function Affiliate() {
           {leaderboard.length > 0 ? (
             leaderboard.map((user, index) => (
               <li key={user.id}>
-                <span>#{index + 1}</span> {user.name} - <b>${user.total_earnings}</b>
+                <span>#{index + 1}</span> {user.name} - <b>${user.total_earnings.toFixed(2)}</b> {/* Display earnings with 2 decimals */}
               </li>
             ))
           ) : (
