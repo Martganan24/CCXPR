@@ -1,19 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import "../styles/Wallet.css"; // ✅ Make sure this file exists
-import DepositWithdrawPopup from "../components/DepositWithdrawPopup"; // ✅ Added Popup Import
-
-const transactionsData = [
-  { id: 1, type: "Deposit", amount: "+$500.00", date: "Mar 9, 2025", time: "10:30 AM", status: "Completed" },
-  { id: 2, type: "Withdraw", amount: "-$200.00", date: "Mar 8, 2025", time: "5:45 PM", status: "Completed" },
-  { id: 3, type: "Profit", amount: "+$150.00", date: "Mar 7, 2025", time: "2:15 PM", status: "Completed" },
-  { id: 4, type: "Loss", amount: "-$75.00", date: "Mar 6, 2025", time: "11:10 AM", status: "Completed" },
-  { id: 5, type: "Commission", amount: "+$50.00", date: "Mar 5, 2025", time: "3:20 PM", status: "Completed" },
-];
+import "../styles/Wallet.css"; // ✅ Ensure this file exists
+import DepositWithdrawPopup from "../components/DepositWithdrawPopup"; // ✅ Import popup
+import { useUser } from "../context/UserContext"; // ✅ Import User Context
 
 function Wallet() {
-  const [transactions] = useState(transactionsData); // ✅ Store transaction history
-  const [popupType, setPopupType] = useState(null); // ✅ Added state to control popups
+  const { user } = useUser(); // ✅ Get User Data from Context
+  const [popupType, setPopupType] = useState(null); // ✅ Control popups
+  const [transactions, setTransactions] = useState([]); // ✅ Store transactions
+
+  // ✅ Fetch Transaction History
+  useEffect(() => {
+    if (!user) return; // ✅ Prevent fetching if user is not loaded
+
+    fetch(`https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/transactions/${user.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setTransactions(data.transactions); // ✅ Set transaction history
+        } else {
+          console.error("Error fetching transactions:", data.message);
+        }
+      })
+      .catch((error) => console.error("Error fetching transactions:", error));
+  }, [user]); // ✅ Runs when user data is available
 
   return (
     <motion.div
@@ -32,10 +42,10 @@ function Wallet() {
           transition={{ duration: 0.3 }}
         >
           <h2>Main Wallet</h2>
-          <p className="balance">$12,345.67</p>
+          <p className="balance">{user ? `$${user.balance}` : "Loading..."}</p>
           <div className="wallet-actions">
-            <button className="wallet-btn" onClick={() => setPopupType("deposit")}>Deposit</button> {/* ✅ Added click event */}
-            <button className="wallet-btn" onClick={() => setPopupType("withdraw")}>Withdraw</button> {/* ✅ Added click event */}
+            <button className="wallet-btn" onClick={() => setPopupType("deposit")}>Deposit</button>
+            <button className="wallet-btn" onClick={() => setPopupType("withdraw")}>Withdraw</button>
           </div>
         </motion.div>
 
@@ -46,9 +56,9 @@ function Wallet() {
           transition={{ duration: 0.3 }}
         >
           <h2>Commission</h2>
-          <p className="balance">$987.65</p>
+          <p className="balance">{user ? `$${user.commission_balance}` : "Loading..."}</p>
           <div className="wallet-actions">
-            <button className="wallet-btn" onClick={() => setPopupType("withdraw")}>Withdraw</button> {/* ✅ Added click event */}
+            <button className="wallet-btn" onClick={() => setPopupType("withdraw")}>Withdraw</button>
           </div>
         </motion.div>
       </div>
@@ -62,23 +72,27 @@ function Wallet() {
       >
         <h2>Transaction History</h2>
         <div className="transaction-list">
-          {transactions.map((tx) => (
-            <motion.div
-              key={tx.id}
-              className={`transaction-item ${tx.type.toLowerCase()}`}
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-            >
-              <span className="tx-type">{tx.type}</span>
-              <span className="tx-amount">{tx.amount}</span>
-              <span className="tx-date">{tx.date} - {tx.time}</span>
-              <span className="tx-status">{tx.status}</span>
-            </motion.div>
-          ))}
+          {transactions.length > 0 ? (
+            transactions.map((tx) => (
+              <motion.div
+                key={tx.id}
+                className={`transaction-item ${tx.type.toLowerCase()}`}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
+                <span className="tx-type">{tx.type}</span>
+                <span className="tx-amount">{tx.amount > 0 ? `+ $${tx.amount}` : `- $${Math.abs(tx.amount)}`}</span>
+                <span className="tx-date">{tx.date}</span>
+                <span className="tx-status">{tx.status}</span>
+              </motion.div>
+            ))
+          ) : (
+            <p>No transactions found.</p>
+          )}
         </div>
       </motion.div>
 
-      {/* ✅ Deposit & Withdraw Popups (Only Added This) */}
+      {/* ✅ Deposit & Withdraw Popups */}
       {popupType && <DepositWithdrawPopup type={popupType} onClose={() => setPopupType(null)} />}
     </motion.div>
   );
