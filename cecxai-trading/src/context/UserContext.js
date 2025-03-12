@@ -22,12 +22,7 @@ export const UserProvider = ({ children }) => {
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
-            const { total_referrals, commission_balance, ...userData } = data.user;
-            setUser({
-              ...userData,
-              total_referrals,
-              commission_balance,
-            }); // ✅ Store User Data Globally
+            setUser(data.user); // ✅ Store User Data Globally
           } else {
             console.error("Error fetching user:", data.message);
           }
