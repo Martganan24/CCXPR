@@ -6,11 +6,11 @@ import { useUser } from "../context/UserContext"; // ✅ Import UserContext
 // Function to generate random names (static for the leaderboard)
 const generateStaticLeaderboard = () => {
   return [
-    { id: 1, name: "John Doe", total_earnings: 8000 },  // Starting earnings $8,000
-    { id: 2, name: "Jane Smith", total_earnings: 8000 },
-    { id: 3, name: "Mike Johnson", total_earnings: 8000 },
-    { id: 4, name: "Emily Davis", total_earnings: 8000 },
-    { id: 5, name: "David Wilson", total_earnings: 8000 },
+    { id: 1, name: "John Doe", total_earnings: Math.random() * (20000 - 8000) + 8000 },
+    { id: 2, name: "Jane Smith", total_earnings: Math.random() * (20000 - 8000) + 8000 },
+    { id: 3, name: "Mike Johnson", total_earnings: Math.random() * (20000 - 8000) + 8000 },
+    { id: 4, name: "Emily Davis", total_earnings: Math.random() * (20000 - 8000) + 8000 },
+    { id: 5, name: "David Wilson", total_earnings: Math.random() * (20000 - 8000) + 8000 },
   ];
 };
 
@@ -35,6 +35,9 @@ function Affiliate() {
         const newEarnings = Math.min(100000, affiliate.total_earnings + 3000); // Increase by $3,000 daily, max $100,000
         return { ...affiliate, total_earnings: newEarnings };
       });
+
+      // Sort by earnings to keep the highest at the top
+      updatedLeaderboard.sort((a, b) => b.total_earnings - a.total_earnings);
 
       setLeaderboard(updatedLeaderboard); // Update leaderboard with new earnings
     };
