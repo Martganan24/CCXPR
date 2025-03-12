@@ -3,24 +3,21 @@ import { motion } from "framer-motion";
 import "../styles/Affiliate.css"; // ✅ Ensure this file exists
 import { useUser } from "../context/UserContext"; // ✅ Import UserContext
 
-// Function to generate random names
-const generateRandomName = () => {
-  const names = [
-    "John Doe", "Jane Smith", "Mike Johnson", "Emily Davis", "David Wilson",
-    "Sarah Brown", "Chris Lee", "Jessica White", "Matthew Harris", "Amanda Clark"
+// Function to generate random names (static for the leaderboard)
+const generateStaticLeaderboard = () => {
+  return [
+    { id: 1, name: "John Doe", total_earnings: 8000 },  // Starting earnings $8,000
+    { id: 2, name: "Jane Smith", total_earnings: 8000 },
+    { id: 3, name: "Mike Johnson", total_earnings: 8000 },
+    { id: 4, name: "Emily Davis", total_earnings: 8000 },
+    { id: 5, name: "David Wilson", total_earnings: 8000 },
   ];
-  return names[Math.floor(Math.random() * names.length)];
-};
-
-// Function to generate random earnings in the range
-const generateRandomEarnings = () => {
-  return (Math.random() * (100000 - 8000) + 8000).toFixed(2); // Random between $8,000 and $100,000
 };
 
 function Affiliate() {
   const { user } = useUser(); // ✅ Get User Data from Context
   const [copied, setCopied] = useState(false);
-  const [leaderboard, setLeaderboard] = useState([]); // Optional leaderboard state
+  const [leaderboard, setLeaderboard] = useState(generateStaticLeaderboard()); // Static leaderboard data
 
   const referralLink = user ? user.referral_code : ""; // Dynamic referral code (already system-generated)
 
@@ -30,29 +27,24 @@ function Affiliate() {
     setTimeout(() => setCopied(false), 1500); // Reset after 1.5s
   };
 
-  // ✅ Fetch leaderboard data (Optional)
+  // ✅ Simulate Earnings Increase for Top Affiliates
   useEffect(() => {
-    const generateLeaderboard = () => {
-      const newLeaderboard = Array.from({ length: 5 }).map((_, index) => ({
-        id: index + 1,
-        name: generateRandomName(),
-        total_earnings: generateRandomEarnings(),
-      }));
+    const updateLeaderboardEarnings = () => {
+      const updatedLeaderboard = leaderboard.map((affiliate) => {
+        // Increase earnings daily
+        const newEarnings = Math.min(100000, affiliate.total_earnings + 3000); // Increase by $3,000 daily, max $100,000
+        return { ...affiliate, total_earnings: newEarnings };
+      });
 
-      // Sort to ensure the top earner is first
-      newLeaderboard.sort((a, b) => b.total_earnings - a.total_earnings);
-
-      setLeaderboard(newLeaderboard); // ✅ Set leaderboard data
+      setLeaderboard(updatedLeaderboard); // Update leaderboard with new earnings
     };
 
-    generateLeaderboard(); // Initial leaderboard generation
-
     const interval = setInterval(() => {
-      generateLeaderboard(); // Update leaderboard daily
+      updateLeaderboardEarnings(); // Update every day (simulated)
     }, 86400000); // 1 day in milliseconds
 
     return () => clearInterval(interval); // Cleanup interval when component unmounts
-  }, []);
+  }, [leaderboard]);
 
   return (
     <motion.div
