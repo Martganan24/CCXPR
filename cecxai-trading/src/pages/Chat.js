@@ -1,66 +1,63 @@
-import React, { useState, useEffect } from "react";
-import { useUser } from "../context/UserContext"; // Import UserContext
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import "../styles/Chat.css"; // ✅ Ensure this file exists
 
 function Chat() {
-  const { user, chatHistory } = useUser(); // Access user data and chat history from UserContext
-  const [message, setMessage] = useState(""); // State for the user's current message
-  const [botReply, setBotReply] = useState(""); // State for bot reply
-  const [waitingForAdmin, setWaitingForAdmin] = useState(false); // To check if waiting for admin response
+  const [messages, setMessages] = useState([
+    { sender: "bot", text: "Welcome to CECXAI Chat Support! 🎉" },
+    { sender: "bot", text: "Hello! What can I do for you?" },
+  ]);
+  const [input, setInput] = useState("");
 
-  // Handle sending a new message
-  const sendMessage = async () => {
-    if (!message) return; // Do not send empty messages
-
-    // Save user's message to chat history (simulated, save to backend)
-    const newMessage = { sender: "user", message };
-    const updatedChatHistory = [...chatHistory, newMessage];
-
-    // Simulate bot reply only once and wait for admin response
-    const botMessage = { sender: "bot", message: "Thank you for your message! Please wait for the admin to respond." };
-    setBotReply(botMessage.message); // Bot response
-    setWaitingForAdmin(true); // Set waiting for admin response
-
-    // Store the new message and bot reply in chat history
-    updatedChatHistory.push(botMessage);
-    // Here, you would also send the updated chat history to the backend (Supabase)
-    
-    // Update the chat history in UserContext (you would also save to Supabase)
-    setMessage(""); // Clear input after sending
+  const sendMessage = () => {
+    if (input.trim() !== "") {
+      setMessages([...messages, { sender: "user", text: input }]);
+      setInput(""); // Clear input after sending
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          { sender: "Admin", text: "Thank you! for reaching out to us. We have received your message and one of our team members will get in touch with you as soon as possible. We appreciate your patience and look forward to assisting you.! 🚀" },
+        ]);
+      }, 1000); // Simulated bot reply after 1 sec
+    }
   };
 
   return (
-    <div className="chat-container">
-      <h2>Chat with Support</h2>
+    <motion.div
+      className="chat-container"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h1 className="chat-title">Live Chat</h1>
 
-      {/* Display Chat History */}
-      <div className="chat-history">
-        {chatHistory.length > 0 ? (
-          chatHistory.map((chat, index) => (
-            <div key={index} className={`chat-message ${chat.sender}`}>
-              <p>{chat.message}</p>
-            </div>
-          ))
-        ) : (
-          <div>No previous chat history.</div> // If no chat history, display this message
-        )}
+      {/* ✅ Messages Display */}
+      <div className="chat-box">
+        {messages.map((msg, index) => (
+          <motion.div
+            key={index}
+            className={`chat-message ${msg.sender}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {msg.text}
+          </motion.div>
+        ))}
       </div>
 
-      {/* Display Bot's Last Reply */}
-      {botReply && <div className="bot-reply">{botReply}</div>}
-
-      {/* User's Message Input */}
-      <div className="input-container">
+      {/* ✅ Chat Input */}
+      <div className="chat-input">
         <input
           type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message..."
+          placeholder="Type a message..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === "Enter" && sendMessage()} // Send on Enter
         />
-        <button onClick={sendMessage} disabled={waitingForAdmin}>
-          Send
-        </button>
+        <button onClick={sendMessage}>Send</button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
