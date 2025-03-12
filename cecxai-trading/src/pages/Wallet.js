@@ -1,29 +1,37 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import "../styles/Wallet.css"; // ✅ Ensure this file exists
-import DepositWithdrawPopup from "../components/DepositWithdrawPopup"; // ✅ Import popup
-import { useUser } from "../context/UserContext"; // ✅ Import User Context
+import DepositWithdrawPopup from "../components/DepositWithdrawPopup"; // ✅ Popup Import
 
-function Wallet() {
-  const { user } = useUser(); // ✅ Get User Data from Context
-  const [popupType, setPopupType] = useState(null); // ✅ Control popups
-  const [transactions, setTransactions] = useState([]); // ✅ Store transactions
+const transactionsData = [
+  { id: 1, type: "Deposit", amount: "+$500.00", date: "Mar 9, 2025", time: "10:30 AM", status: "Completed" },
+  { id: 2, type: "Withdraw", amount: "-$200.00", date: "Mar 8, 2025", time: "5:45 PM", status: "Completed" },
+  { id: 3, type: "Profit", amount: "+$150.00", date: "Mar 7, 2025", time: "2:15 PM", status: "Completed" },
+  { id: 4, type: "Loss", amount: "-$75.00", date: "Mar 6, 2025", time: "11:10 AM", status: "Completed" },
+  { id: 5, type: "Commission", amount: "+$50.00", date: "Mar 5, 2025", time: "3:20 PM", status: "Completed" },
+  { id: 6, type: "Deposit", amount: "+$1,000.00", date: "Mar 4, 2025", time: "9:00 AM", status: "Completed" },
+  { id: 7, type: "Withdraw", amount: "-$300.00", date: "Mar 3, 2025", time: "12:30 PM", status: "Completed" },
+  { id: 8, type: "Profit", amount: "+$200.00", date: "Mar 2, 2025", time: "4:00 PM", status: "Completed" },
+  { id: 9, type: "Loss", amount: "-$50.00", date: "Mar 1, 2025", time: "8:00 AM", status: "Completed" },
+  { id: 10, type: "Commission", amount: "+$100.00", date: "Feb 28, 2025", time: "7:00 PM", status: "Completed" },
+  { id: 11, type: "Deposit", amount: "+$2,000.00", date: "Feb 27, 2025", time: "10:00 AM", status: "Completed" },
+  { id: 12, type: "Withdraw", amount: "-$500.00", date: "Feb 26, 2025", time: "11:30 AM", status: "Completed" },
+];
 
-  // ✅ Fetch Transaction History
-  useEffect(() => {
-    if (!user) return; // ✅ Prevent fetching if user is not loaded
+const Wallet = () => {
+  const [transactions] = useState(transactionsData); // ✅ Store transaction history
 
-    fetch(`https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/transactions/${user.id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setTransactions(data.transactions); // ✅ Set transaction history
-        } else {
-          console.error("Error fetching transactions:", data.message);
-        }
-      })
-      .catch((error) => console.error("Error fetching transactions:", error));
-  }, [user]); // ✅ Runs when user data is available
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+
+  // Get the current page's transactions
+  const indexOfLastTransaction = currentPage * rowsPerPage;
+  const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
+  const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <motion.div
@@ -35,35 +43,35 @@ function Wallet() {
       <h1 className="wallet-title">Wallet Overview</h1>
 
       <div className="wallet-grid">
-        {/* ✅ Main Wallet */}
+        {/* Main Wallet */}
         <motion.div
           className="wallet-box main-wallet"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.3 }}
         >
           <h2>Main Wallet</h2>
-          <p className="balance">{user ? `$${user.balance}` : "Loading..."}</p>
+          <p className="balance">$12,345.67</p>
           <div className="wallet-actions">
-            <button className="wallet-btn" onClick={() => setPopupType("deposit")}>Deposit</button>
-            <button className="wallet-btn" onClick={() => setPopupType("withdraw")}>Withdraw</button>
+            <button className="wallet-btn">Deposit</button>
+            <button className="wallet-btn">Withdraw</button>
           </div>
         </motion.div>
 
-        {/* ✅ Commission Wallet */}
+        {/* Commission Wallet */}
         <motion.div
           className="wallet-box commission-wallet"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.3 }}
         >
           <h2>Commission</h2>
-          <p className="balance">{user ? `$${user.commission_balance}` : "Loading..."}</p>
+          <p className="balance">$987.65</p>
           <div className="wallet-actions">
-            <button className="wallet-btn" onClick={() => setPopupType("withdraw")}>Withdraw</button>
+            <button className="wallet-btn">Withdraw</button>
           </div>
         </motion.div>
       </div>
 
-      {/* ✅ Transaction History */}
+      {/* Transaction History */}
       <motion.div
         className="transaction-history"
         initial={{ opacity: 0 }}
@@ -72,8 +80,8 @@ function Wallet() {
       >
         <h2>Transaction History</h2>
         <div className="transaction-list">
-          {transactions.length > 0 ? (
-            transactions.map((tx) => (
+          {currentTransactions.length > 0 ? (
+            currentTransactions.map((tx) => (
               <motion.div
                 key={tx.id}
                 className={`transaction-item ${tx.type.toLowerCase()}`}
@@ -81,21 +89,43 @@ function Wallet() {
                 transition={{ duration: 0.3 }}
               >
                 <span className="tx-type">{tx.type}</span>
-                <span className="tx-amount">{tx.amount > 0 ? `+ $${tx.amount}` : `- $${Math.abs(tx.amount)}`}</span>
-                <span className="tx-date">{tx.date}</span>
+                <span className="tx-amount">{tx.amount}</span>
+                <span className="tx-date">{tx.date} - {tx.time}</span>
                 <span className="tx-status">{tx.status}</span>
               </motion.div>
             ))
           ) : (
-            <p>No transactions found.</p>
+            <div>No transactions found.</div>
           )}
         </div>
       </motion.div>
 
-      {/* ✅ Deposit & Withdraw Popups */}
-      {popupType && <DepositWithdrawPopup type={popupType} onClose={() => setPopupType(null)} />}
+      {/* Pagination */}
+      <div className="pagination">
+        {transactions.length > rowsPerPage && (
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+        )}
+        {Array.from({ length: Math.ceil(transactions.length / rowsPerPage) }, (_, index) => (
+          <button key={index} onClick={() => handlePageChange(index + 1)}>
+            {index + 1}
+          </button>
+        ))}
+        {transactions.length > rowsPerPage && (
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === Math.ceil(transactions.length / rowsPerPage)}
+          >
+            Next
+          </button>
+        )}
+      </div>
     </motion.div>
   );
-}
+};
 
 export default Wallet;
