@@ -47,7 +47,7 @@ function Affiliate() {
           transition={{ duration: 0.3 }}
         >
           <h2>Commission Rate</h2>
-          <p className="commission-rate">10%</p>
+          <p className="commission-rate">3%</p>
         </motion.div>
       </div>
 
