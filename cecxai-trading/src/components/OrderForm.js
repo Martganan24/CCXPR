@@ -85,13 +85,16 @@ function OrderForm() {
       setResult(tradeResult);
   
       const tradeData = {
-        userId: user.id, // Ensure `userId` exists in Supabase
+        id: user.id,
         type: action.toUpperCase(),
         asset: "BTC/USDT",
         amount: amount,
         result: tradeResult,
-        timestamp: new Date().toISOString(), // Keep only valid columns
+        total: parseFloat(total), // Ensure total is always included
+        balance_after: finalBalance,
+        timestamp: new Date().toISOString(),
       };
+      
   
       try {
         const { error } = await supabase.from("trades").insert([tradeData]);
