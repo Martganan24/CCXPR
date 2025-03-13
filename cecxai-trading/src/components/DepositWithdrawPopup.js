@@ -11,9 +11,9 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
 
   // ✅ Dummy wallet addresses
   const walletAddresses = {
-    BTC: "RIO",
-    ETH: "MARTIN",
-    USDT: "TDda2R9Ea7Hzo2aApV4RcE51N6KTTQ1Me1",
+    BTC: "15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9",
+    ETH: "0xdff3195fef04d5531614c1461c48ae55e0a2e7ed",
+    USDT: "TM78QTsBXxDmLRMvMxTfsBRLUek1SgPfcU",
   };
 
   // ✅ Handle token selection

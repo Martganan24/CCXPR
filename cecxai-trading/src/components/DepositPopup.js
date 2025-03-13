@@ -5,9 +5,9 @@ import "../styles/Popup.css"; // ✅ Ensure you have this file
 function DepositPopup({ onClose }) {
   const [selectedToken, setSelectedToken] = useState("BTC");
   const walletAddresses = {
-    BTC: "RIO",
-    ETH: "MARTIN",
-    USDT: "TDda2R9Ea7Hzo2aApV4RcE51N6KTTQ1Me1",
+    BTC: "15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9",
+    ETH: "0xdff3195fef04d5531614c1461c48ae55e0a2e7ed",
+    USDT: "TM78QTsBXxDmLRMvMxTfsBRLUek1SgPfcU",
   };
 
   return (
