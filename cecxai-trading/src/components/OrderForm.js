@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext"; // Use UserContext to get user data and transactionHistory
-import { supabase } from "../utils/supabase"; // Import Supabase client
+import { supabase } from './supabase'; // Adjust the import path based on your structure
 
 // Customizable Amount Input Component
 const AmountInput = ({ amount, onIncrease, onDecrease, onChange }) => {
@@ -94,13 +94,14 @@ function OrderForm() {
     }, 1000); // Update every second
 
     // Simulate result after countdown (e.g., 2s for testing)
-    setTimeout(async () => {
+    setTimeout(() => {
       const win = Math.random() > 0.5; // 50% chance to win
       if (win) {
         setUser({ ...user, balance: user.balance + parseFloat(total) });
         setResult("You Win!");
         // Push data to trading history (Supabase table "transactions")
-        const { data, error } = await supabase.from('transactions').insert([
+        setTransactionHistory((prevHistory) => [
+          ...prevHistory,
           {
             id: user.userId, // userId from UserContext
             type: action === "buy" ? "BUY" : "SELL", // Buy or Sell type
@@ -109,13 +110,11 @@ function OrderForm() {
             created_at: new Date().toISOString(), // Timestamp
           },
         ]);
-        if (error) {
-          console.error("Error inserting transaction:", error);
-        }
       } else {
         setResult("You Lose!");
         // Push data to trading history (Supabase table "transactions")
-        const { data, error } = await supabase.from('transactions').insert([
+        setTransactionHistory((prevHistory) => [
+          ...prevHistory,
           {
             id: user.userId, // userId from UserContext
             type: action === "buy" ? "BUY" : "SELL", // Buy or Sell type
@@ -124,9 +123,6 @@ function OrderForm() {
             created_at: new Date().toISOString(), // Timestamp
           },
         ]);
-        if (error) {
-          console.error("Error inserting transaction:", error);
-        }
       }
       setIsProcessing(false);
       setPopupVisible(false);
