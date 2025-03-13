@@ -8,6 +8,7 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null); // Store User Data
   const [chatHistory, setChatHistory] = useState([]); // Store Chat History
+  const [transactionHistory, setTransactionHistory] = useState([]); // Store Transaction History
 
   useEffect(() => {
     const token = localStorage.getItem("authToken"); // Get Token
@@ -54,6 +55,11 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // Function to add a trade to the transaction history
+  const addTradeToHistory = (trade) => {
+    setTransactionHistory((prevHistory) => [...prevHistory, trade]);
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem("authToken");
@@ -61,7 +67,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, chatHistory, setUser, logout }}>
+    <UserContext.Provider value={{ user, chatHistory, setUser, transactionHistory, addTradeToHistory, logout }}>
       {children}
     </UserContext.Provider>
   );
