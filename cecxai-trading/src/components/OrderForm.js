@@ -45,7 +45,7 @@ function OrderForm() {
   const [isProcessing, setIsProcessing] = useState(false); // To track if a trade is in process
   const [result, setResult] = useState(""); // To store the result (win/loss)
   const [popupVisible, setPopupVisible] = useState(false); // Show the countdown popup
-  const [timeLeft, setTimeLeft] = useState(60); // Timer state for countdown
+  const [timeLeft, setTimeLeft] = useState(2); // Timer state for countdown (2 seconds for testing)
   const [showCloseButton, setShowCloseButton] = useState(false); // State to control close button visibility
 
   // Decrease amount (Min: 0)
@@ -92,7 +92,7 @@ function OrderForm() {
       });
     }, 1000);
 
-    // Simulate result after a countdown (e.g., 60s)
+    // Simulate result after a countdown (e.g., 2s for testing)
     setTimeout(() => {
       const win = Math.random() > 0.5; // 50% chance to win
       if (win) {
@@ -105,13 +105,14 @@ function OrderForm() {
       }
       setIsProcessing(false);
       setPopupVisible(false);
-    }, 10000); // Simulate 60s countdown
+    }, 2000); // Simulate 2s countdown for testing
   };
 
   const handleClosePopup = () => {
     setPopupVisible(false); // Close popup
     setResult(""); // Reset result when closing the popup
-    setTimeLeft(60); // Reset the timer when closing the popup
+    setTimeLeft(2); // Reset the timer when closing the popup
+    setIsProcessing(false); // Allow new trade to be initiated
   };
 
   return (
@@ -135,7 +136,7 @@ function OrderForm() {
         <div className="popup">
           <div className="popup-content">
             <h3>Trade in Progress...</h3>
-            <p>Result will be shown after 60 seconds.</p>
+            <p>Result will be shown after {timeLeft}s.</p>
             {isProcessing && <p>Processing... {timeLeft}s</p>}
             {showCloseButton && (
               <button className="close-btn" onClick={handleClosePopup}>Close</button>
