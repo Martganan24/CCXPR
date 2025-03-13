@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useUser } from "../context/UserContext"; // Use UserContext to get user data and transactionHistory
 
 // Customizable Amount Input Component
 const AmountInput = ({ amount, onIncrease, onDecrease, onChange }) => {
@@ -39,7 +40,11 @@ const OrderButtons = ({ onBuy, onSell }) => {
 };
 
 function OrderForm() {
+  const { user, setUser, transactionHistory, setTransactionHistory } = useUser(); // Get user data and transaction history
   const [amount, setAmount] = useState(0); // Default amount is 0
+  const [isProcessing, setIsProcessing] = useState(false); // To track if a trade is in process
+  const [result, setResult] = useState(""); // To store the result (win/loss)
+  const [popupVisible, setPopupVisible] = useState(false); // Show the countdown popup
 
   // Decrease amount (Min: 0)
   const decreaseAmount = () => {
@@ -62,15 +67,53 @@ function OrderForm() {
   const total = (amount + parseFloat(profit)).toFixed(2); // Total earnings
 
   // Buy action
-  const handleBuy = () => {
-    console.log(`Buying with ${amount} USD.`);
-    // Additional logic for buying goes here
+  const handleBuy = async () => {
+    if (!user || user.balance < amount) return alert("Not enough balance!");
+    setIsProcessing(true);
+    setPopupVisible(true);
+
+    // Deduct balance immediately
+    setUser({ ...user, balance: user.balance - amount });
+
+    // Simulate result after a countdown (e.g., 60s)
+    setTimeout(() => {
+      const win = Math.random() > 0.5; // 50% chance to win
+      if (win) {
+        setUser({ ...user, balance: user.balance + parseFloat(total) });
+        setResult("You Win!");
+        setTransactionHistory([...transactionHistory, { type: "Profit", amount: total, status: "Completed" }]);
+      } else {
+        setResult("You Lose!");
+        setTransactionHistory([...transactionHistory, { type: "Loss", amount: `-$${amount}`, status: "Completed" }]);
+      }
+      setIsProcessing(false);
+      setPopupVisible(false);
+    }, 60000); // Simulate 60s countdown
   };
 
   // Sell action
-  const handleSell = () => {
-    console.log(`Selling with ${amount} USD.`);
-    // Additional logic for selling goes here
+  const handleSell = async () => {
+    if (!user || user.balance < amount) return alert("Not enough balance!");
+    setIsProcessing(true);
+    setPopupVisible(true);
+
+    // Deduct balance immediately
+    setUser({ ...user, balance: user.balance - amount });
+
+    // Simulate result after a countdown (e.g., 60s)
+    setTimeout(() => {
+      const win = Math.random() > 0.5; // 50% chance to win
+      if (win) {
+        setUser({ ...user, balance: user.balance + parseFloat(total) });
+        setResult("You Win!");
+        setTransactionHistory([...transactionHistory, { type: "Profit", amount: total, status: "Completed" }]);
+      } else {
+        setResult("You Lose!");
+        setTransactionHistory([...transactionHistory, { type: "Loss", amount: `-$${amount}`, status: "Completed" }]);
+      }
+      setIsProcessing(false);
+      setPopupVisible(false);
+    }, 60000); // Simulate 60s countdown
   };
 
   return (
@@ -88,6 +131,20 @@ function OrderForm() {
 
       {/* Customizable Buy/Sell Buttons */}
       <OrderButtons onBuy={handleBuy} onSell={handleSell} />
+
+      {/* Countdown Timer Popup */}
+      {popupVisible && (
+        <div className="popup">
+          <div className="popup-content">
+            <h3>Trade in Progress...</h3>
+            <p>Result will be shown after 60 seconds.</p>
+            {isProcessing && <p>Processing...</p>}
+          </div>
+        </div>
+      )}
+
+      {/* Notification */}
+      {result && <div className={`notification ${result === "You Win!" ? "win" : "lose"}`}>{result}</div>}
     </div>
   );
 }
