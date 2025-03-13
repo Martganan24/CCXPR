@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext"; // Use UserContext to get user data and transactionHistory
-import { supabase } from "../utils/supabase"; // Adjust the import path based on your structure
 
 // Customizable Amount Input Component
 const AmountInput = ({ amount, onIncrease, onDecrease, onChange }) => {
@@ -41,7 +40,7 @@ const OrderButtons = ({ onTrade, disabled }) => {
 };
 
 function OrderForm() {
-  const { user, setUser, setTransactionHistory } = useUser(); // Get user data and transaction history
+  const { user, setUser, transactionHistory, setTransactionHistory } = useUser(); // Get user data and transaction history
   const [amount, setAmount] = useState(0); // Default amount is 0
   const [isProcessing, setIsProcessing] = useState(false); // To track if a trade is in process
   const [result, setResult] = useState(""); // To store the result (win/loss)
@@ -82,7 +81,7 @@ function OrderForm() {
     // Deduct balance immediately
     setUser({ ...user, balance: user.balance - amount });
 
-    // Start countdown timer
+    // Start countdown timer (only using setInterval now)
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
@@ -93,40 +92,18 @@ function OrderForm() {
       });
     }, 1000); // Update every second
 
-    // Simulate result after countdown
-    setTimeout(async () => {
+    // Simulate result after countdown (e.g., 2s for testing)
+    setTimeout(() => {
       const win = Math.random() > 0.5; // 50% chance to win
       if (win) {
         setUser({ ...user, balance: user.balance + parseFloat(total) });
         setResult("You Win!");
-        // Push data to Supabase "transactions" table for profit
-        const { data, error } = await supabase.from('transactions').insert([
-          {
-            id: user.userId, // userId from UserContext
-            type: action === "buy" ? "BUY" : "SELL", // Buy or Sell type
-            amount: total, // Amount of profit
-            status: "Profit", // Trade outcome
-            created_at: new Date().toISOString(), // Timestamp
-          },
-        ]);
-        if (error) {
-          console.error("Error inserting transaction:", error);
-        }
+        // Update transaction history
+        setTransactionHistory([...transactionHistory, { type: action === "buy" ? "BUY" : "SELL", asset: "BTC/USDT", price: `$${total}`, time: new Date().toLocaleTimeString(), buyPrice: amount, sellPrice: total }]);
       } else {
         setResult("You Lose!");
-        // Push data to Supabase "transactions" table for loss
-        const { data, error } = await supabase.from('transactions').insert([
-          {
-            id: user.userId, // userId from UserContext
-            type: action === "buy" ? "BUY" : "SELL", // Buy or Sell type
-            amount: `-${amount}`, // Amount of loss
-            status: "Loss", // Trade outcome
-            created_at: new Date().toISOString(), // Timestamp
-          },
-        ]);
-        if (error) {
-          console.error("Error inserting transaction:", error);
-        }
+        // Update transaction history
+        setTransactionHistory([...transactionHistory, { type: action === "buy" ? "BUY" : "SELL", asset: "BTC/USDT", price: `$${amount}`, time: new Date().toLocaleTimeString(), buyPrice: amount, sellPrice: total }]);
       }
       setIsProcessing(false);
       setPopupVisible(false);
