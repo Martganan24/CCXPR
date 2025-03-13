@@ -13,7 +13,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const walletAddresses = {
     BTC: "RIO",
     ETH: "MARTIN",
-    USDT: "RENLY",
+    USDT: "TDda2R9Ea7Hzo2aApV4RcE51N6KTTQ1Me1",
   };
 
   // ✅ Handle token selection
