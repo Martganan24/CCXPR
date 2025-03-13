@@ -98,10 +98,12 @@ function OrderForm() {
       if (win) {
         setUser({ ...user, balance: user.balance + parseFloat(total) });
         setResult("You Win!");
-        setTransactionHistory([...transactionHistory, { type: "Profit", amount: total, status: "Completed" }]);
+        // Update transaction history
+        setTransactionHistory([...transactionHistory, { type: action === "buy" ? "BUY" : "SELL", asset: "BTC/USDT", price: `$${total}`, time: new Date().toLocaleTimeString(), buyPrice: amount, sellPrice: total }]);
       } else {
         setResult("You Lose!");
-        setTransactionHistory([...transactionHistory, { type: "Loss", amount: `-$${amount}`, status: "Completed" }]);
+        // Update transaction history
+        setTransactionHistory([...transactionHistory, { type: action === "buy" ? "BUY" : "SELL", asset: "BTC/USDT", price: `$${amount}`, time: new Date().toLocaleTimeString(), buyPrice: amount, sellPrice: total }]);
       }
       setIsProcessing(false);
       setPopupVisible(false);
