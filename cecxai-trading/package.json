@@ -2,8 +2,12 @@
   "name": "cecxai-trading",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/dashboard",
+  "homepage": "https://yourdomain.com",
+  "engines": {
+    "node": "16.x"
+  },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
