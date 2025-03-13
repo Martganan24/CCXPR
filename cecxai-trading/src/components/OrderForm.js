@@ -105,7 +105,7 @@ function OrderForm() {
       }
       setIsProcessing(false);
       setPopupVisible(false);
-    }, ); // Simulate 2s countdown for testing
+    }, 2000); // Simulate 2s countdown for testing
   };
 
   const handleClosePopup = () => {
