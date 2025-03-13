@@ -85,15 +85,15 @@ function OrderForm() {
       setResult(tradeResult);
   
       const tradeData = {
-        id: user.id,
-        type: action.toUpperCase(),
+        userId: user.id,  // Ensure this matches your Supabase column
+        action: action.toLowerCase(), // Convert to lowercase to match the constraint
         asset: "BTC/USDT",
         amount: amount,
         result: tradeResult,
-        total: parseFloat(total), // Ensure total is always included
         balance_after: finalBalance,
         timestamp: new Date().toISOString(),
       };
+      
       
   
       try {
