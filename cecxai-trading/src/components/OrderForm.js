@@ -85,13 +85,12 @@ function OrderForm() {
       setResult(tradeResult);
   
       const tradeData = {
-        user_id: user.id, // Change this if needed
+        userId: user.id, // Ensure `userId` exists in Supabase
         type: action.toUpperCase(),
         asset: "BTC/USDT",
         amount: amount,
         result: tradeResult,
-        balance_after: finalBalance,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString(), // Keep only valid columns
       };
   
       try {
@@ -112,6 +111,7 @@ function OrderForm() {
       setPopupVisible(false);
     }, 2000);
   };
+  
   
 
   const handleClosePopup = () => {
