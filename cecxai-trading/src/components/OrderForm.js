@@ -40,7 +40,7 @@ const OrderButtons = ({ onTrade, disabled }) => {
 };
 
 function OrderForm() {
-  const { user, setUser, transactionHistory, setTransactionHistory } = useUser(); // Get user data and transaction history
+  const { user, setUser, setTransactionHistory } = useUser(); // Get user data and transaction history
   const [amount, setAmount] = useState(0); // Default amount is 0
   const [isProcessing, setIsProcessing] = useState(false); // To track if a trade is in process
   const [result, setResult] = useState(""); // To store the result (win/loss)
@@ -98,12 +98,30 @@ function OrderForm() {
       if (win) {
         setUser({ ...user, balance: user.balance + parseFloat(total) });
         setResult("You Win!");
-        // Update transaction history
-        setTransactionHistory([...transactionHistory, { type: action === "buy" ? "BUY" : "SELL", asset: "BTC/USDT", price: `$${total}`, time: new Date().toLocaleTimeString(), buyPrice: amount, sellPrice: total }]);
+        // Push data to trading history (Supabase table "transactions")
+        setTransactionHistory((prevHistory) => [
+          ...prevHistory,
+          {
+            id: user.userId, // userId from UserContext
+            type: action === "buy" ? "BUY" : "SELL", // Buy or Sell type
+            amount: total, // Amount of profit
+            status: "Profit", // Trade outcome
+            created_at: new Date().toISOString(), // Timestamp
+          },
+        ]);
       } else {
         setResult("You Lose!");
-        // Update transaction history
-        setTransactionHistory([...transactionHistory, { type: action === "buy" ? "BUY" : "SELL", asset: "BTC/USDT", price: `$${amount}`, time: new Date().toLocaleTimeString(), buyPrice: amount, sellPrice: total }]);
+        // Push data to trading history (Supabase table "transactions")
+        setTransactionHistory((prevHistory) => [
+          ...prevHistory,
+          {
+            id: user.userId, // userId from UserContext
+            type: action === "buy" ? "BUY" : "SELL", // Buy or Sell type
+            amount: `-${amount}`, // Amount of loss
+            status: "Loss", // Trade outcome
+            created_at: new Date().toISOString(), // Timestamp
+          },
+        ]);
       }
       setIsProcessing(false);
       setPopupVisible(false);
