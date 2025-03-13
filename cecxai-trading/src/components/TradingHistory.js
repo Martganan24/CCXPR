@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import "./TradingHistory.css"; // ✅ Ensure this file exists
 
-const TradingHistory = ({ transactionHistory }) => {
+const TradingHistory = () => {
+  // ✅ Dummy trade history data (Replace with real API data later)
+  const tradeHistory = [
+    { id: 1, type: "BUY", asset: "BTC/USDT", price: "$65,000", time: "12:30 PM", buyPrice: 65000, sellPrice: 67000 },
+    { id: 2, type: "SELL", asset: "BTC/USDT", price: "$3,500", time: "12:45 PM", buyPrice: 3400, sellPrice: 3500 },
+    { id: 3, type: "BUY", asset: "BTC/USDT", price: "$120", time: "1:00 PM", buyPrice: 120, sellPrice: 115 },
+    { id: 4, type: "SELL", asset: "BTC/USDT", price: "$2,500", time: "1:30 PM", buyPrice: 2450, sellPrice: 2500 },
+    // Add more data to test pagination...
+  ];
+
   // Pagination logic
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
@@ -9,17 +18,17 @@ const TradingHistory = ({ transactionHistory }) => {
   // Logic for showing the current page's data
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = transactionHistory.slice(indexOfFirstRow, indexOfLastRow);
+  const currentRows = tradeHistory.slice(indexOfFirstRow, indexOfLastRow);
 
   // Function to calculate profit or loss based on price and type
   const calculateProfitOrLoss = (trade) => {
     let profitOrLoss = 0;
     if (trade.type === "BUY") {
       // Profit/Loss for BUY transactions
-      profitOrLoss = (trade.sellPrice - trade.buyPrice) * 1; // Adjusted to amount or quantity if necessary
+      profitOrLoss = (trade.sellPrice - trade.buyPrice) * trade.amount;
     } else if (trade.type === "SELL") {
       // Profit/Loss for SELL transactions
-      profitOrLoss = (trade.sellPrice - trade.buyPrice) * 1; // Adjusted to amount or quantity if necessary
+      profitOrLoss = (trade.sellPrice - trade.buyPrice) * trade.amount;
     }
     return profitOrLoss > 0 ? `+${profitOrLoss.toFixed(2)} USD` : `${profitOrLoss.toFixed(2)} USD`;
   };
@@ -62,7 +71,7 @@ const TradingHistory = ({ transactionHistory }) => {
 
       {/* Pagination */}
       <div className="pagination">
-        {transactionHistory.length > rowsPerPage && (
+        {tradeHistory.length > rowsPerPage && (
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
@@ -70,15 +79,15 @@ const TradingHistory = ({ transactionHistory }) => {
             Previous
           </button>
         )}
-        {Array.from({ length: Math.ceil(transactionHistory.length / rowsPerPage) }, (_, index) => (
+        {Array.from({ length: Math.ceil(tradeHistory.length / rowsPerPage) }, (_, index) => (
           <button key={index} onClick={() => handlePageChange(index + 1)}>
             {index + 1}
           </button>
         ))}
-        {transactionHistory.length > rowsPerPage && (
+        {tradeHistory.length > rowsPerPage && (
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === Math.ceil(transactionHistory.length / rowsPerPage)}
+            disabled={currentPage === Math.ceil(tradeHistory.length / rowsPerPage)}
           >
             Next
           </button>
