@@ -81,18 +81,18 @@ function OrderForm() {
     // Deduct balance immediately
     setUser({ ...user, balance: user.balance - amount });
 
-    // Start countdown timer
+    // Start countdown timer (only using setInterval now)
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
-          clearInterval(timer);
+          clearInterval(timer); // Stop the timer when time runs out
           setShowCloseButton(true); // Show the close button after countdown ends
         }
         return prevTime - 1;
       });
-    }, 1000);
+    }, 1000); // Update every second
 
-    // Simulate result after a countdown (e.g., 2s for testing)
+    // Simulate result after countdown (e.g., 2s for testing)
     setTimeout(() => {
       const win = Math.random() > 0.5; // 50% chance to win
       if (win) {
