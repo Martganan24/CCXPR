@@ -76,6 +76,7 @@ function OrderForm() {
     setIsProcessing(true);
     setPopupVisible(true);
     setShowCloseButton(false); // Hide close button at the start
+    setResult(""); // Reset result when a new trade starts
 
     // Deduct balance immediately
     setUser({ ...user, balance: user.balance - amount });
@@ -107,6 +108,11 @@ function OrderForm() {
     }, 60000); // Simulate 60s countdown
   };
 
+  const handleClosePopup = () => {
+    setPopupVisible(false); // Close popup
+    setResult(""); // Reset result when closing the popup
+  };
+
   return (
     <div className="order-form">
       {/* Customizable Amount Input */}
@@ -131,7 +137,7 @@ function OrderForm() {
             <p>Result will be shown after 60 seconds.</p>
             {isProcessing && <p>Processing... {timeLeft}s</p>}
             {showCloseButton && (
-              <button className="close-btn" onClick={() => setPopupVisible(false)}>Close</button>
+              <button className="close-btn" onClick={handleClosePopup}>Close</button>
             )}
           </div>
         </div>
