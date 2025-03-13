@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useUser } from "../context/UserContext"; // Use UserContext to get user data and transactionHistory
 
 // Customizable Amount Input Component
@@ -30,11 +30,11 @@ const EarningsIndicator = ({ total }) => {
 };
 
 // Customizable Buy/Sell Buttons Component
-const OrderButtons = ({ onBuy, onSell, disabled }) => {
+const OrderButtons = ({ onTrade, disabled }) => {
   return (
     <div className="order-buttons">
-      <button className="buy-button" onClick={onBuy} disabled={disabled}>Buy</button>
-      <button className="sell-button" onClick={onSell} disabled={disabled}>Sell</button>
+      <button className="buy-button" onClick={() => onTrade("buy")} disabled={disabled}>Buy</button>
+      <button className="sell-button" onClick={() => onTrade("sell")} disabled={disabled}>Sell</button>
     </div>
   );
 };
@@ -68,44 +68,8 @@ function OrderForm() {
   const profit = (amount * 0.95).toFixed(2); // 95% of input
   const total = (amount + parseFloat(profit)).toFixed(2); // Total earnings
 
-  // Buy action
-  const handleBuy = async () => {
-    if (!user || user.balance < amount) return alert("Not enough balance!");
-    if (isProcessing) return alert("A trade is already in process. Please wait.");
-
-    setIsProcessing(true);
-    setPopupVisible(true);
-    setShowCloseButton(false); // Hide close button at the start
-
-    // Deduct balance immediately
-    setUser({ ...user, balance: user.balance - amount });
-
-    // Start countdown timer
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(timer);
-          setShowCloseButton(true); // Show the close button after countdown ends
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
-
-    // Simulate result after a countdown (e.g., 60s)
-    setTimeout(() => {
-      const win = Math.random() > 0.5; // 50% chance to win
-      if (win) {
-        setUser({ ...user, balance: user.balance + parseFloat(total) });
-        setResult("You Win!");
-        setTransactionHistory([...transactionHistory, { type: "Profit", amount: total, status: "Completed" }]);
-      }
-      setIsProcessing(false);
-      setPopupVisible(false);
-    }, 60000); // Simulate 60s countdown
-  };
-
-  // Sell action
-  const handleSell = async () => {
+  // Generalized Trade action (buy/sell)
+  const handleTrade = async (action) => {
     if (!user || user.balance < amount) return alert("Not enough balance!");
     if (isProcessing) return alert("A trade is already in process. Please wait.");
 
@@ -157,7 +121,7 @@ function OrderForm() {
       <EarningsIndicator total={total} />
 
       {/* Customizable Buy/Sell Buttons */}
-      <OrderButtons onBuy={handleBuy} onSell={handleSell} disabled={isProcessing} />
+      <OrderButtons onTrade={handleTrade} disabled={isProcessing} />
 
       {/* Countdown Timer Popup */}
       {popupVisible && (
