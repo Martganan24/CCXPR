@@ -30,11 +30,11 @@ const EarningsIndicator = ({ total }) => {
 };
 
 // Customizable Buy/Sell Buttons Component
-const OrderButtons = ({ onBuy, onSell }) => {
+const OrderButtons = ({ onBuy, onSell, disabled }) => {
   return (
     <div className="order-buttons">
-      <button className="buy-button" onClick={onBuy}>Buy</button>
-      <button className="sell-button" onClick={onSell}>Sell</button>
+      <button className="buy-button" onClick={onBuy} disabled={disabled}>Buy</button>
+      <button className="sell-button" onClick={onSell} disabled={disabled}>Sell</button>
     </div>
   );
 };
@@ -45,6 +45,7 @@ function OrderForm() {
   const [isProcessing, setIsProcessing] = useState(false); // To track if a trade is in process
   const [result, setResult] = useState(""); // To store the result (win/loss)
   const [popupVisible, setPopupVisible] = useState(false); // Show the countdown popup
+  const [timeLeft, setTimeLeft] = useState(60); // Timer state for countdown
 
   // Decrease amount (Min: 0)
   const decreaseAmount = () => {
@@ -69,11 +70,23 @@ function OrderForm() {
   // Buy action
   const handleBuy = async () => {
     if (!user || user.balance < amount) return alert("Not enough balance!");
+    if (isProcessing) return alert("A trade is already in process. Please wait.");
+
     setIsProcessing(true);
     setPopupVisible(true);
 
     // Deduct balance immediately
     setUser({ ...user, balance: user.balance - amount });
+
+    // Start countdown timer
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer);
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
 
     // Simulate result after a countdown (e.g., 60s)
     setTimeout(() => {
@@ -94,11 +107,23 @@ function OrderForm() {
   // Sell action
   const handleSell = async () => {
     if (!user || user.balance < amount) return alert("Not enough balance!");
+    if (isProcessing) return alert("A trade is already in process. Please wait.");
+
     setIsProcessing(true);
     setPopupVisible(true);
 
     // Deduct balance immediately
     setUser({ ...user, balance: user.balance - amount });
+
+    // Start countdown timer
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer);
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
 
     // Simulate result after a countdown (e.g., 60s)
     setTimeout(() => {
@@ -130,7 +155,7 @@ function OrderForm() {
       <EarningsIndicator total={total} />
 
       {/* Customizable Buy/Sell Buttons */}
-      <OrderButtons onBuy={handleBuy} onSell={handleSell} />
+      <OrderButtons onBuy={handleBuy} onSell={handleSell} disabled={isProcessing} />
 
       {/* Countdown Timer Popup */}
       {popupVisible && (
@@ -138,7 +163,7 @@ function OrderForm() {
           <div className="popup-content">
             <h3>Trade in Progress...</h3>
             <p>Result will be shown after 60 seconds.</p>
-            {isProcessing && <p>Processing...</p>}
+            {isProcessing && <p>Processing... {timeLeft}s</p>}
           </div>
         </div>
       )}
