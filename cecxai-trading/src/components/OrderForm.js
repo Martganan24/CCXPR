@@ -46,6 +46,7 @@ function OrderForm() {
   const [result, setResult] = useState(""); // To store the result (win/loss)
   const [popupVisible, setPopupVisible] = useState(false); // Show the countdown popup
   const [timeLeft, setTimeLeft] = useState(60); // Timer state for countdown
+  const [showCloseButton, setShowCloseButton] = useState(false); // State to control close button visibility
 
   // Decrease amount (Min: 0)
   const decreaseAmount = () => {
@@ -74,6 +75,7 @@ function OrderForm() {
 
     setIsProcessing(true);
     setPopupVisible(true);
+    setShowCloseButton(false); // Hide close button at the start
 
     // Deduct balance immediately
     setUser({ ...user, balance: user.balance - amount });
@@ -83,6 +85,7 @@ function OrderForm() {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(timer);
+          setShowCloseButton(true); // Show the close button after countdown ends
         }
         return prevTime - 1;
       });
@@ -111,6 +114,7 @@ function OrderForm() {
 
     setIsProcessing(true);
     setPopupVisible(true);
+    setShowCloseButton(false); // Hide close button at the start
 
     // Deduct balance immediately
     setUser({ ...user, balance: user.balance - amount });
@@ -120,6 +124,7 @@ function OrderForm() {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(timer);
+          setShowCloseButton(true); // Show the close button after countdown ends
         }
         return prevTime - 1;
       });
@@ -164,6 +169,9 @@ function OrderForm() {
             <h3>Trade in Progress...</h3>
             <p>Result will be shown after 60 seconds.</p>
             {isProcessing && <p>Processing... {timeLeft}s</p>}
+            {showCloseButton && (
+              <button className="close-btn" onClick={() => setPopupVisible(false)}>Close</button>
+            )}
           </div>
         </div>
       )}
