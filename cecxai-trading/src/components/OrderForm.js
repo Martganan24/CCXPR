@@ -105,12 +105,13 @@ function OrderForm() {
       }
       setIsProcessing(false);
       setPopupVisible(false);
-    }, 2000); // Simulate 2s countdown for testing
+    }, ); // Simulate 2s countdown for testing
   };
 
   const handleClosePopup = () => {
     setPopupVisible(false); // Close popup
     setResult(""); // Reset result when closing the popup
+    setTimeLeft(2); // Reset the timer when closing the popup
     setIsProcessing(false); // Allow new trade to be initiated
   };
 
