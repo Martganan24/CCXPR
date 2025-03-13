@@ -98,9 +98,6 @@ function OrderForm() {
         setUser({ ...user, balance: user.balance + parseFloat(total) });
         setResult("You Win!");
         setTransactionHistory([...transactionHistory, { type: "Profit", amount: total, status: "Completed" }]);
-      } else {
-        setResult("You Lose!");
-        setTransactionHistory([...transactionHistory, { type: "Loss", amount: `-$${amount}`, status: "Completed" }]);
       }
       setIsProcessing(false);
       setPopupVisible(false);
