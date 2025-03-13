@@ -52,13 +52,13 @@ function OrderForm() {
   const handleTrade = async (action) => {
     if (!user || user.balance < amount) return alert("Not enough balance!");
     if (isProcessing) return alert("A trade is already in process. Please wait.");
-
+  
     setIsProcessing(true);
     setPopupVisible(true);
     setShowCloseButton(false);
     setResult("");
     setUser({ ...user, balance: user.balance - amount });
-
+  
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
@@ -68,24 +68,24 @@ function OrderForm() {
         return prevTime - 1;
       });
     }, 1000);
-
+  
     setTimeout(async () => {
       const win = Math.random() > 0.5;
       let finalBalance = user.balance;
       let tradeResult = "You Lose!";
       let finalAmount = amount;
-
+  
       if (win) {
         finalBalance += parseFloat(total);
         tradeResult = "You Win!";
         finalAmount = total;
       }
-
+  
       setUser({ ...user, balance: finalBalance });
       setResult(tradeResult);
-
+  
       const tradeData = {
-        id: user.id, // Changed from user_id to id
+        user_id: user.id, // Change this if needed
         type: action.toUpperCase(),
         asset: "BTC/USDT",
         amount: amount,
@@ -93,15 +93,26 @@ function OrderForm() {
         balance_after: finalBalance,
         timestamp: new Date().toISOString(),
       };
-
-      const { error } = await supabase.from("trades").insert([tradeData]);
-      if (error) console.error("Supabase Insert Error:", error);
-
+  
+      try {
+        const { error } = await supabase.from("trades").insert([tradeData]);
+        if (error) {
+          console.error("🔥 Supabase Insert Error:", error);
+          alert(`Trade failed: ${error.message}`);
+          return;
+        }
+      } catch (err) {
+        console.error("🚨 Unexpected Insert Error:", err);
+        alert("An unexpected error occurred while inserting trade data.");
+        return;
+      }
+  
       setTransactionHistory([...transactionHistory, tradeData]);
       setIsProcessing(false);
       setPopupVisible(false);
     }, 2000);
   };
+  
 
   const handleClosePopup = () => {
     setPopupVisible(false);
