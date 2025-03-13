@@ -45,6 +45,7 @@ function OrderForm() {
   const [isProcessing, setIsProcessing] = useState(false); // To track if a trade is in process
   const [result, setResult] = useState(""); // To store the result (win/loss)
   const [popupVisible, setPopupVisible] = useState(false); // Show the countdown popup
+  const [timeLeft, setTimeLeft] = useState(2); // Timer state for countdown (2 seconds for testing)
   const [showCloseButton, setShowCloseButton] = useState(false); // State to control close button visibility
 
   // Decrease amount (Min: 0)
@@ -110,7 +111,6 @@ function OrderForm() {
   const handleClosePopup = () => {
     setPopupVisible(false); // Close popup
     setResult(""); // Reset result when closing the popup
-    setTimeLeft(2); // Reset the timer when closing the popup
     setIsProcessing(false); // Allow new trade to be initiated
   };
 
