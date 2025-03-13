@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext"; // Use UserContext to get user data and transactionHistory
+import { supabase } from "../utils/supabase"; // Import Supabase
 
 // Customizable Amount Input Component
 const AmountInput = ({ amount, onIncrease, onDecrease, onChange }) => {
@@ -68,6 +69,27 @@ function OrderForm() {
   const profit = (amount * 0.95).toFixed(2); // 95% of input
   const total = (amount + parseFloat(profit)).toFixed(2); // Total earnings
 
+  // Store trade in Supabase
+  const saveTradeToSupabase = async (tradeType, tradeAmount, tradeResult) => {
+    if (!user) return;
+
+    const { data, error } = await supabase.from("trades").insert([
+      {
+        user_id: user.id, 
+        trade_type: tradeType.toUpperCase(),
+        amount: tradeAmount,
+        result: tradeResult,
+        timestamp: new Date().toISOString(),
+      },
+    ]);
+
+    if (error) {
+      console.error("Error saving trade:", error);
+    } else {
+      console.log("Trade saved successfully:", data);
+    }
+  };
+
   // Generalized Trade action (buy/sell)
   const handleTrade = async (action) => {
     if (!user || user.balance < amount) return alert("Not enough balance!");
@@ -95,16 +117,26 @@ function OrderForm() {
     // Simulate result after countdown (e.g., 2s for testing)
     setTimeout(() => {
       const win = Math.random() > 0.5; // 50% chance to win
+      let tradeResult;
+
       if (win) {
         setUser({ ...user, balance: user.balance + parseFloat(total) });
         setResult("You Win!");
-        // Update transaction history
-        setTransactionHistory([...transactionHistory, { type: action === "buy" ? "BUY" : "SELL", asset: "BTC/USDT", price: `$${total}`, time: new Date().toLocaleTimeString(), buyPrice: amount, sellPrice: total }]);
+        tradeResult = "Win";
       } else {
         setResult("You Lose!");
-        // Update transaction history
-        setTransactionHistory([...transactionHistory, { type: action === "buy" ? "BUY" : "SELL", asset: "BTC/USDT", price: `$${amount}`, time: new Date().toLocaleTimeString(), buyPrice: amount, sellPrice: total }]);
+        tradeResult = "Loss";
       }
+
+      // Save trade to Supabase
+      saveTradeToSupabase(action, amount, tradeResult);
+
+      // Update transaction history
+      setTransactionHistory([
+        ...transactionHistory,
+        { type: action === "buy" ? "BUY" : "SELL", asset: "BTC/USDT", price: `$${total}`, time: new Date().toLocaleTimeString(), buyPrice: amount, sellPrice: total }
+      ]);
+
       setIsProcessing(false);
       setPopupVisible(false);
     }, 2000); // Simulate 2s countdown for testing
