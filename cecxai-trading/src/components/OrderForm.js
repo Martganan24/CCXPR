@@ -105,12 +105,13 @@ function OrderForm() {
       }
       setIsProcessing(false);
       setPopupVisible(false);
-    }, 60000); // Simulate 60s countdown
+    }, 10000); // Simulate 60s countdown
   };
 
   const handleClosePopup = () => {
     setPopupVisible(false); // Close popup
     setResult(""); // Reset result when closing the popup
+    setTimeLeft(60); // Reset the timer when closing the popup
   };
 
   return (
