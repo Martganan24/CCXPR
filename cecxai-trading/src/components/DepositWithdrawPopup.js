@@ -11,6 +11,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const [recipientWallet, setRecipientWallet] = useState("");
   const [copied, setCopied] = useState(false); // State for tracking copy status
   const [receiptUrl, setReceiptUrl] = useState(""); // State for the uploaded receipt URL
+  const [fileName, setFileName] = useState(""); // State to store file name
 
   // ✅ Dummy wallet addresses
   const walletAddresses = {
@@ -29,6 +30,10 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     setReceipt(file);
+    setFileName(file.name); // Display the file name
+
+    // Log to track file change
+    console.log("Selected file:", file.name);
 
     // Upload the file to Supabase storage
     const { data, error } = await supabase
@@ -51,6 +56,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
         console.error("Error getting public URL:", urlError);
       } else {
         setReceiptUrl(publicURL); // Save the receipt URL to state
+        console.log("Receipt uploaded successfully:", publicURL);
       }
     }
   };
@@ -64,6 +70,11 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
 
   // ✅ Handle submit
   const handleSubmit = async () => {
+    if (!amount || !receiptUrl) {
+      console.log("Please enter amount and upload a receipt.");
+      return;
+    }
+
     // Create the deposit data object
     const depositData = {
       token: selectedToken,
@@ -72,8 +83,10 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
       status: "pending", // Default status
     };
 
+    // Log to track the submission data
+    console.log("Submitting deposit data:", depositData);
+
     // Submit deposit data to your database (Supabase)
-    // Assuming you have a `deposits` table to store the deposit
     const { data, error } = await supabase
       .from('deposits')
       .insert([depositData]);
@@ -156,6 +169,8 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
           <>
             <label>Upload Receipt:</label>
             <input type="file" onChange={handleFileChange} />
+            {/* Show the file name after selection */}
+            {fileName && <p>Selected File: {fileName}</p>}
           </>
         )}
 
