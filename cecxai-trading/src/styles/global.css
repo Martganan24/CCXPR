@@ -371,7 +371,7 @@ body {
 /* 🔥 Sidebar Styling */
 .sidebar {
   position: fixed;
-  left: 099px;
+  left: 155px;
   top: 80px; /* ✅ Moved Down to Show "Trade" */
   width: 50px;
   height: calc(100vh - 80px); /* ✅ Adjusted Height */
