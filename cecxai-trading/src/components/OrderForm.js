@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext";
-import { supabase } from "../supabaseClient"; // Import Supabase client
+import { supabase } from "../supabaseClient";
 
 const AmountInput = ({ amount, onIncrease, onDecrease, onChange }) => {
   return (
@@ -58,7 +58,7 @@ function OrderForm() {
     setShowCloseButton(false);
     setResult("");
     setUser({ ...user, balance: user.balance - amount });
-  
+
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
@@ -68,34 +68,32 @@ function OrderForm() {
         return prevTime - 1;
       });
     }, 1000);
-  
+
     setTimeout(async () => {
       const win = Math.random() > 0.5;
-      let finalBalance = user.balance;
+      let finalBalance = user.balance - amount; // Deduct first
       let tradeResult = "You Lose!";
       let finalAmount = amount;
-  
+
       if (win) {
-        finalBalance += parseFloat(total);
+        finalBalance += parseFloat(total); // Only add if win
         tradeResult = "You Win!";
         finalAmount = total;
       }
-  
+
       setUser({ ...user, balance: finalBalance });
       setResult(tradeResult);
-  
+
       const tradeData = {
-        userId: user.id,  // Ensure this matches your Supabase column
-        action: action.toLowerCase(), // Convert to lowercase to match the constraint
+        userId: user.id,
+        action: action.toLowerCase(),
         asset: "BTC/USDT",
         amount: amount,
         result: tradeResult,
         balance_after: finalBalance,
         timestamp: new Date().toISOString(),
       };
-      
-      
-  
+
       try {
         const { error } = await supabase.from("trades").insert([tradeData]);
         if (error) {
@@ -103,19 +101,28 @@ function OrderForm() {
           alert(`Trade failed: ${error.message}`);
           return;
         }
+
+        // Update balance in Supabase
+        const { data, updateError } = await supabase
+          .from("users")
+          .update({ balance: finalBalance })
+          .eq("id", user.id);
+        if (updateError) {
+          console.error("🔥 Balance Update Error:", updateError);
+          alert(`Balance update failed: ${updateError.message}`);
+          return;
+        }
       } catch (err) {
         console.error("🚨 Unexpected Insert Error:", err);
         alert("An unexpected error occurred while inserting trade data.");
         return;
       }
-  
+
       setTransactionHistory([...transactionHistory, tradeData]);
       setIsProcessing(false);
       setPopupVisible(false);
     }, 2000);
   };
-  
-  
 
   const handleClosePopup = () => {
     setPopupVisible(false);
