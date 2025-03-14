@@ -95,14 +95,6 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
       >
         <h2 className="popup-title">{type === "deposit" ? "Deposit Funds" : "Withdraw Funds"}</h2>
 
-        {/* Action Buttons moved up here */}
-        <div className="popup-actions">
-          <button className="submit-btn" onClick={handleSubmit}>
-            {type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}
-          </button>
-          <button className="close-btn" onClick={onClose}>Close</button>
-        </div>
-
         {/* Token Selection */}
         <label>Select Token:</label>
         <div className="token-options">
@@ -161,6 +153,14 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
             {fileName && <p>Selected File: {fileName}</p>}
           </>
         )}
+
+        {/* Action Buttons moved up here */}
+        <div className="popup-actions">
+          <button className="submit-btn" onClick={handleSubmit}>
+            {type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}
+          </button>
+          <button className="close-btn" onClick={onClose}>Close</button>
+        </div>
       </motion.div>
     </motion.div>
   );
