@@ -12,6 +12,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const [copied, setCopied] = useState(false); // State for tracking copy status
   const [receiptUrl, setReceiptUrl] = useState(""); // State for the uploaded receipt URL
   const [fileName, setFileName] = useState(""); // State to store file name
+  const [errorMessage, setErrorMessage] = useState(""); // Error message state to display errors
 
   // Dummy wallet addresses
   const walletAddresses = {
@@ -30,6 +31,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) {
+      setErrorMessage("No file selected.");
       console.log("No file selected.");
       return;
     }
@@ -46,8 +48,8 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
 
       if (error) {
         // Log the error details from Supabase
+        setErrorMessage("Error uploading file: " + error.message);
         console.error("Error uploading file:", error.message);
-        console.log("Detailed error response:", error);
       } else {
         // Get the file URL after uploading
         const fileUrl = supabase.storage
@@ -59,6 +61,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
         console.log("File uploaded successfully. URL:", fileUrl);
       }
     } catch (err) {
+      setErrorMessage("Unexpected error during file upload: " + err.message);
       console.error("Unexpected error during file upload:", err);
     }
   };
@@ -73,6 +76,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   // Handle submit (single handler for both deposit and withdrawal)
   const handleSubmit = async () => {
     if (!amount || (type === "deposit" && !receiptUrl)) {
+      setErrorMessage("Please enter amount and upload a receipt.");
       console.log("Please enter amount and upload a receipt.");
       return;
     }
@@ -94,14 +98,17 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
         .insert([transactionData]);
 
       if (error) {
-        console.error("Error submitting transaction:", error.message); // Display detailed error message
+        setErrorMessage("Error submitting transaction: " + error.message); // Display detailed error message
+        console.error("Error submitting transaction:", error.message);
       } else {
+        setErrorMessage(""); // Clear error message on success
         console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
         // Optionally clear fields or close popup
         onClose(); // Close the popup after successful submission
       }
     } catch (err) {
-      console.error("Unexpected error during submit:", err); // Catch any unexpected errors during submission
+      setErrorMessage("Unexpected error during submit: " + err.message); // Catch any unexpected errors during submission
+      console.error("Unexpected error during submit:", err); // Log unexpected errors
     }
   };
 
@@ -178,6 +185,13 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
             {/* Show the file name after selection */}
             {fileName && <p>Selected File: {fileName}</p>}
           </>
+        )}
+
+        {/* Error Message */}
+        {errorMessage && (
+          <div className="error-message">
+            <p>{errorMessage}</p>
+          </div>
         )}
 
         {/* Action Buttons moved up here */}
