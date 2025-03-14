@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import "../styles/Wallet.css"; // ✅ Ensure this file exists
 import DepositWithdrawPopup from "../components/DepositWithdrawPopup"; // ✅ Popup Import
 import { useUser } from "../context/UserContext"; // Importing useUser from UserContext
-import { supabase } from "../supabase"; // Import Supabase client
+import { supabase } from "../supabase"; // Importing Supabase client
 
 const Wallet = () => {
   const { user } = useUser(); // Access the user object from UserContext
@@ -12,12 +12,43 @@ const Wallet = () => {
   const balance = user ? user.balance : 0; // Assuming balance exists in the user object
   const commissionBalance = user ? user.commission_balance : 0; // Commission balance from the user context
 
-  const [transactions, setTransactions] = useState([]); // State for transactions
+  const [transactions, setTransactions] = useState([]); // State to hold transaction data
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
   const [isPopupVisible, setIsPopupVisible] = useState(false); // State for popup visibility
   const [popupType, setPopupType] = useState(null); // Type for the popup (deposit or withdraw)
+
+  useEffect(() => {
+    // Fetch transactions from 'withdrawals' and 'deposits' tables
+    const fetchTransactions = async () => {
+      const { data: withdrawals, error: withdrawalsError } = await supabase
+        .from("withdrawals")
+        .select("*");
+
+      const { data: deposits, error: depositsError } = await supabase
+        .from("deposits")
+        .select("*");
+
+      if (withdrawalsError || depositsError) {
+        console.error("Error fetching transactions:", withdrawalsError || depositsError);
+        return;
+      }
+
+      // Combine withdrawals and deposits data
+      const combinedTransactions = [
+        ...withdrawals.map(tx => ({ ...tx, type: "Withdraw", status: tx.status })),
+        ...deposits.map(tx => ({ ...tx, type: "Deposit", status: tx.status })),
+      ];
+
+      // Sort transactions by date
+      const sortedTransactions = combinedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      setTransactions(sortedTransactions); // Set transactions state with sorted data
+    };
+
+    fetchTransactions();
+  }, []);
 
   // Get the current page's transactions
   const indexOfLastTransaction = currentPage * rowsPerPage;
@@ -42,47 +73,6 @@ const Wallet = () => {
     setIsPopupVisible(false); // Close the popup
     setPopupType(null); // Reset popup type
   };
-
-  // Fetch transaction data (withdrawals and deposits)
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        // Fetch both withdrawals and deposits data
-        const { data: withdrawals, error: withdrawalsError } = await supabase
-          .from("withdrawals")
-          .select("*")
-          .eq("user_id", user.id); // Assuming the user_id is available
-
-        const { data: deposits, error: depositsError } = await supabase
-          .from("deposits")
-          .select("*")
-          .eq("user_id", user.id); // Assuming the user_id is available
-
-        if (withdrawalsError || depositsError) {
-          console.error("Error fetching transactions:", withdrawalsError || depositsError);
-          return;
-        }
-
-        // Combine withdrawals and deposits into a single transactions array
-        const combinedTransactions = [
-          ...withdrawals.map(tx => ({ ...tx, type: "Withdraw", status: tx.status })),
-          ...deposits.map(tx => ({ ...tx, type: "Deposit", status: tx.status }))
-        ];
-
-        // Sort the transactions by date (descending order)
-        combinedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        // Set the transactions state
-        setTransactions(combinedTransactions);
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
-      }
-    };
-
-    if (user) {
-      fetchTransactions();
-    }
-  }, [user]); // Run the effect only when the user object changes
 
   return (
     <motion.div
@@ -140,7 +130,7 @@ const Wallet = () => {
                 transition={{ duration: 0.3 }}
               >
                 <span className="tx-type">{tx.type}</span>
-                <span className="tx-amount">{tx.amount}</span>
+                <span className="tx-amount">${tx.amount}</span>
                 <span className="tx-date">{tx.date} - {tx.time}</span>
                 <span className="tx-status">{tx.status}</span>
               </motion.div>
