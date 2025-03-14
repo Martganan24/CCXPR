@@ -1,3 +1,13 @@
+.profit-row {
+  background-color: rgba(0, 255, 0, 0.2); /* Light Green */
+  color: green;
+}
+
+.loss-row {
+  background-color: rgba(255, 0, 0, 0.2); /* Light Red */
+  color: red;
+}
+
 .trading-history {
     background-color: #181818;
     padding: 20px;
