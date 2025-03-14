@@ -12,6 +12,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const [copied, setCopied] = useState(false); // State for tracking copy status
   const [receiptUrl, setReceiptUrl] = useState(""); // State for the uploaded receipt URL
   const [fileName, setFileName] = useState(""); // State to store file name
+  const [notification, setNotification] = useState(""); // State for notification message
 
   // Dummy wallet addresses
   const walletAddresses = {
@@ -62,20 +63,57 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
     console.log("Submitting transaction data:", transactionData);
 
     try {
-      // Insert transaction data into Supabase (or other database)
+      // Fetch current balance from Supabase (adjust table and column names as needed)
+      const { data: userData, error: balanceError } = await supabase
+        .from("users") // Assuming user balance is stored in 'users' table
+        .select("balance")
+        .single();
+
+      if (balanceError) {
+        console.error("Error fetching balance:", balanceError.message);
+        setNotification("Error fetching balance.");
+        return;
+      }
+
+      const currentBalance = userData.balance;
+
+      // If withdrawal, deduct balance
+      if (type === "withdraw" && parseFloat(amount) > currentBalance) {
+        setNotification("Insufficient balance.");
+        return;
+      }
+
+      // Update balance in the database (deduct balance for withdrawal)
+      if (type === "withdraw") {
+        const { error: updateError } = await supabase
+          .from("users")
+          .update({ balance: currentBalance - parseFloat(amount) })
+          .eq("id", userData.id);
+
+        if (updateError) {
+          console.error("Error updating balance:", updateError.message);
+          setNotification("Error updating balance.");
+          return;
+        }
+      }
+
+      // Insert transaction data into Supabase (either deposit or withdrawal)
       const { data, error } = await supabase
         .from(type === "deposit" ? 'deposits' : 'withdrawals') // Use different tables for deposit and withdrawal
         .insert([transactionData]);
 
       if (error) {
-        console.error("Error submitting transaction:", error.message); // Display detailed error message
+        console.error("Error submitting transaction:", error.message);
+        setNotification("Error submitting transaction.");
       } else {
         console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
+        setNotification(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully.`);
         // Optionally clear fields or close popup
         onClose(); // Close the popup after successful submission
       }
     } catch (err) {
       console.error("Unexpected error during submit:", err); // Catch any unexpected errors during submission
+      setNotification("Unexpected error during submission.");
     }
   };
 
@@ -153,6 +191,9 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
             {fileName && <p>Selected File: {fileName}</p>}
           </>
         )}
+
+        {/* Notification */}
+        {notification && <p className="notification">{notification}</p>}
 
         {/* Action Buttons moved up here */}
         <div className="popup-actions">
