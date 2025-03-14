@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import "../styles/Popup.css"; // ✅ Ensure this file exists
+import { supabase } from "../supabaseClient"; // Make sure to initialize supabase client correctly
 
 const DepositWithdrawPopup = ({ type, onClose }) => {
   const [selectedToken, setSelectedToken] = useState("BTC");
@@ -9,6 +10,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const [receipt, setReceipt] = useState(null);
   const [recipientWallet, setRecipientWallet] = useState("");
   const [copied, setCopied] = useState(false); // State for tracking copy status
+  const [receiptUrl, setReceiptUrl] = useState(""); // State for the uploaded receipt URL
 
   // ✅ Dummy wallet addresses
   const walletAddresses = {
@@ -24,8 +26,33 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   };
 
   // ✅ Handle file upload
-  const handleFileChange = (e) => {
-    setReceipt(e.target.files[0]);
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    setReceipt(file);
+
+    // Upload the file to Supabase storage
+    const { data, error } = await supabase
+      .storage
+      .from('receipts') // The name of the bucket
+      .upload(`receipts/${file.name}`, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (error) {
+      console.error("Error uploading receipt:", error);
+    } else {
+      const { publicURL, error: urlError } = supabase
+        .storage
+        .from('receipts')
+        .getPublicUrl(data.path); // Get the public URL of the uploaded file
+
+      if (urlError) {
+        console.error("Error getting public URL:", urlError);
+      } else {
+        setReceiptUrl(publicURL); // Save the receipt URL to state
+      }
+    }
   };
 
   // ✅ Copy function with auto update to "Copied!"
@@ -33,6 +60,30 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
     navigator.clipboard.writeText(walletAddress);
     setCopied(true); // Update button text to "Copied!"
     setTimeout(() => setCopied(false), 2000); // Reset to original text after 2 seconds
+  };
+
+  // ✅ Handle submit
+  const handleSubmit = async () => {
+    // Create the deposit data object
+    const depositData = {
+      token: selectedToken,
+      amount,
+      receipt: receiptUrl, // Store the receipt URL in the deposit
+      status: "pending", // Default status
+    };
+
+    // Submit deposit data to your database (Supabase)
+    // Assuming you have a `deposits` table to store the deposit
+    const { data, error } = await supabase
+      .from('deposits')
+      .insert([depositData]);
+
+    if (error) {
+      console.error("Error submitting deposit:", error);
+    } else {
+      console.log("Deposit submitted successfully:", data);
+      // You may want to clear fields or close the popup here
+    }
   };
 
   return (
@@ -110,7 +161,9 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
 
         {/* ✅ Action Buttons */}
         <div className="popup-actions">
-          <button className="submit-btn">{type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}</button>
+          <button className="submit-btn" onClick={handleSubmit}>
+            {type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}
+          </button>
           <button className="close-btn" onClick={onClose}>Close</button>
         </div>
       </motion.div>
