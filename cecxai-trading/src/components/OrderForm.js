@@ -50,13 +50,16 @@ function OrderForm() {
   const total = (amount + parseFloat(profit)).toFixed(2);
 
   const handleTrade = async (action) => {
-    if (!user || user.balance < amount) return alert("Not enough balance!");
+    if (!user || amount <= 0) return alert("Trade amount must be greater than 0!");
+    if (user.balance < amount) return alert("Not enough balance!");
     if (isProcessing) return alert("A trade is already in process. Please wait.");
   
     setIsProcessing(true);
     setPopupVisible(true);
     setShowCloseButton(false);
     setResult("");
+    
+    const balanceBefore = user.balance;
     setUser({ ...user, balance: user.balance - amount });
 
     const timer = setInterval(() => {
@@ -71,12 +74,12 @@ function OrderForm() {
 
     setTimeout(async () => {
       const win = Math.random() > 0.5;
-      let finalBalance = user.balance - amount; // Deduct first
+      let finalBalance = balanceBefore - amount;
       let tradeResult = "You Lose!";
       let finalAmount = amount;
 
       if (win) {
-        finalBalance += parseFloat(total); // Only add if win
+        finalBalance += parseFloat(total);
         tradeResult = "You Win!";
         finalAmount = total;
       }
@@ -89,6 +92,7 @@ function OrderForm() {
         action: action.toLowerCase(),
         asset: "BTC/USDT",
         amount: amount,
+        balance_before: balanceBefore,
         result: tradeResult,
         balance_after: finalBalance,
         timestamp: new Date().toISOString(),
@@ -102,8 +106,7 @@ function OrderForm() {
           return;
         }
 
-        // Update balance in Supabase
-        const { data, updateError } = await supabase
+        const { updateError } = await supabase
           .from("users")
           .update({ balance: finalBalance })
           .eq("id", user.id);
