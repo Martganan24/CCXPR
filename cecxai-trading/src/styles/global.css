@@ -343,11 +343,11 @@ body {
 }
 
 .sidebar.open {
-  transform: translateX(0);
+  transform: translateX(-205%);
 }
 
 .sidebar.closed {
-  transform: translateX(-100%);
+  transform: translateX(-420%);
 }
 /* 🔥 Move Sidebar Toggle to Navbar */
 .toggle-btn {
@@ -360,18 +360,18 @@ body {
   color: white;
   font-size: 22px;
   cursor: pointer;
-  z-index: 1100; /* ✅ Ensures it's always visible */
+  z-index: 8100; /* ✅ Ensures it's always visible */
   transition: all 0.3s ease-in-out;
 }
 
 /* ✅ Toggle Button Click Effect */
 .toggle-btn:active {
-  transform: translateY(-50%) scale(0.9);
+  transform: translateY(-0%) scale(0.9);
 }
 /* 🔥 Sidebar Styling */
 .sidebar {
   position: fixed;
-  left: 0;
+  left: 099px;
   top: 80px; /* ✅ Moved Down to Show "Trade" */
   width: 50px;
   height: calc(100vh - 80px); /* ✅ Adjusted Height */
@@ -392,12 +392,12 @@ body {
   /* 🔥 Navbar */
   .navbar {
     position: relative;
-    top: 50px; /* ✅ Move down */
-    bottom: 0px; /* ✅ Move up */
-    left: 50px; /* ✅ Move right */
-    right: 0px; /* ✅ Move left */
-    width: 500px; /* ✅ Adjustable width */
-    height: 80px; /* ✅ Adjustable height */
+    top: -69px; /* ✅ Move down */
+    bottom: 1000px; /* ✅ Move up */
+    left: -90px; /* ✅ Move right */
+    right: 200px; /* ✅ Move left */
+    width: 580px; /* ✅ Adjustable width */
+    height: 30px; /* ✅ Adjustable height */
     padding: 20px; /* ✅ Adjustable padding */
     margin: 10px; /* ✅ Adjustable margin */
     background-color: #1a1a1a; /* ✅ Customizable background */
@@ -437,14 +437,14 @@ body {
     display: flex;
     flex-direction: column; /* ✅ Stack elements vertically */
     gap: 20px; /* ✅ Adjustable gap */
-    width: 100%; /* ✅ Adjustable width */
-    height: auto; /* ✅ Adjustable height */
+    width: 200%; /* ✅ Adjustable width */
+    height: 1000px; /* ✅ Adjustable height */
     padding: 20px; /* ✅ Adjustable padding */
     margin: 20px auto; /* ✅ Move up/down */
     position: relative;
-    top: 10px; /* ✅ Move down */
+    top: -170px; /* ✅ Move down */
     bottom: 0px; /* ✅ Move up */
-    left: 10px; /* ✅ Move right */
+    left: -89px; /* ✅ Move right */
     right: 0px; /* ✅ Move left */
   }
 
@@ -457,24 +457,24 @@ body {
     background-color: #181818; /* ✅ Adjustable background */
     border: 3px solid #333; /* ✅ Customizable border */
     position: relative;
-    top: 20px; /* ✅ Move down */
+    top: -17px; /* ✅ Move down */
     bottom: 0px; /* ✅ Move up */
-    left: 10px; /* ✅ Move right */
+    left: -1px; /* ✅ Move right */
     right: 0px; /* ✅ Move left */
   }
 
   /* 🔥 Trading History */
   .trading-history {
-    width: 100%; /* ✅ Adjustable width */
+    width: 30%; /* ✅ Adjustable width */
     height: auto; /* ✅ Adjustable height */
-    padding: 15px; /* ✅ Adjustable padding */
-    margin: 20px auto; /* ✅ Move up/down */
+    padding: 0px; /* ✅ Adjustable padding */
+    margin: 0px auto; /* ✅ Move up/down */
     background-color: #222; /* ✅ Adjustable background */
     border: 2px solid #555; /* ✅ Adjustable border */
     position: relative;
     top: 25px; /* ✅ Move down */
     bottom: 0px; /* ✅ Move up */
-    left: 10px; /* ✅ Move right */
+    left: -187px; /* ✅ Move right */
     right: 0px; /* ✅ Move left */
   }
 
@@ -488,9 +488,9 @@ body {
     background-color: #222; /* ✅ Adjustable background */
     border: 2px solid #555; /* ✅ Adjustable border */
     position: relative;
-    top: 30px; /* ✅ Move down */
+    top: -8px; /* ✅ Move down */
     bottom: 0px; /* ✅ Move up */
-    left: -10px; /* ✅ Move left */
+    left: -128px; /* ✅ Move left */
     right: 0px; /* ✅ Move right */
   }
 
@@ -502,24 +502,24 @@ body {
     padding: 15px; /* ✅ Adjustable padding */
     margin: 10px; /* ✅ Move up/down */
     position: relative;
-    top: 5px; /* ✅ Move down */
+    top: -50px; /* ✅ Move down */
     bottom: 0px; /* ✅ Move up */
-    left: 5px; /* ✅ Move right */
+    left: 2.5px; /* ✅ Move right */
     right: 0px; /* ✅ Move left */
   }
 
   /* 🔥 Sidebar Button */
   .sidebar-btn {
-    padding: 12px; /* ✅ Adjustable padding */
-    font-size: 18px; /* ✅ Adjustable font size */
+    padding: 0px; /* ✅ Adjustable padding */
+    font-size: 10px; /* ✅ Adjustable font size */
     width: auto; /* ✅ Adjustable width */
     height: auto; /* ✅ Adjustable height */
     margin: 5px; /* ✅ Move up/down */
     background-color: #333; /* ✅ Customizable button color */
     position: relative;
-    top: 5px; /* ✅ Move down */
+    top: 100px; /* ✅ Move down */
     bottom: 0px; /* ✅ Move up */
-    left: 5px; /* ✅ Move right */
+    left: 220px; /* ✅ Move right */
     right: 0px; /* ✅ Move left */
   }
 }
