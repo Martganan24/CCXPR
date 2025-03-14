@@ -92,17 +92,20 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
 
         {/* Token Selection */}
         <label>Select Token:</label>
-        <div className="token-options">
-          {["BTC", "ETH", "USDT"].map((token) => (
-            <button
-              key={token}
-              className={`token-btn ${selectedToken === token ? "active" : ""}`}
-              onClick={() => handleTokenChange(token)}
-            >
-              {token}
-            </button>
-          ))}
-        </div>
+        // Inside your DepositWithdrawPopup component, ensure the selected token changes the button color.
+
+<div className="token-options">
+  {["BTC", "ETH", "USDT"].map((token) => (
+    <button
+      key={token}
+      className={`token-btn ${selectedToken === token ? "active" : ""}`}
+      onClick={() => handleTokenChange(token)}
+    >
+      {token}
+    </button>
+  ))}
+</div>
+
 
         {/* Show wallet address if deposit */}
         {type === "deposit" && (

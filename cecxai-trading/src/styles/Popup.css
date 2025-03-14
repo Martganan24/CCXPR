@@ -75,3 +75,39 @@
     border-radius: 5px;
   }
   
+  .token-btn {
+    padding: 10px 20px;
+    border: 2px solid #ccc;
+    background-color: white;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .token-btn:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .token-btn.active {
+    background-color: #4CAF50; /* Green for active token */
+    color: white;
+    border-color: #4CAF50;
+  }
+  
+  .token-btn.active.BTC {
+    background-color: #f7931a; /* Bitcoin orange */
+  }
+  
+  .token-btn.active.ETH {
+    background-color: #3c3c3d; /* Ethereum dark grey */
+  }
+  
+  .token-btn.active.USDT {
+    background-color: #26a17b; /* USDT green */
+  }
+  
+  .token-btn.active:hover {
+    background-color: #45a049; /* Slightly darker shade when hovered */
+  }
+  
