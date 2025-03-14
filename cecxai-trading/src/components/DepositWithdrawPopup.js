@@ -1,130 +1,163 @@
-import React, { useState } from 'react';
-import { useUser } from "../context/UserContext"; // Assuming you are using UserContext
-import { supabase } from '../utils/supabaseClient'; // Assuming supabase is set up
-import "../styles/Popup.css"; // Popup styling
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import "../styles/Popup.css"; // Ensure this file exists
+import { supabase } from "../supabaseClient"; // Make sure to initialize supabase client correctly
 
 const DepositWithdrawPopup = ({ type, onClose }) => {
-  const { user } = useUser(); // Access the user object from UserContext
-  const [amount, setAmount] = useState('');
-  const [recipientWallet, setRecipientWallet] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [selectedToken, setSelectedToken] = useState("BTC");
+  const [walletAddress, setWalletAddress] = useState("15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9"); // Default BTC address
+  const [amount, setAmount] = useState("");
+  const [receipt, setReceipt] = useState(null);
+  const [recipientWallet, setRecipientWallet] = useState("");
+  const [copied, setCopied] = useState(false); // State for tracking copy status
+  const [receiptUrl, setReceiptUrl] = useState(""); // State for the uploaded receipt URL
+  const [fileName, setFileName] = useState(""); // State to store file name
 
-  // Handle submit for deposit
-  const handleDepositSubmit = async () => {
-    if (!amount) {
-      setError("Please enter an amount.");
-      return;
-    }
+  // Dummy wallet addresses
+  const walletAddresses = {
+    BTC: "15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9",
+    ETH: "0xdff3195fef04d5531614c1461c48ae55e0a2e7ed",
+    USDT: "TM78QTsBXxDmLRMvMxTfsBRLUek1SgPfcU",
+  };
 
-    setLoading(true);
-    setError("");
+  // Handle token selection
+  const handleTokenChange = (token) => {
+    setSelectedToken(token);
+    setWalletAddress(walletAddresses[token]);
+  };
 
-    try {
-      // Perform deposit logic
-      const depositData = {
-        amount,
-        userId: user.id, // Assuming user ID is available
-        status: "pending", // Set status as pending
-      };
-
-      const { data, error } = await supabase
-        .from('deposits') // Assuming you have a deposits table
-        .insert([depositData]);
-
-      if (error) {
-        throw error;
-      }
-
-      console.log("Deposit successful:", data);
-      onClose(); // Close the popup after success
-    } catch (error) {
-      console.error("Error processing deposit:", error);
-      setError("An error occurred while processing your deposit.");
-    } finally {
-      setLoading(false);
+  // Handle file upload
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setReceipt(file);
+      setFileName(file.name); // Display the file name
+    } else {
+      console.log("No file selected.");
     }
   };
 
-  // Handle submit for withdrawal
-  const handleWithdrawSubmit = async () => {
-    if (!amount || !recipientWallet) {
-      setError("Please enter amount and wallet address.");
+  // Handle copy function with auto update to "Copied!"
+  const handleCopy = () => {
+    navigator.clipboard.writeText(walletAddress);
+    setCopied(true); // Update button text to "Copied!"
+    setTimeout(() => setCopied(false), 2000); // Reset to original text after 2 seconds
+  };
+
+  // Handle submit
+  const handleSubmit = async () => {
+    if (!amount || (type === "deposit" && !receiptUrl)) {
+      console.log("Please enter amount and upload a receipt.");
       return;
     }
 
-    setLoading(true);
-    setError("");
+    const transactionData = {
+      token: selectedToken,
+      amount,
+      status: "pending", // Default status
+      ...(type === "deposit" && { receipt: receiptUrl }), // Only include receipt for deposits
+      ...(type === "withdraw" && { recipient_wallet: recipientWallet }), // Include recipient wallet for withdrawals
+    };
 
-    try {
-      // Perform withdrawal logic
-      const withdrawalData = {
-        amount,
-        recipientWallet,
-        userId: user.id, // Assuming user ID is available
-        status: "pending", // Set status as pending
-      };
+    console.log("Submitting transaction data:", transactionData);
 
-      const { data, error } = await supabase
-        .from('withdrawals') // Assuming you have a withdrawals table
-        .insert([withdrawalData]);
+    // Insert transaction data into Supabase (or other database)
+    const { data, error } = await supabase
+      .from(type === "deposit" ? 'deposits' : 'withdrawals') // Use different tables for deposit and withdrawal
+      .insert([transactionData]);
 
-      if (error) {
-        throw error;
-      }
-
-      console.log("Withdrawal successful:", data);
-      onClose(); // Close the popup after success
-    } catch (error) {
-      console.error("Error processing withdrawal:", error);
-      setError("An error occurred while processing your withdrawal.");
-    } finally {
-      setLoading(false);
+    if (error) {
+      console.error("Error submitting transaction:", error);
+    } else {
+      console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
+      // Optionally clear fields or close popup
     }
   };
 
   return (
-    <div className="popup-overlay" onClick={onClose}>
-      <div className="popup-container" onClick={(e) => e.stopPropagation()}>
-        <h2>{type === 'deposit' ? 'Deposit Funds' : 'Withdraw Funds'}</h2>
-        
-        <div className="form-group">
-          <label>Amount</label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount"
-            disabled={loading}
-          />
+    <motion.div
+      className="popup-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.div
+        className="popup-box glassmorphism"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      >
+        <h2 className="popup-title">{type === "deposit" ? "Deposit Funds" : "Withdraw Funds"}</h2>
+
+        {/* Token Selection */}
+        <label>Select Token:</label>
+        <div className="token-options">
+          {["BTC", "ETH", "USDT"].map((token) => (
+            <button
+              key={token}
+              className={`token-btn ${selectedToken === token ? "active" : ""}`}
+              onClick={() => handleTokenChange(token)}
+            >
+              {token}
+            </button>
+          ))}
         </div>
 
-        {type === 'withdraw' && (
-          <div className="form-group">
-            <label>Recipient Wallet Address</label>
+        {/* Show wallet address if deposit */}
+        {type === "deposit" && (
+          <>
+            <label>Wallet Address:</label>
+            <div className="wallet-address">
+              <input type="text" value={walletAddress} readOnly />
+              <button onClick={handleCopy}>
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Show recipient wallet input if withdrawal */}
+        {type === "withdraw" && (
+          <>
+            <label>Enter Your Wallet Address:</label>
             <input
               type="text"
               value={recipientWallet}
               onChange={(e) => setRecipientWallet(e.target.value)}
-              placeholder="Enter wallet address"
-              disabled={loading}
+              placeholder="Enter your wallet address"
             />
-          </div>
+          </>
         )}
 
-        {error && <div className="error-message">{error}</div>}
+        {/* Amount Input */}
+        <label>Enter Amount:</label>
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="Enter amount"
+        />
 
+        {/* Upload Receipt for Deposit */}
+        {type === "deposit" && (
+          <>
+            <label>Upload Receipt:</label>
+            <input type="file" onChange={handleFileChange} />
+            {/* Show the file name after selection */}
+            {fileName && <p>Selected File: {fileName}</p>}
+          </>
+        )}
+
+        {/* Action Buttons */}
         <div className="popup-actions">
-          <button onClick={onClose} disabled={loading}>Cancel</button>
-          <button
-            onClick={type === 'deposit' ? handleDepositSubmit : handleWithdrawSubmit}
-            disabled={loading}
-          >
-            {loading ? 'Processing...' : type === 'deposit' ? 'Deposit' : 'Withdraw'}
+          <button className="submit-btn" onClick={handleSubmit}>
+            {type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}
           </button>
+          <button className="close-btn" onClick={onClose}>Close</button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
