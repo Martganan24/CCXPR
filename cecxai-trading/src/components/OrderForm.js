@@ -50,80 +50,72 @@ function OrderForm() {
   const total = (amount + parseFloat(profit)).toFixed(2);
 
   const handleTrade = async (action) => {
-    if (!user || user.balance < amount) return alert("Not enough balance!");
+    if (!user) return alert("User not found!");
+    if (amount <= 0) return alert("Enter a valid amount!");
+    if (user.balance < amount) return alert("Not enough balance!");
     if (isProcessing) return alert("A trade is already in process. Please wait.");
-  
+
     setIsProcessing(true);
     setPopupVisible(true);
     setShowCloseButton(false);
     setResult("");
-  
-    let finalBalance = user.balance - amount;
-    let tradeResult = "You Lose!";
-    let finalAmount = amount;
-  
-    // Simulate trade result (50% win chance)
-    const win = Math.random() > 0.5;
-    if (win) {
-      finalBalance += parseFloat(total);
-      tradeResult = "You Win!";
-      finalAmount = total;
-    }
-  
-    setUser({ ...user, balance: finalBalance });
-  
-    // ✅ Step 1: Update user balance in Supabase
-    try {
-      const { data, error } = await supabase
-        .from("users")
-        .update({ balance: finalBalance })
-        .eq("id", user.id)
-        .select("balance");
-  
-      if (error) {
-        console.error("🔥 Balance Update Error:", error);
-        alert(`Failed to update balance: ${error.message}`);
-        return;
-      } else {
-        console.log("✅ Supabase Balance Updated:", data);
+    setTimeLeft(2); // Reset timer before starting
+
+    // Deduct balance temporarily
+    setUser((prevUser) => ({ ...prevUser, balance: prevUser.balance - amount }));
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer);
+          setShowCloseButton(true);
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    setTimeout(async () => {
+      const win = Math.random() > 0.5;
+      let finalBalance = user.balance - amount;
+      let tradeResult = "You Lose!";
+      let finalAmount = amount;
+
+      if (win) {
+        finalBalance += parseFloat(total);
+        tradeResult = "You Win!";
+        finalAmount = total;
       }
-    } catch (err) {
-      console.error("🚨 Unexpected Balance Update Error:", err);
-      alert("An unexpected error occurred while updating balance.");
-      return;
-    }
-  
-    // ✅ Step 2: Insert trade into Supabase
-    const tradeData = {
-      userId: user.id,
-      action: action.toLowerCase(),
-      asset: "BTC/USDT",
-      amount: amount,
-      result: tradeResult,
-      balance_after: finalBalance,
-      timestamp: new Date().toISOString(),
-    };
-  
-    try {
-      const { error } = await supabase.from("trades").insert([tradeData]);
-      if (error) {
-        console.error("🔥 Trade Insert Error:", error);
-        alert(`Trade failed: ${error.message}`);
+
+      setUser((prevUser) => ({ ...prevUser, balance: finalBalance }));
+      setResult(tradeResult);
+
+      const tradeData = {
+        userId: user.id,
+        action: action.toLowerCase(),
+        asset: "BTC/USDT",
+        amount: amount,
+        result: tradeResult,
+        balance_after: finalBalance,
+        timestamp: new Date().toISOString(),
+      };
+
+      try {
+        const { error } = await supabase.from("trades").insert([tradeData]);
+        if (error) {
+          console.error("🔥 Supabase Insert Error:", error);
+          alert(`Trade failed: ${error.message}`);
+          return;
+        }
+      } catch (err) {
+        console.error("🚨 Unexpected Insert Error:", err);
+        alert("An unexpected error occurred while inserting trade data.");
         return;
       }
-    } catch (err) {
-      console.error("🚨 Unexpected Trade Insert Error:", err);
-      alert("An unexpected error occurred while inserting trade data.");
-      return;
-    }
-  
-    setTransactionHistory([...transactionHistory, tradeData]);
-    setIsProcessing(false);
-    setPopupVisible(false);
+
+      setTransactionHistory((prev) => [...prev, tradeData]);
+      setIsProcessing(false);
+    }, 2000);
   };
-  
-  
-  
 
   const handleClosePopup = () => {
     setPopupVisible(false);
@@ -137,6 +129,7 @@ function OrderForm() {
       <AmountInput amount={amount} onIncrease={increaseAmount} onDecrease={decreaseAmount} onChange={handleInputChange} />
       <EarningsIndicator total={total} />
       <OrderButtons onTrade={handleTrade} disabled={isProcessing} />
+
       {popupVisible && (
         <div className="popup">
           <div className="popup-content">
@@ -149,6 +142,7 @@ function OrderForm() {
           </div>
         </div>
       )}
+
       {result && <div className={`notification ${result === "You Win!" ? "win" : "lose"}`}>{result}</div>}
     </div>
   );
