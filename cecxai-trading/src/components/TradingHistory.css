@@ -1,10 +1,10 @@
 .profit-row {
-  background-color: #333; /* Light Green */
+  background-color: #222; /* Light Green */
   color: green;
 }
 
 .loss-row {
-  background-color: #333; /* Light Red */
+  background-color: #222; /* Light Red */
   color: red;
 }
 
