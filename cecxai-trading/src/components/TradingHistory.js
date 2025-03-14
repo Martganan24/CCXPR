@@ -31,19 +31,14 @@ const TradingHistory = () => {
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = tradeHistory.slice(indexOfFirstRow, indexOfLastRow);
 
-  // ✅ Calculate price from balance difference
-  const getPrice = (trade, index) => {
-    if (index === 0) return `$${trade.amount}`; // First trade shows amount
-    const prevBalance = tradeHistory[index - 1]?.balance_after || 0;
-    const price = prevBalance ? Math.abs(prevBalance - trade.balance_after) : trade.amount;
-    return `$${price.toFixed(2)}`;
-  };
-
-  // ✅ Calculate profit/loss from balance difference
-  const calculateProfitOrLoss = (trade, index) => {
-    if (index === 0) return "0.00 USD"; // First trade has no comparison
-    const prevBalance = tradeHistory[index - 1]?.balance_after || 0;
-    const profitOrLoss = trade.balance_after - prevBalance;
+  // ✅ Calculate profit/loss
+  const calculateProfitOrLoss = (trade) => {
+    let profitOrLoss = 0;
+    if (trade.type === "BUY") {
+      profitOrLoss = (trade.sellPrice - trade.buyPrice) * (trade.amount || 1);
+    } else if (trade.type === "SELL") {
+      profitOrLoss = (trade.sellPrice - trade.buyPrice) * (trade.amount || 1);
+    }
     return profitOrLoss > 0 ? `+${profitOrLoss.toFixed(2)} USD` : `${profitOrLoss.toFixed(2)} USD`;
   };
 
@@ -67,13 +62,16 @@ const TradingHistory = () => {
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
-            currentRows.map((trade, index) => (
-              <tr key={trade.id} className={trade.type === "BUY" ? "buy" : "sell"}>
-                <td>{trade.type}</td>
-                <td>{trade.asset}</td>
-                <td>{getPrice(trade, index)}</td>
+            currentRows.map((trade) => (
+              <tr 
+                key={trade.id} 
+                className={trade.type === "BUY" ? "buy" : trade.type === "SELL" ? "sell" : ""}
+              >
+                <td>{trade.type || "N/A"}</td> {/* ✅ Ensure Type is displayed */}
+                <td>{trade.asset || "Unknown"}</td>
+                <td>${trade.price || "0.00"}</td>
                 <td>{new Date(trade.timestamp).toLocaleString()}</td> {/* ✅ Display timestamp */}
-                <td>{calculateProfitOrLoss(trade, index)}</td>
+                <td>{calculateProfitOrLoss(trade)}</td>
               </tr>
             ))
           ) : (
