@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import "../styles/Popup.css"; // Ensure this file exists
 import { supabase } from "../supabaseClient"; // Make sure to initialize supabase client correctly
 
-const DepositWithdrawPopup = ({ type, onClose, userId }) => {
+const DepositWithdrawPopup = ({ type, onClose }) => {
   const [selectedToken, setSelectedToken] = useState("BTC");
   const [walletAddress, setWalletAddress] = useState("15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9"); // Default BTC address
   const [amount, setAmount] = useState("");
@@ -12,7 +12,6 @@ const DepositWithdrawPopup = ({ type, onClose, userId }) => {
   const [copied, setCopied] = useState(false); // State for tracking copy status
   const [receiptUrl, setReceiptUrl] = useState(""); // State for the uploaded receipt URL
   const [fileName, setFileName] = useState(""); // State to store file name
-  const [notification, setNotification] = useState(""); // State to store notification message
 
   // Dummy wallet addresses
   const walletAddresses = {
@@ -49,7 +48,6 @@ const DepositWithdrawPopup = ({ type, onClose, userId }) => {
   const handleSubmit = async () => {
     if (!amount || (type === "deposit" && !receiptUrl)) {
       console.log("Please enter amount and upload a receipt.");
-      setNotification("Please enter amount and upload a receipt.");
       return;
     }
 
@@ -64,12 +62,6 @@ const DepositWithdrawPopup = ({ type, onClose, userId }) => {
     console.log("Submitting transaction data:", transactionData);
 
     try {
-      // If userId is not available, show an error notification and stop further execution
-      if (!userId) {
-        setNotification("User ID is missing. Please log in first.");
-        return;
-      }
-
       // Insert transaction data into Supabase (or other database)
       const { data, error } = await supabase
         .from(type === "deposit" ? 'deposits' : 'withdrawals') // Use different tables for deposit and withdrawal
@@ -77,49 +69,13 @@ const DepositWithdrawPopup = ({ type, onClose, userId }) => {
 
       if (error) {
         console.error("Error submitting transaction:", error.message); // Display detailed error message
-        setNotification(`Error: ${error.message}`);
       } else {
         console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
-
-        // If it's a withdrawal, deduct the amount from the user's balance
-        if (type === "withdraw") {
-          // Fetch the current balance first
-          const { data: userData, error: balanceError } = await supabase
-            .from("users") // Assuming balance is stored in the "users" table
-            .select("balance")
-            .eq("id", userId) // Use the unique user ID for querying
-            .single(); // Ensure a single row is returned
-
-          if (balanceError) {
-            console.error("Error fetching balance:", balanceError.message);
-            setNotification("Error fetching balance for deduction.");
-            return;
-          }
-
-          const currentBalance = userData.balance;
-          const newBalance = currentBalance - parseFloat(amount);
-
-          // Update the balance after the withdrawal
-          const { updateError } = await supabase
-            .from("users")
-            .update({ balance: newBalance })
-            .eq("id", userId);
-
-          if (updateError) {
-            console.error("Error updating balance:", updateError.message);
-            setNotification("Error updating balance after withdrawal.");
-          } else {
-            console.log("Balance updated successfully after withdrawal.");
-            setNotification("Withdrawal successful, balance updated.");
-          }
-        }
-
         // Optionally clear fields or close popup
         onClose(); // Close the popup after successful submission
       }
     } catch (err) {
       console.error("Unexpected error during submit:", err); // Catch any unexpected errors during submission
-      setNotification("Unexpected error. Please try again.");
     }
   };
 
@@ -138,9 +94,6 @@ const DepositWithdrawPopup = ({ type, onClose, userId }) => {
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
         <h2 className="popup-title">{type === "deposit" ? "Deposit Funds" : "Withdraw Funds"}</h2>
-
-        {/* Notification */}
-        {notification && <div className="notification">{notification}</div>}
 
         {/* Token Selection */}
         <label>Select Token:</label>
