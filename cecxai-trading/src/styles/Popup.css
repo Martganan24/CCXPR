@@ -111,3 +111,92 @@
     background-color: #45a049; /* Slightly darker shade when hovered */
   }
   
+
+  /* 🔥 Fully Customizable Responsive Popup - @media Queries */
+
+/* ✅ Adjust popup for screens 1024px and below */
+@media (max-width: 1024px) {
+  .popup-overlay {
+    position: fixed;
+    top: 10px; /* ✅ Move down */
+    bottom: 0px; /* ✅ Move up */
+    left: 10px; /* ✅ Move right */
+    right: 0px; /* ✅ Move left */
+    width: 100%; /* ✅ Adjustable width */
+    height: 100%; /* ✅ Adjustable height */
+    background: rgba(0, 0, 0, 0.7); /* ✅ Adjustable background */
+  }
+
+  .popup-box {
+    width: 320px; /* ✅ Adjustable width */
+    padding: 15px; /* ✅ Adjustable padding */
+    background: white; /* ✅ Adjustable background */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* ✅ Adjustable shadow */
+  }
+
+  input, select {
+    width: 95%; /* ✅ Adjustable width */
+  }
+
+  .wallet-address {
+    padding: 10px;
+  }
+
+  .wallet-address button {
+    padding: 6px 12px; /* ✅ Adjustable button size */
+  }
+
+  .submit-btn, .close-btn {
+    padding: 8px 15px; /* ✅ Adjustable button padding */
+  }
+}
+
+/* ✅ Further adjustments for mobile screens */
+@media (max-width: 768px) {
+  .popup-box {
+    width: 300px;
+    padding: 12px;
+  }
+
+  input, select {
+    width: 90%;
+  }
+
+  .wallet-address {
+    padding: 8px;
+  }
+
+  .wallet-address button {
+    padding: 5px 10px;
+  }
+
+  .submit-btn, .close-btn {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+}
+
+/* ✅ Extreme small screen adjustments */
+@media (max-width: 480px) {
+  .popup-box {
+    width: 280px;
+    padding: 10px;
+  }
+
+  input, select {
+    width: 85%;
+  }
+
+  .wallet-address {
+    padding: 6px;
+  }
+
+  .wallet-address button {
+    padding: 4px 8px;
+  }
+
+  .submit-btn, .close-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}

@@ -75,3 +75,83 @@
     background: #e68900;
   }
   
+
+  /* 🔥 Fully Customizable Responsive Chat - @media Queries */
+
+/* ✅ Adjust chat for screens 1024px and below */
+@media (max-width: 1024px) {
+  .chat-container {
+    position: relative;
+    top: 20px; /* ✅ Move down */
+    bottom: 0px; /* ✅ Move up */
+    left: 20px; /* ✅ Move right */
+    right: 0px; /* ✅ Move left */
+    padding: 15px; /* ✅ Adjustable padding */
+  }
+
+  .chat-box {
+    width: 75%; /* ✅ Adjustable width */
+    height: 280px; /* ✅ Adjustable height */
+    padding: 15px; /* ✅ Adjustable padding */
+    background: #252525; /* ✅ Adjustable background */
+    border-radius: 12px; /* ✅ Adjustable border */
+  }
+
+  .chat-input {
+    width: 75%; /* ✅ Matches new Chat Box Width */
+  }
+
+  .chat-input input {
+    font-size: 14px; /* ✅ Adjustable input font size */
+    padding: 10px; /* ✅ Adjustable input padding */
+  }
+
+  .chat-input button {
+    font-size: 14px; /* ✅ Adjustable button size */
+    padding: 10px 14px; /* ✅ Adjustable button padding */
+  }
+}
+
+/* ✅ Further adjustments for mobile screens */
+@media (max-width: 768px) {
+  .chat-box {
+    width: 85%;
+    height: 250px;
+  }
+
+  .chat-input {
+    width: 85%;
+  }
+
+  .chat-input input {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .chat-input button {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+}
+
+/* ✅ Extreme small screen adjustments */
+@media (max-width: 480px) {
+  .chat-box {
+    width: 95%;
+    height: 220px;
+  }
+
+  .chat-input {
+    width: 95%;
+  }
+
+  .chat-input input {
+    font-size: 10px;
+    padding: 6px;
+  }
+
+  .chat-input button {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+}

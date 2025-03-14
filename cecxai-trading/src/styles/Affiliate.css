@@ -95,3 +95,90 @@
     color: gold;
   }
   
+
+  /* 🔥 Fully Customizable Responsive Affiliate Section - @media Queries */
+
+/* ✅ Adjust affiliate layout for screens 1024px and below */
+@media (max-width: 1024px) {
+  .affiliate-container {
+    position: relative;
+    top: 20px; /* ✅ Move down */
+    bottom: 0px; /* ✅ Move up */
+    left: 20px; /* ✅ Move right */
+    right: 0px; /* ✅ Move left */
+    padding: 15px; /* ✅ Adjustable padding */
+  }
+
+  .affiliate-title {
+    font-size: 22px; /* ✅ Adjustable size */
+  }
+
+  .affiliate-grid {
+    flex-direction: column; /* ✅ Stack elements for smaller screens */
+    align-items: center;
+  }
+
+  .affiliate-box {
+    width: 180px; /* ✅ Adjustable width */
+    padding: 15px; /* ✅ Adjustable padding */
+    background: #252525; /* ✅ Adjustable background */
+  }
+
+  .referral-input {
+    width: 230px; /* ✅ Adjustable width */
+  }
+
+  .copy-btn {
+    font-size: 14px; /* ✅ Adjustable button size */
+    padding: 10px 14px; /* ✅ Adjustable button padding */
+  }
+
+  .leaderboard {
+    width: 280px; /* ✅ Adjustable width */
+    padding: 12px; /* ✅ Adjustable padding */
+  }
+}
+
+/* ✅ Further adjustments for mobile screens */
+@media (max-width: 768px) {
+  .affiliate-box {
+    width: 160px;
+    padding: 12px;
+  }
+
+  .referral-input {
+    width: 210px;
+  }
+
+  .copy-btn {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .leaderboard {
+    width: 260px;
+    padding: 10px;
+  }
+}
+
+/* ✅ Extreme small screen adjustments */
+@media (max-width: 480px) {
+  .affiliate-box {
+    width: 140px;
+    padding: 10px;
+  }
+
+  .referral-input {
+    width: 190px;
+  }
+
+  .copy-btn {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+
+  .leaderboard {
+    width: 240px;
+    padding: 8px;
+  }
+}

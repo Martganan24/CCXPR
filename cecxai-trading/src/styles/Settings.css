@@ -70,3 +70,95 @@
     transform: scale(1.05);
   }
   
+  /* 🔥 Fully Customizable Responsive Settings - @media Queries */
+
+/* ✅ Adjust settings for screens 1024px and below */
+@media (max-width: 1024px) {
+  .settings-container {
+    position: relative;
+    top: 20px; /* ✅ Move down */
+    bottom: 0px; /* ✅ Move up */
+    left: 20px; /* ✅ Move right */
+    right: 0px; /* ✅ Move left */
+    width: 90%; /* ✅ Adjustable width */
+    height: auto; /* ✅ Adjustable height */
+    margin: 15px auto; /* ✅ Adjustable margin */
+    padding: 25px; /* ✅ Adjustable padding */
+    background-color: rgba(35, 35, 35, 0.9); /* ✅ Adjustable background */
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4); /* ✅ Adjustable shadow */
+  }
+
+  .settings-title {
+    font-size: 22px; /* ✅ Adjustable size */
+  }
+
+  .settings-section {
+    width: 90%; /* ✅ Adjustable width */
+    padding: 20px; /* ✅ Adjustable padding */
+    margin: 10px auto; /* ✅ Move up/down */
+  }
+
+  .input-group input {
+    width: 80%; /* ✅ Adjustable input width */
+  }
+
+  .save-btn {
+    padding: 12px 25px; /* ✅ Adjustable padding */
+    font-size: 18px; /* ✅ Adjustable font size */
+  }
+}
+
+/* ✅ Further adjustments for mobile screens */
+@media (max-width: 768px) {
+  .settings-container {
+    top: 10px; /* ✅ Move down */
+    left: 10px; /* ✅ Move right */
+    width: 95%; /* ✅ Adjustable width */
+    padding: 20px; /* ✅ Adjustable padding */
+    background-color: rgba(25, 25, 25, 0.9); /* ✅ Adjustable background */
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3); /* ✅ Adjustable shadow */
+  }
+
+  .settings-section {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .input-group input {
+    width: 85%;
+  }
+
+  .save-btn {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+}
+
+/* ✅ Extreme small screen adjustments */
+@media (max-width: 480px) {
+  .settings-container {
+    top: 5px; /* ✅ Move down */
+    left: 5px; /* ✅ Move right */
+    width: 100%; /* ✅ Adjustable width */
+    padding: 15px; /* ✅ Adjustable padding */
+    background-color: rgba(20, 20, 20, 0.9); /* ✅ Adjustable background */
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); /* ✅ Adjustable shadow */
+  }
+
+  .settings-title {
+    font-size: 20px;
+  }
+
+  .settings-section {
+    padding: 10px;
+  }
+
+  .input-group input {
+    width: 90%;
+  }
+
+  .save-btn {
+    font-size: 14px;
+    padding: 8px 18px;
+  }
+}

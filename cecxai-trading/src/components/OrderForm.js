@@ -36,7 +36,7 @@ function OrderForm() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState("");
   const [popupVisible, setPopupVisible] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(2);
+  const [timeLeft, setTimeLeft] = useState(60);
   const [showCloseButton, setShowCloseButton] = useState(false);
 
   const decreaseAmount = () => setAmount((prev) => Math.max(0, prev - 1));
@@ -130,7 +130,7 @@ function OrderForm() {
   const handleClosePopup = () => {
     setPopupVisible(false);
     setResult("");
-    setTimeLeft(2);
+    setTimeLeft(60);
     setIsProcessing(false);
   };
 
@@ -142,7 +142,7 @@ function OrderForm() {
       {popupVisible && (
         <div className="popup">
           <div className="popup-content">
-            <h3>Trade in Progress...</h3>
+            <h3>"Trade in Progress... Please avoid navigating or making changes."</h3>
             <p>Result will be shown after {timeLeft}s.</p>
             {isProcessing && <p>Processing... {timeLeft}s</p>}
             {showCloseButton && (

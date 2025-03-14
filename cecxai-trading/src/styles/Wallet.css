@@ -103,3 +103,47 @@
     color: rgba(255, 255, 255, 0.8);
   }
   
+  /* 🔥 Fully Customizable Responsive Sidebar - @media Queries */
+
+/* ✅ Adjust sidebar for smaller screens */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    top: 10px; /* ✅ Move down */
+    bottom: 0px; /* ✅ Move up */
+    left: 10px; /* ✅ Move right */
+    right: 0px; /* ✅ Move left */
+    width: 60px; /* ✅ Adjustable width */
+    height: 90vh; /* ✅ Adjustable height */
+    margin: 5px; /* ✅ Adjustable margin */
+    padding: 10px; /* ✅ Adjustable padding */
+    background-color: #252525; /* ✅ Adjustable background */
+    box-shadow: 3px 0 6px rgba(0, 0, 0, 0.3); /* ✅ Adjustable shadow */
+  }
+}
+
+/* ✅ Further adjustments for mobile screens */
+@media (max-width: 768px) {
+  .sidebar {
+    top: 5px; /* ✅ Move down */
+    left: 5px; /* ✅ Move right */
+    width: 50px; /* ✅ Adjustable width */
+    height: 85vh; /* ✅ Adjustable height */
+    padding: 8px; /* ✅ Adjustable padding */
+    background-color: #1a1a1a; /* ✅ Adjustable background */
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.2); /* ✅ Adjustable shadow */
+  }
+}
+
+/* ✅ Extreme small screen adjustments */
+@media (max-width: 480px) {
+  .sidebar {
+    top: 0px; /* ✅ Move down */
+    left: 0px; /* ✅ Move right */
+    width: 40px; /* ✅ Adjustable width */
+    height: 80vh; /* ✅ Adjustable height */
+    padding: 5px; /* ✅ Adjustable padding */
+    background-color: #111; /* ✅ Adjustable background */
+    box-shadow: 1px 0 3px rgba(0, 0, 0, 0.2); /* ✅ Adjustable shadow */
+  }
+}
