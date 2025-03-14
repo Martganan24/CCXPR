@@ -81,7 +81,7 @@ function OrderForm() {
         finalAmount = total;
       }
 
-      setUser({ ...user, balance: finalBalance });
+      setUser({ ...user, balance: parseFloat(finalBalance.toFixed(2)) });
       setResult(tradeResult);
 
       const tradeData = {
