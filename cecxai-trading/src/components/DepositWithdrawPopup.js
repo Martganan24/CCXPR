@@ -4,6 +4,7 @@ import "../styles/Popup.css"; // ✅ Ensure this file exists
 
 const DepositWithdrawPopup = ({ type, onClose }) => {
   const [selectedToken, setSelectedToken] = useState("BTC");
+  const [walletAddress, setWalletAddress] = useState("BTC"); // Default BTC address
   const [amount, setAmount] = useState("");
   const [receipt, setReceipt] = useState(null);
   const [recipientWallet, setRecipientWallet] = useState("");
