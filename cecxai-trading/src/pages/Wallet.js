@@ -2,11 +2,16 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import "../styles/Wallet.css"; // ✅ Ensure this file exists
 import DepositWithdrawPopup from "../components/DepositWithdrawPopup"; // ✅ Popup Import
-
-const transactionsData = []; // Cleared transaction history
+import { useUser } from "../context/UserContext"; // Importing useUser from UserContext
 
 const Wallet = () => {
-  const [transactions] = useState(transactionsData); // ✅ Store transaction history
+  const { user } = useUser(); // Access the user object from UserContext
+
+  // Get the balance and commission_balance from the user context
+  const balance = user ? user.balance : 0; // Assuming balance exists in the user object
+  const commissionBalance = user ? user.commission_balance : 0; // Commission balance from the user context
+
+  const [transactions] = useState([]); // Clear the transaction history
 
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
@@ -37,7 +42,7 @@ const Wallet = () => {
           transition={{ duration: 0.3 }}
         >
           <h2>Main Wallet</h2>
-          <p className="balance">$12,345.67</p>
+          <p className="balance">${balance}</p> {/* Display balance from UserContext */}
           <div className="wallet-actions">
             <button className="wallet-btn">Deposit</button>
             <button className="wallet-btn">Withdraw</button>
@@ -51,7 +56,7 @@ const Wallet = () => {
           transition={{ duration: 0.3 }}
         >
           <h2>Commission</h2>
-          <p className="balance">$987.65</p>
+          <p className="balance">${commissionBalance}</p> {/* Display commission balance from UserContext */}
           <div className="wallet-actions">
             <button className="wallet-btn">Withdraw</button>
           </div>
