@@ -64,6 +64,12 @@ const DepositWithdrawPopup = ({ type, onClose, userId }) => {
     console.log("Submitting transaction data:", transactionData);
 
     try {
+      // If userId is not available, show an error notification and stop further execution
+      if (!userId) {
+        setNotification("User ID is missing. Please log in first.");
+        return;
+      }
+
       // Insert transaction data into Supabase (or other database)
       const { data, error } = await supabase
         .from(type === "deposit" ? 'deposits' : 'withdrawals') // Use different tables for deposit and withdrawal
