@@ -62,34 +62,28 @@ const TradingHistory = () => {
           </tr>
         </thead>
         <tbody>
-          {currentRows.length > 0 ? (
-            currentRows.map((trade) => {
-              const profitOrLoss = trade.balance_after - trade.balance_before;
-              return (
-                <tr
-                  key={trade.id}
-                  className={
-                    profitOrLoss > 0
-                      ? "profit-row" // ✅ Green for profit
-                      : profitOrLoss < 0
-                      ? "loss-row" // ✅ Red for loss
-                      : ""
-                  }
-                >
-                  <td>{trade.action.toUpperCase()}</td> {/* ✅ Now always in UPPERCASE */}
-                  <td>{trade.asset}</td>
-                  <td>{getPrice(trade)}</td>
-                  <td>{new Date(trade.timestamp).toLocaleString()}</td> {/* ✅ Display timestamp */}
-                  <td>{calculateProfitOrLoss(trade)}</td>
-                </tr>
-              );
-            })
-          ) : (
-            <tr>
-              <td colSpan="5">No trading history available.</td>
-            </tr>
-          )}
-        </tbody>
+  {currentRows.length > 0 ? (
+    currentRows.map((trade) => {
+      const profitOrLoss = calculateProfitOrLoss(trade);
+      const rowClass = profitOrLoss.includes("+") ? "profit-row" : "loss-row";
+
+      return (
+        <tr key={trade.id} className={rowClass}>
+          <td>{trade.action.toUpperCase()}</td> 
+          <td>{trade.asset}</td>
+          <td>{getPrice(trade)}</td>
+          <td>{new Date(trade.timestamp).toLocaleString()}</td>
+          <td>{profitOrLoss}</td>
+        </tr>
+      );
+    })
+  ) : (
+    <tr>
+      <td colSpan="5">No trading history available.</td>
+    </tr>
+  )}
+</tbody>
+
       </table>
 
       {/* ✅ Pagination */}
