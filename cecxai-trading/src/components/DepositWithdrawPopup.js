@@ -53,6 +53,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
     // Log the submission event
     console.log("Submit button clicked.");
 
+    // Validate amount and receiptUrl
     if (!amount || !receiptUrl) {
       console.log("Please enter amount and upload a receipt.");
       return;

@@ -12,9 +12,11 @@ const Wallet = () => {
   const commissionBalance = user ? user.commission_balance : 0; // Commission balance from the user context
 
   const [transactions] = useState([]); // Clear the transaction history
-
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
+
+  const [isPopupVisible, setIsPopupVisible] = useState(false); // State for popup visibility
+  const [popupType, setPopupType] = useState(null); // Type for the popup (deposit or withdraw)
 
   // Get the current page's transactions
   const indexOfLastTransaction = currentPage * rowsPerPage;
@@ -23,6 +25,21 @@ const Wallet = () => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  const handleDepositClick = () => {
+    setPopupType("deposit"); // Set type to deposit
+    setIsPopupVisible(true); // Show the popup
+  };
+
+  const handleWithdrawClick = () => {
+    setPopupType("withdraw"); // Set type to withdraw
+    setIsPopupVisible(true); // Show the popup
+  };
+
+  const closePopup = () => {
+    setIsPopupVisible(false); // Close the popup
+    setPopupType(null); // Reset popup type
   };
 
   return (
@@ -44,8 +61,8 @@ const Wallet = () => {
           <h2>Main Wallet</h2>
           <p className="balance">${balance}</p> {/* Display balance from UserContext */}
           <div className="wallet-actions">
-            <button className="wallet-btn">Deposit</button>
-            <button className="wallet-btn">Withdraw</button>
+            <button className="wallet-btn" onClick={handleDepositClick}>Deposit</button>
+            <button className="wallet-btn" onClick={handleWithdrawClick}>Withdraw</button>
           </div>
         </motion.div>
 
@@ -58,7 +75,7 @@ const Wallet = () => {
           <h2>Commission</h2>
           <p className="balance">${commissionBalance}</p> {/* Display commission balance from UserContext */}
           <div className="wallet-actions">
-            <button className="wallet-btn">Withdraw</button>
+            <button className="wallet-btn" onClick={handleWithdrawClick}>Withdraw</button>
           </div>
         </motion.div>
       </div>
@@ -116,6 +133,11 @@ const Wallet = () => {
           </button>
         )}
       </div>
+
+      {/* Render Popup if visible */}
+      {isPopupVisible && (
+        <DepositWithdrawPopup type={popupType} onClose={closePopup} />
+      )}
     </motion.div>
   );
 };
