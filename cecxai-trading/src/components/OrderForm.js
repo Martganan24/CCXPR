@@ -57,63 +57,71 @@ function OrderForm() {
     setPopupVisible(true);
     setShowCloseButton(false);
     setResult("");
-    setUser({ ...user, balance: user.balance - amount });
   
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(timer);
-          setShowCloseButton(true);
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
+    let finalBalance = user.balance - amount;
+    let tradeResult = "You Lose!";
+    let finalAmount = amount;
   
-    setTimeout(async () => {
-      const win = Math.random() > 0.5;
-      let finalBalance = user.balance;
-      let tradeResult = "You Lose!";
-      let finalAmount = amount;
+    // Simulate trade result (50% win chance)
+    const win = Math.random() > 0.5;
+    if (win) {
+      finalBalance += parseFloat(total);
+      tradeResult = "You Win!";
+      finalAmount = total;
+    }
   
-      if (win) {
-        finalBalance += parseFloat(total);
-        tradeResult = "You Win!";
-        finalAmount = total;
+    setUser({ ...user, balance: finalBalance });
+  
+    // ✅ Step 1: Update user balance in Supabase
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ balance: finalBalance })
+        .eq("id", user.id)
+        .select("balance");
+  
+      if (error) {
+        console.error("🔥 Balance Update Error:", error);
+        alert(`Failed to update balance: ${error.message}`);
+        return;
+      } else {
+        console.log("✅ Supabase Balance Updated:", data);
       }
+    } catch (err) {
+      console.error("🚨 Unexpected Balance Update Error:", err);
+      alert("An unexpected error occurred while updating balance.");
+      return;
+    }
   
-      setUser({ ...user, balance: finalBalance });
-      setResult(tradeResult);
+    // ✅ Step 2: Insert trade into Supabase
+    const tradeData = {
+      userId: user.id,
+      action: action.toLowerCase(),
+      asset: "BTC/USDT",
+      amount: amount,
+      result: tradeResult,
+      balance_after: finalBalance,
+      timestamp: new Date().toISOString(),
+    };
   
-      const tradeData = {
-        userId: user.id,  // Ensure this matches your Supabase column
-        action: action.toLowerCase(), // Convert to lowercase to match the constraint
-        asset: "BTC/USDT",
-        amount: amount,
-        result: tradeResult,
-        balance_after: finalBalance,
-        timestamp: new Date().toISOString(),
-      };
-      
-      
-  
-      try {
-        const { error } = await supabase.from("trades").insert([tradeData]);
-        if (error) {
-          console.error("🔥 Supabase Insert Error:", error);
-          alert(`Trade failed: ${error.message}`);
-          return;
-        }
-      } catch (err) {
-        console.error("🚨 Unexpected Insert Error:", err);
-        alert("An unexpected error occurred while inserting trade data.");
+    try {
+      const { error } = await supabase.from("trades").insert([tradeData]);
+      if (error) {
+        console.error("🔥 Trade Insert Error:", error);
+        alert(`Trade failed: ${error.message}`);
         return;
       }
+    } catch (err) {
+      console.error("🚨 Unexpected Trade Insert Error:", err);
+      alert("An unexpected error occurred while inserting trade data.");
+      return;
+    }
   
-      setTransactionHistory([...transactionHistory, tradeData]);
-      setIsProcessing(false);
-      setPopupVisible(false);
-    }, 2000);
+    setTransactionHistory([...transactionHistory, tradeData]);
+    setIsProcessing(false);
+    setPopupVisible(false);
   };
+  
   
   
 
