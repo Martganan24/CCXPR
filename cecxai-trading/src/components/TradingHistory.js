@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
-import "./TradingHistory.css";
+import { supabase } from "../supabaseClient"; // ✅ Ensure correct import
+import "./TradingHistory.css"; // ✅ Ensure this file exists
 
 const TradingHistory = () => {
   const [tradeHistory, setTradeHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
+  // ✅ Fetch trade history from Supabase
   useEffect(() => {
     const fetchTradeHistory = async () => {
       const { data, error } = await supabase
         .from("trades")
         .select("*")
-        .order("timestamp", { ascending: false })
-        .limit(100);
+        .order("timestamp", { ascending: false }) // ✅ Sorting by timestamp
+        .limit(100); // ✅ Limit for performance
 
       if (error) {
         console.error("Error fetching trade history:", error.message);
       } else {
-        console.log("Fetched Trade Data:", data); // ✅ Debugging line
         setTradeHistory(data || []);
       }
     };
@@ -26,23 +26,28 @@ const TradingHistory = () => {
     fetchTradeHistory();
   }, []);
 
+  // ✅ Pagination logic
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = tradeHistory.slice(indexOfFirstRow, indexOfLastRow);
 
-  const calculateProfitOrLoss = (trade) => {
-    if (!trade.buyPrice || !trade.sellPrice) return "N/A"; // ✅ Handle missing values
+  // ✅ Calculate price from balance difference
+  const getPrice = (trade, index) => {
+    if (index === 0) return `$${trade.amount}`; // First trade shows amount
+    const prevBalance = tradeHistory[index - 1]?.balance_after || 0;
+    const price = prevBalance ? Math.abs(prevBalance - trade.balance_after) : trade.amount;
+    return `$${price.toFixed(2)}`;
+  };
 
-    let profitOrLoss = 0;
-    if (trade.type === "BUY") {
-      profitOrLoss = (trade.sellPrice - trade.buyPrice) * (trade.amount || 1);
-    } else if (trade.type === "SELL") {
-      profitOrLoss = (trade.sellPrice - trade.buyPrice) * (trade.amount || 1);
-    }
-
+  // ✅ Calculate profit/loss from balance difference
+  const calculateProfitOrLoss = (trade, index) => {
+    if (index === 0) return "0.00 USD"; // First trade has no comparison
+    const prevBalance = tradeHistory[index - 1]?.balance_after || 0;
+    const profitOrLoss = trade.balance_after - prevBalance;
     return profitOrLoss > 0 ? `+${profitOrLoss.toFixed(2)} USD` : `${profitOrLoss.toFixed(2)} USD`;
   };
 
+  // ✅ Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -62,16 +67,13 @@ const TradingHistory = () => {
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
-            currentRows.map((trade) => (
-              <tr 
-                key={trade.id} 
-                className={trade.type === "BUY" ? "buy" : trade.type === "SELL" ? "sell" : ""}
-              >
-                <td>{trade.type ? trade.type.toUpperCase() : "N/A"}</td> {/* ✅ Ensure Type is displayed */}
-                <td>{trade.asset || "Unknown"}</td>
-                <td>${trade.price ? trade.price.toFixed(2) : "0.00"}</td> {/* ✅ Ensure Price is displayed */}
-                <td>{trade.timestamp ? new Date(trade.timestamp).toLocaleString() : "N/A"}</td>
-                <td>{calculateProfitOrLoss(trade)}</td>
+            currentRows.map((trade, index) => (
+              <tr key={trade.id} className={trade.type === "BUY" ? "buy" : "sell"}>
+                <td>{trade.type}</td>
+                <td>{trade.asset}</td>
+                <td>{getPrice(trade, index)}</td>
+                <td>{new Date(trade.timestamp).toLocaleString()}</td> {/* ✅ Display timestamp */}
+                <td>{calculateProfitOrLoss(trade, index)}</td>
               </tr>
             ))
           ) : (
@@ -82,6 +84,7 @@ const TradingHistory = () => {
         </tbody>
       </table>
 
+      {/* ✅ Pagination */}
       <div className="pagination">
         {tradeHistory.length > rowsPerPage && (
           <button
