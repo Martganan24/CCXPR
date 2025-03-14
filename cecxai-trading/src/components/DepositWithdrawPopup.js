@@ -27,41 +27,21 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   };
 
   // ✅ Handle file upload
-  const handleFileChange = async (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setReceipt(file);
-    setFileName(file.name); // Display the file name
+    if (file) {
+      setReceipt(file);
+      setFileName(file.name); // Display the file name
+      console.log("File selected:", file.name); // Log file name
 
-    // Log to track file change
-    console.log("Selected file:", file.name);
-
-    // Upload the file to Supabase storage
-    const { data, error } = await supabase
-      .storage
-      .from('receipts') // The name of the bucket
-      .upload(`receipts/${file.name}`, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (error) {
-      console.error("Error uploading receipt:", error);
+      // Log the file size to check if it's being selected
+      console.log("File size:", file.size, "bytes");
     } else {
-      const { publicURL, error: urlError } = supabase
-        .storage
-        .from('receipts')
-        .getPublicUrl(data.path); // Get the public URL of the uploaded file
-
-      if (urlError) {
-        console.error("Error getting public URL:", urlError);
-      } else {
-        setReceiptUrl(publicURL); // Save the receipt URL to state
-        console.log("Receipt uploaded successfully:", publicURL);
-      }
+      console.log("No file selected.");
     }
   };
 
-  // ✅ Copy function with auto update to "Copied!"
+  // ✅ Handle copy function with auto update to "Copied!"
   const handleCopy = () => {
     navigator.clipboard.writeText(walletAddress);
     setCopied(true); // Update button text to "Copied!"
@@ -70,6 +50,9 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
 
   // ✅ Handle submit
   const handleSubmit = async () => {
+    // Log the submission event
+    console.log("Submit button clicked.");
+
     if (!amount || !receiptUrl) {
       console.log("Please enter amount and upload a receipt.");
       return;
