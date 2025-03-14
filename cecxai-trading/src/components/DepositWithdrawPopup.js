@@ -4,10 +4,11 @@ import "../styles/Popup.css"; // ✅ Ensure this file exists
 
 const DepositWithdrawPopup = ({ type, onClose }) => {
   const [selectedToken, setSelectedToken] = useState("BTC");
-  const [walletAddress, setWalletAddress] = useState("15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9"); // Default BTC address
+  const [walletAddress, setWalletAddress] = useState("RIO"); // Default BTC address
   const [amount, setAmount] = useState("");
   const [receipt, setReceipt] = useState(null);
   const [recipientWallet, setRecipientWallet] = useState("");
+  const [copied, setCopied] = useState(false); // State for tracking copy status
 
   // ✅ Dummy wallet addresses
   const walletAddresses = {
@@ -25,6 +26,13 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   // ✅ Handle file upload
   const handleFileChange = (e) => {
     setReceipt(e.target.files[0]);
+  };
+
+  // ✅ Copy function with auto update to "Copied!"
+  const handleCopy = () => {
+    navigator.clipboard.writeText(walletAddress);
+    setCopied(true); // Update button text to "Copied!"
+    setTimeout(() => setCopied(false), 2000); // Reset to original text after 2 seconds
   };
 
   return (
@@ -63,13 +71,9 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
             <label>Wallet Address:</label>
             <div className="wallet-address">
               <input type="text" value={walletAddress} readOnly />
-              <button onClick={() => {
-  navigator.clipboard.writeText(walletAddress);
-  alert("Wallet address copied!");
-}}>
-  Copy
-</button>
-
+              <button onClick={handleCopy}>
+                {copied ? "Copied!" : "Copy"}
+              </button>
             </div>
           </>
         )}
