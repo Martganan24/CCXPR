@@ -68,8 +68,8 @@ const TradingHistory = () => {
         <tbody>
           {currentRows.length > 0 ? (
             currentRows.map((trade, index) => (
-              <tr key={trade.id} className={trade.type === "BUY" ? "buy" : "sell"}>
-                <td>{trade.type}</td>
+              <tr key={trade.id} className={trade.action === "BUY" ? "buy" : "sell"}>
+                <td>{trade.action}</td> {/* ✅ FIXED: Shows BUY / SELL now */}
                 <td>{trade.asset}</td>
                 <td>{getPrice(trade, index)}</td>
                 <td>{new Date(trade.timestamp).toLocaleString()}</td> {/* ✅ Display timestamp */}
