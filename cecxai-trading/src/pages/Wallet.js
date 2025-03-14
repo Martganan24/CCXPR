@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import "../styles/Wallet.css"; // ✅ Ensure this file exists
 import DepositWithdrawPopup from "../components/DepositWithdrawPopup"; // ✅ Popup Import
 import { useUser } from "../context/UserContext"; // Importing useUser from UserContext
-import { supabase } from "../supabase"; // Importing Supabase client
+import { supabase } from "./supabase"; // Importing Supabase client
 
 const Wallet = () => {
   const { user } = useUser(); // Access the user object from UserContext
