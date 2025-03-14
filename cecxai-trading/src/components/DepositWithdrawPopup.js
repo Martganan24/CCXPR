@@ -29,28 +29,37 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   // Handle file upload
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setReceipt(file);
-      setFileName(file.name); // Display the file name
-      try {
-        // Upload the file to Supabase storage
-        const { data, error } = await supabase.storage
-          .from("receipts")
-          .upload(`public/${file.name}`, file);
-
-        if (error) {
-          console.error("Error uploading file:", error.message);
-        } else {
-          // Get the file URL after uploading
-          const fileUrl = supabase.storage.from("receipts").getPublicUrl(`public/${file.name}`).publicURL;
-          setReceiptUrl(fileUrl); // Set the receipt URL after uploading
-          console.log("File uploaded successfully. URL:", fileUrl);
-        }
-      } catch (err) {
-        console.error("Unexpected error during file upload:", err);
-      }
-    } else {
+    if (!file) {
       console.log("No file selected.");
+      return;
+    }
+
+    // Show the file name in the UI
+    setReceipt(file);
+    setFileName(file.name);
+
+    try {
+      // Upload the file to Supabase storage
+      const { data, error } = await supabase.storage
+        .from("receipts") // Ensure this matches the bucket name
+        .upload(`public/${file.name}`, file); // Path within the bucket
+
+      if (error) {
+        // Log the error details from Supabase
+        console.error("Error uploading file:", error.message);
+        console.log("Detailed error response:", error);
+      } else {
+        // Get the file URL after uploading
+        const fileUrl = supabase.storage
+          .from("receipts")
+          .getPublicUrl(`public/${file.name}`).publicURL;
+
+        // Save the file URL to your state or backend
+        setReceiptUrl(fileUrl);
+        console.log("File uploaded successfully. URL:", fileUrl);
+      }
+    } catch (err) {
+      console.error("Unexpected error during file upload:", err);
     }
   };
 
