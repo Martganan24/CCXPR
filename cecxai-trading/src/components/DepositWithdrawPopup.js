@@ -1,31 +1,55 @@
 import React, { useState } from "react";
-import { supabase } from "../utils/supabaseClient"; // Assuming you have a Supabase client
-import { useUserContext } from "../context/UserContext"; // Assuming you have user context
-import { toast } from "react-toastify"; // Assuming you use a notification library like react-toastify
+import { motion } from "framer-motion";
+import "../styles/Popup.css"; // Ensure this file exists
+import { supabase } from "../supabaseClient"; // Make sure to initialize supabase client correctly
 
-const DepositWithdrawPopup = ({ onClose, type }) => {
-  const { userId, balance, setBalance } = useUserContext(); // Get userId and balance from context
+const DepositWithdrawPopup = ({ type, onClose }) => {
+  const [selectedToken, setSelectedToken] = useState("BTC");
+  const [walletAddress, setWalletAddress] = useState("15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9"); // Default BTC address
   const [amount, setAmount] = useState("");
-  const [receiptUrl, setReceiptUrl] = useState(""); // For deposit only
-  const [recipientWallet, setRecipientWallet] = useState(""); // For withdrawal only
-  const [processing, setProcessing] = useState(false);
-  const [selectedToken, setSelectedToken] = useState("ETH"); // Example token selection
+  const [receipt, setReceipt] = useState(null);
+  const [recipientWallet, setRecipientWallet] = useState("");
+  const [copied, setCopied] = useState(false); // State for tracking copy status
+  const [receiptUrl, setReceiptUrl] = useState(""); // State for the uploaded receipt URL
+  const [fileName, setFileName] = useState(""); // State to store file name
 
-  // Handle form submission for deposit/withdrawal
+  // Dummy wallet addresses
+  const walletAddresses = {
+    BTC: "15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9",
+    ETH: "0xdff3195fef04d5531614c1461c48ae55e0a2e7ed",
+    USDT: "TM78QTsBXxDmLRMvMxTfsBRLUek1SgPfcU",
+  };
+
+  // Handle token selection
+  const handleTokenChange = (token) => {
+    setSelectedToken(token);
+    setWalletAddress(walletAddresses[token]);
+  };
+
+  // Handle file upload
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setReceipt(file);
+      setFileName(file.name); // Display the file name
+    } else {
+      console.log("No file selected.");
+    }
+  };
+
+  // Handle copy function with auto update to "Copied!"
+  const handleCopy = () => {
+    navigator.clipboard.writeText(walletAddress);
+    setCopied(true); // Update button text to "Copied!"
+    setTimeout(() => setCopied(false), 2000); // Reset to original text after 2 seconds
+  };
+
+  // Handle submit (single handler for both deposit and withdrawal)
   const handleSubmit = async () => {
-    if (!amount || parseFloat(amount) <= 0 || (type === "withdraw" && !recipientWallet)) {
-      toast.error("Please enter a valid amount and recipient wallet address.");
+    if (!amount || (type === "deposit" && !receiptUrl)) {
+      console.log("Please enter amount and upload a receipt.");
       return;
     }
-
-    // For deposit, ensure receipt is uploaded
-    if (type === "deposit" && !receiptUrl) {
-      toast.error("Please upload a receipt for the deposit.");
-      return;
-    }
-
-    // Show processing message
-    setProcessing(true);
 
     const transactionData = {
       token: selectedToken,
@@ -44,112 +68,101 @@ const DepositWithdrawPopup = ({ onClose, type }) => {
         .insert([transactionData]);
 
       if (error) {
-        console.error("Error submitting transaction:", error.message);
-        toast.error("Error submitting transaction.");
-        setProcessing(false);
+        console.error("Error submitting transaction:", error.message); // Display detailed error message
       } else {
-        // Deduct balance for withdrawal
-        if (type === "withdraw") {
-          const newBalance = balance - amount;
-
-          // Update the balance in your database
-          const { updateError } = await supabase
-            .from('users') // Assuming you have a 'users' table
-            .update({ balance: newBalance })
-            .eq('user_id', userId); // Ensure userId is available
-
-          if (updateError) {
-            console.error("Error updating balance:", updateError.message);
-            toast.error("Error updating balance.");
-            setProcessing(false);
-            return;
-          }
-        }
-
-        // Show success notification
-        toast.success(`${type === "deposit" ? "Deposit" : "Withdrawal"} in process!`);
-
+        console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
+        // Optionally clear fields or close popup
         onClose(); // Close the popup after successful submission
-        setBalance(balance - amount); // Update the local state for balance
       }
     } catch (err) {
-      console.error("Unexpected error during submit:", err);
-      toast.error("Unexpected error during submission.");
-      setProcessing(false);
-    }
-  };
-
-  // Handle balance rollback in case of rejection
-  const handleWithdrawalRejection = async (transactionId) => {
-    const { data, error } = await supabase
-      .from('withdrawals')
-      .select('status, amount')
-      .eq('id', transactionId)
-      .single();
-
-    if (error || data.status !== 'approved') {
-      // If the withdrawal is rejected, roll back the balance deduction
-      const newBalance = balance + data.amount;
-
-      // Update the user's balance
-      const { updateError } = await supabase
-        .from('users') // Assuming you have a 'users' table
-        .update({ balance: newBalance })
-        .eq('user_id', userId); // Ensure userId is available
-
-      if (updateError) {
-        console.error("Error updating balance:", updateError.message);
-        toast.error("Error rolling back balance.");
-      } else {
-        toast.success("Your withdrawal was rejected. Your balance has been refunded.");
-      }
+      console.error("Unexpected error during submit:", err); // Catch any unexpected errors during submission
     }
   };
 
   return (
-    <div className="popup-container">
-      <div className="popup-content">
-        <h2>{type === "deposit" ? "Deposit" : "Withdrawal"}</h2>
+    <motion.div
+      className="popup-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.div
+        className="popup-box glassmorphism"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      >
+        <h2 className="popup-title">{type === "deposit" ? "Deposit Funds" : "Withdraw Funds"}</h2>
 
-        <div>
-          <label>Amount</label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            min="0"
-            step="any" // Allow decimal values
-          />
+        {/* Token Selection */}
+        <label>Select Token:</label>
+        <div className="token-options">
+          {["BTC", "ETH", "USDT"].map((token) => (
+            <button
+              key={token}
+              className={`token-btn ${selectedToken === token ? "active" : ""}`}
+              onClick={() => handleTokenChange(token)}
+            >
+              {token}
+            </button>
+          ))}
         </div>
 
+        {/* Show wallet address if deposit */}
         {type === "deposit" && (
-          <div>
-            <label>Upload Receipt</label>
-            <input
-              type="file"
-              onChange={(e) => setReceiptUrl(e.target.files[0])}
-            />
-          </div>
+          <>
+            <label>Wallet Address:</label>
+            <div className="wallet-address">
+              <input type="text" value={walletAddress} readOnly />
+              <button onClick={handleCopy}>
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+          </>
         )}
 
+        {/* Show recipient wallet input if withdrawal */}
         {type === "withdraw" && (
-          <div>
-            <label>Recipient Wallet Address</label>
+          <>
+            <label>Enter Your Wallet Address:</label>
             <input
               type="text"
               value={recipientWallet}
               onChange={(e) => setRecipientWallet(e.target.value)}
+              placeholder="Enter your wallet address"
             />
-          </div>
+          </>
         )}
 
-        <button onClick={handleSubmit} disabled={processing}>
-          {processing ? "Processing..." : "Submit"}
-        </button>
+        {/* Amount Input */}
+        <label>Enter Amount:</label>
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="Enter amount"
+        />
 
-        <button onClick={onClose}>Close</button>
-      </div>
-    </div>
+        {/* Upload Receipt for Deposit */}
+        {type === "deposit" && (
+          <>
+            <label>Upload Receipt:</label>
+            <input type="file" onChange={handleFileChange} />
+            {/* Show the file name after selection */}
+            {fileName && <p>Selected File: {fileName}</p>}
+          </>
+        )}
+
+        {/* Action Buttons moved up here */}
+        <div className="popup-actions">
+          <button className="submit-btn" onClick={handleSubmit}>
+            {type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}
+          </button>
+          <button className="close-btn" onClick={onClose}>Close</button>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
