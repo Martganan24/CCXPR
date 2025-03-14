@@ -20,16 +20,10 @@ const TradingHistory = () => {
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = tradeHistory.slice(indexOfFirstRow, indexOfLastRow);
 
-  // Function to calculate profit or loss based on price and type
+  // ✅ Function to calculate profit or loss dynamically
   const calculateProfitOrLoss = (trade) => {
-    let profitOrLoss = 0;
-    if (trade.type === "BUY") {
-      // Profit/Loss for BUY transactions
-      profitOrLoss = (trade.sellPrice - trade.buyPrice) * trade.amount;
-    } else if (trade.type === "SELL") {
-      // Profit/Loss for SELL transactions
-      profitOrLoss = (trade.sellPrice - trade.buyPrice) * trade.amount;
-    }
+    if (!trade.buyPrice || !trade.sellPrice) return "N/A"; // Prevent errors if missing data
+    let profitOrLoss = trade.sellPrice - trade.buyPrice;
     return profitOrLoss > 0 ? `+${profitOrLoss.toFixed(2)} USD` : `${profitOrLoss.toFixed(2)} USD`;
   };
 
@@ -47,7 +41,7 @@ const TradingHistory = () => {
             <th>Asset</th>
             <th>Price</th>
             <th>Time</th>
-            <th>Profit/Loss</th> {/* Profit/Loss column */}
+            <th>Profit/Loss</th> {/* ✅ Profit/Loss column added */}
           </tr>
         </thead>
         <tbody>
@@ -58,7 +52,7 @@ const TradingHistory = () => {
                 <td>{trade.asset}</td>
                 <td>{trade.price}</td>
                 <td>{trade.time}</td>
-                <td>{calculateProfitOrLoss(trade)}</td> {/* Show Profit/Loss */}
+                <td>{calculateProfitOrLoss(trade)}</td> {/* ✅ Shows Profit/Loss dynamically */}
               </tr>
             ))
           ) : (
