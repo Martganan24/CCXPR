@@ -8,6 +8,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const [walletAddress, setWalletAddress] = useState("15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9"); // Default BTC address
   const [amount, setAmount] = useState("");
   const [recipientWallet, setRecipientWallet] = useState("");
+  const [txid, setTxid] = useState(""); // New state for TxID Hash input
   const [copied, setCopied] = useState(false); // State for tracking copy status
 
   // Dummy wallet addresses
@@ -42,6 +43,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
       amount,
       status: "pending", // Default status
       ...(type === "withdraw" && { recipient_wallet: recipientWallet }), // Include recipient wallet for withdrawals
+      ...(type === "deposit" && { txid }) // Add txid for deposits
     };
 
     console.log("Submitting transaction data:", transactionData);
@@ -104,6 +106,15 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
                 {copied ? "Copied!" : "Copy"}
               </button>
             </div>
+
+            {/* Add TxID Hash input field for deposit */}
+            <label>Transaction Receipt TxID Hash:</label>
+            <input
+              type="text"
+              value={txid}
+              onChange={(e) => setTxid(e.target.value)} // Update TxID state
+              placeholder="Enter TxID Hash"
+            />
           </>
         )}
 
