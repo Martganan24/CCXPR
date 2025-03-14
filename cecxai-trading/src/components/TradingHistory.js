@@ -31,20 +31,16 @@ const TradingHistory = () => {
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = tradeHistory.slice(indexOfFirstRow, indexOfLastRow);
 
-  // ✅ Calculate price from balance difference
-  const getPrice = (trade, index) => {
-    if (index === 0) return `$${trade.amount}`; // First trade shows amount
-    const prevBalance = tradeHistory[index - 1]?.balance_after || 0;
-    const price = prevBalance ? Math.abs(prevBalance - trade.balance_after) : trade.amount;
-    return `$${price.toFixed(2)}`;
-  };
+  // ✅ Calculate price from trade amount
+  const getPrice = (trade) => `$${trade.amount.toFixed(2)}`;
 
-  // ✅ Calculate profit/loss from balance difference
-  const calculateProfitOrLoss = (trade, index) => {
-    if (index === 0) return "0.00 USD"; // First trade has no comparison
-    const prevBalance = tradeHistory[index - 1]?.balance_after || 0;
-    const profitOrLoss = trade.balance_after - prevBalance;
-    return profitOrLoss > 0 ? `+${profitOrLoss.toFixed(2)} USD` : `${profitOrLoss.toFixed(2)} USD`;
+  // ✅ Correct Profit/Loss calculation
+  const calculateProfitOrLoss = (trade) => {
+    if (!trade.balance_before || !trade.balance_after) return "0.00 USD";
+    const profitOrLoss = trade.balance_after - trade.balance_before;
+    return profitOrLoss > 0
+      ? `+${profitOrLoss.toFixed(2)} USD`
+      : `${profitOrLoss.toFixed(2)} USD`;
   };
 
   // ✅ Handle page change
@@ -67,13 +63,13 @@ const TradingHistory = () => {
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
-            currentRows.map((trade, index) => (
+            currentRows.map((trade) => (
               <tr key={trade.id} className={trade.action === "BUY" ? "buy" : "sell"}>
-                <td>{trade.action}</td> {/* ✅ FIXED: Shows BUY / SELL now */}
+                <td>{trade.action}</td> {/* ✅ Shows BUY / SELL */}
                 <td>{trade.asset}</td>
-                <td>{getPrice(trade, index)}</td>
+                <td>{getPrice(trade)}</td>
                 <td>{new Date(trade.timestamp).toLocaleString()}</td> {/* ✅ Display timestamp */}
-                <td>{calculateProfitOrLoss(trade, index)}</td>
+                <td>{calculateProfitOrLoss(trade)}</td>
               </tr>
             ))
           ) : (
