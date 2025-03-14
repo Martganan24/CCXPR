@@ -502,7 +502,7 @@ body {
     padding: 15px; /* ✅ Adjustable padding */
     margin: 10px; /* ✅ Move up/down */
     position: relative;
-    top: -50px; /* ✅ Move down */
+    top: -150px; /* ✅ Move down */
     bottom: 0px; /* ✅ Move up */
     left: 2.5px; /* ✅ Move right */
     right: 0px; /* ✅ Move left */
