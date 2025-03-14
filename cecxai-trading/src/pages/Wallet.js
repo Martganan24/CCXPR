@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import "../styles/Wallet.css"; // ✅ Ensure this file exists
 import DepositWithdrawPopup from "../components/DepositWithdrawPopup"; // ✅ Popup Import
 import { useUser } from "../context/UserContext"; // Importing useUser from UserContext
+import { supabase } from "../supabase"; // Import Supabase client
 
 const Wallet = () => {
   const { user } = useUser(); // Access the user object from UserContext
@@ -11,7 +12,7 @@ const Wallet = () => {
   const balance = user ? user.balance : 0; // Assuming balance exists in the user object
   const commissionBalance = user ? user.commission_balance : 0; // Commission balance from the user context
 
-  const [transactions] = useState([]); // Clear the transaction history
+  const [transactions, setTransactions] = useState([]); // State for transactions
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
@@ -41,6 +42,47 @@ const Wallet = () => {
     setIsPopupVisible(false); // Close the popup
     setPopupType(null); // Reset popup type
   };
+
+  // Fetch transaction data (withdrawals and deposits)
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        // Fetch both withdrawals and deposits data
+        const { data: withdrawals, error: withdrawalsError } = await supabase
+          .from("withdrawals")
+          .select("*")
+          .eq("user_id", user.id); // Assuming the user_id is available
+
+        const { data: deposits, error: depositsError } = await supabase
+          .from("deposits")
+          .select("*")
+          .eq("user_id", user.id); // Assuming the user_id is available
+
+        if (withdrawalsError || depositsError) {
+          console.error("Error fetching transactions:", withdrawalsError || depositsError);
+          return;
+        }
+
+        // Combine withdrawals and deposits into a single transactions array
+        const combinedTransactions = [
+          ...withdrawals.map(tx => ({ ...tx, type: "Withdraw", status: tx.status })),
+          ...deposits.map(tx => ({ ...tx, type: "Deposit", status: tx.status }))
+        ];
+
+        // Sort the transactions by date (descending order)
+        combinedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Set the transactions state
+        setTransactions(combinedTransactions);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    if (user) {
+      fetchTransactions();
+    }
+  }, [user]); // Run the effect only when the user object changes
 
   return (
     <motion.div
