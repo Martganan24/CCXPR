@@ -74,35 +74,46 @@ const DepositWithdrawPopup = ({ type, onClose, userId }) => {
         setNotification(`Error: ${error.message}`);
       } else {
         console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
+
+        // If it's a withdrawal, deduct the amount from the user's balance
+        if (type === "withdraw") {
+          // Fetch the current balance first
+          const { data: userData, error: balanceError } = await supabase
+            .from("users") // Assuming balance is stored in the "users" table
+            .select("balance")
+            .eq("id", userId) // Use the unique user ID for querying
+            .single(); // Ensure a single row is returned
+
+          if (balanceError) {
+            console.error("Error fetching balance:", balanceError.message);
+            setNotification("Error fetching balance for deduction.");
+            return;
+          }
+
+          const currentBalance = userData.balance;
+          const newBalance = currentBalance - parseFloat(amount);
+
+          // Update the balance after the withdrawal
+          const { updateError } = await supabase
+            .from("users")
+            .update({ balance: newBalance })
+            .eq("id", userId);
+
+          if (updateError) {
+            console.error("Error updating balance:", updateError.message);
+            setNotification("Error updating balance after withdrawal.");
+          } else {
+            console.log("Balance updated successfully after withdrawal.");
+            setNotification("Withdrawal successful, balance updated.");
+          }
+        }
+
         // Optionally clear fields or close popup
         onClose(); // Close the popup after successful submission
       }
     } catch (err) {
       console.error("Unexpected error during submit:", err); // Catch any unexpected errors during submission
       setNotification("Unexpected error. Please try again.");
-    }
-  };
-
-  // Fetch current balance from Supabase
-  const fetchBalance = async () => {
-    try {
-      const { data: userData, error: balanceError } = await supabase
-        .from("users") // Assuming balance is stored in the "users" table
-        .select("balance")
-        .eq("id", userId) // Use the unique user ID for querying
-        .single(); // Ensure a single row is returned
-
-      if (balanceError) {
-        console.error("Error fetching balance:", balanceError.message);
-        setNotification("Error fetching balance.");
-        return;
-      }
-
-      const currentBalance = userData.balance;
-      console.log("Current Balance:", currentBalance);
-    } catch (err) {
-      console.error("Error fetching balance:", err);
-      setNotification("Error fetching balance.");
     }
   };
 
