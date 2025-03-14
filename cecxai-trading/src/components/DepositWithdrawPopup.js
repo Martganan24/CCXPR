@@ -63,7 +63,13 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
             <label>Wallet Address:</label>
             <div className="wallet-address">
               <input type="text" value={walletAddress} readOnly />
-              <button onClick={() => navigator.clipboard.writeText(walletAddress)}>Copy</button>
+              <button onClick={() => {
+  navigator.clipboard.writeText(walletAddress);
+  alert("Wallet address copied!");
+}}>
+  Copy
+</button>
+
             </div>
           </>
         )}
