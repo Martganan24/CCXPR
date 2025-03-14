@@ -63,15 +63,27 @@ const TradingHistory = () => {
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
-            currentRows.map((trade) => (
-              <tr key={trade.id} className={trade.action === "BUY" ? "buy" : "sell"}>
-                <td>{trade.action.toUpperCase()}</td> {/* ✅ Now always in UPPERCASE */}
-                <td>{trade.asset}</td>
-                <td>{getPrice(trade)}</td>
-                <td>{new Date(trade.timestamp).toLocaleString()}</td> {/* ✅ Display timestamp */}
-                <td>{calculateProfitOrLoss(trade)}</td>
-              </tr>
-            ))
+            currentRows.map((trade) => {
+              const profitOrLoss = trade.balance_after - trade.balance_before;
+              return (
+                <tr
+                  key={trade.id}
+                  className={
+                    profitOrLoss > 0
+                      ? "profit-row" // ✅ Green for profit
+                      : profitOrLoss < 0
+                      ? "loss-row" // ✅ Red for loss
+                      : ""
+                  }
+                >
+                  <td>{trade.action.toUpperCase()}</td> {/* ✅ Now always in UPPERCASE */}
+                  <td>{trade.asset}</td>
+                  <td>{getPrice(trade)}</td>
+                  <td>{new Date(trade.timestamp).toLocaleString()}</td> {/* ✅ Display timestamp */}
+                  <td>{calculateProfitOrLoss(trade)}</td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
               <td colSpan="5">No trading history available.</td>
