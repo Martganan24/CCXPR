@@ -7,12 +7,8 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const [selectedToken, setSelectedToken] = useState("BTC");
   const [walletAddress, setWalletAddress] = useState("15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9"); // Default BTC address
   const [amount, setAmount] = useState("");
-  const [receipt, setReceipt] = useState(null);
   const [recipientWallet, setRecipientWallet] = useState("");
   const [copied, setCopied] = useState(false); // State for tracking copy status
-  const [receiptUrl, setReceiptUrl] = useState(""); // State for the uploaded receipt URL
-  const [fileName, setFileName] = useState(""); // State to store file name
-  const [errorMessage, setErrorMessage] = useState(""); // Error message state to display errors
 
   // Dummy wallet addresses
   const walletAddresses = {
@@ -27,45 +23,6 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
     setWalletAddress(walletAddresses[token]);
   };
 
-  // Handle file upload
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) {
-      setErrorMessage("No file selected.");
-      console.log("No file selected.");
-      return;
-    }
-
-    // Show the file name in the UI
-    setReceipt(file);
-    setFileName(file.name);
-
-    try {
-      // Upload the file to Supabase storage
-      const { data, error } = await supabase.storage
-        .from("receipts") // Ensure this matches the bucket name
-        .upload(`public/${file.name}`, file); // Path within the bucket
-
-      if (error) {
-        // Log the error details from Supabase
-        setErrorMessage("Error uploading file: " + error.message);
-        console.error("Error uploading file:", error.message);
-      } else {
-        // Get the file URL after uploading
-        const fileUrl = supabase.storage
-          .from("receipts")
-          .getPublicUrl(`public/${file.name}`).publicURL;
-
-        // Save the file URL to your state or backend
-        setReceiptUrl(fileUrl);
-        console.log("File uploaded successfully. URL:", fileUrl);
-      }
-    } catch (err) {
-      setErrorMessage("Unexpected error during file upload: " + err.message);
-      console.error("Unexpected error during file upload:", err);
-    }
-  };
-
   // Handle copy function with auto update to "Copied!"
   const handleCopy = () => {
     navigator.clipboard.writeText(walletAddress);
@@ -75,9 +32,8 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
 
   // Handle submit (single handler for both deposit and withdrawal)
   const handleSubmit = async () => {
-    if (!amount || (type === "deposit" && !receiptUrl)) {
-      setErrorMessage("Please enter amount and upload a receipt.");
-      console.log("Please enter amount and upload a receipt.");
+    if (!amount) {
+      console.log("Please enter amount.");
       return;
     }
 
@@ -85,7 +41,6 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
       token: selectedToken,
       amount,
       status: "pending", // Default status
-      ...(type === "deposit" && { receipt: receiptUrl }), // Only include receipt for deposits
       ...(type === "withdraw" && { recipient_wallet: recipientWallet }), // Include recipient wallet for withdrawals
     };
 
@@ -98,17 +53,14 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
         .insert([transactionData]);
 
       if (error) {
-        setErrorMessage("Error submitting transaction: " + error.message); // Display detailed error message
-        console.error("Error submitting transaction:", error.message);
+        console.error("Error submitting transaction:", error.message); // Display detailed error message
       } else {
-        setErrorMessage(""); // Clear error message on success
         console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
         // Optionally clear fields or close popup
         onClose(); // Close the popup after successful submission
       }
     } catch (err) {
-      setErrorMessage("Unexpected error during submit: " + err.message); // Catch any unexpected errors during submission
-      console.error("Unexpected error during submit:", err); // Log unexpected errors
+      console.error("Unexpected error during submit:", err); // Catch any unexpected errors during submission
     }
   };
 
@@ -176,23 +128,6 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Enter amount"
         />
-
-        {/* Upload Receipt for Deposit */}
-        {type === "deposit" && (
-          <>
-            <label>Upload Receipt:</label>
-            <input type="file" onChange={handleFileChange} />
-            {/* Show the file name after selection */}
-            {fileName && <p>Selected File: {fileName}</p>}
-          </>
-        )}
-
-        {/* Error Message */}
-        {errorMessage && (
-          <div className="error-message">
-            <p>{errorMessage}</p>
-          </div>
-        )}
 
         {/* Action Buttons moved up here */}
         <div className="popup-actions">
