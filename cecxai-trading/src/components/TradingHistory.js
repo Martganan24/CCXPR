@@ -65,7 +65,7 @@ const TradingHistory = () => {
           {currentRows.length > 0 ? (
             currentRows.map((trade) => (
               <tr key={trade.id} className={trade.action === "BUY" ? "buy" : "sell"}>
-                <td>{trade.action}</td> {/* ✅ Shows BUY / SELL */}
+                <td>{trade.action.toUpperCase()}</td> {/* ✅ Now always in UPPERCASE */}
                 <td>{trade.asset}</td>
                 <td>{getPrice(trade)}</td>
                 <td>{new Date(trade.timestamp).toLocaleString()}</td> {/* ✅ Display timestamp */}
