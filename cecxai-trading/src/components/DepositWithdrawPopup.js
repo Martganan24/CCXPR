@@ -44,7 +44,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
     setTimeout(() => setCopied(false), 2000); // Reset to original text after 2 seconds
   };
 
-  // Handle submit
+  // Handle submit (single handler for both deposit and withdrawal)
   const handleSubmit = async () => {
     if (!amount || (type === "deposit" && !receiptUrl)) {
       console.log("Please enter amount and upload a receipt.");
@@ -61,16 +61,21 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
 
     console.log("Submitting transaction data:", transactionData);
 
-    // Insert transaction data into Supabase (or other database)
-    const { data, error } = await supabase
-      .from(type === "deposit" ? 'deposits' : 'withdrawals') // Use different tables for deposit and withdrawal
-      .insert([transactionData]);
+    try {
+      // Insert transaction data into Supabase (or other database)
+      const { data, error } = await supabase
+        .from(type === "deposit" ? 'deposits' : 'withdrawals') // Use different tables for deposit and withdrawal
+        .insert([transactionData]);
 
-    if (error) {
-      console.error("Error submitting transaction:", error);
-    } else {
-      console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
-      // Optionally clear fields or close popup
+      if (error) {
+        console.error("Error submitting transaction:", error.message); // Display detailed error message
+      } else {
+        console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
+        // Optionally clear fields or close popup
+        onClose(); // Close the popup after successful submission
+      }
+    } catch (err) {
+      console.error("Unexpected error during submit:", err); // Catch any unexpected errors during submission
     }
   };
 
@@ -90,22 +95,27 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
       >
         <h2 className="popup-title">{type === "deposit" ? "Deposit Funds" : "Withdraw Funds"}</h2>
 
+        {/* Action Buttons moved up here */}
+        <div className="popup-actions">
+          <button className="submit-btn" onClick={handleSubmit}>
+            {type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}
+          </button>
+          <button className="close-btn" onClick={onClose}>Close</button>
+        </div>
+
         {/* Token Selection */}
         <label>Select Token:</label>
-        // Inside your DepositWithdrawPopup component, ensure the selected token changes the button color.
-
-<div className="token-options">
-  {["BTC", "ETH", "USDT"].map((token) => (
-    <button
-      key={token}
-      className={`token-btn ${selectedToken === token ? "active" : ""}`}
-      onClick={() => handleTokenChange(token)}
-    >
-      {token}
-    </button>
-  ))}
-</div>
-
+        <div className="token-options">
+          {["BTC", "ETH", "USDT"].map((token) => (
+            <button
+              key={token}
+              className={`token-btn ${selectedToken === token ? "active" : ""}`}
+              onClick={() => handleTokenChange(token)}
+            >
+              {token}
+            </button>
+          ))}
+        </div>
 
         {/* Show wallet address if deposit */}
         {type === "deposit" && (
@@ -151,14 +161,6 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
             {fileName && <p>Selected File: {fileName}</p>}
           </>
         )}
-
-        {/* Action Buttons */}
-        <div className="popup-actions">
-          <button className="submit-btn" onClick={handleSubmit}>
-            {type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}
-          </button>
-          <button className="close-btn" onClick={onClose}>Close</button>
-        </div>
       </motion.div>
     </motion.div>
   );
