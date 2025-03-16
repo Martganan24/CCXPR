@@ -5,7 +5,7 @@ import "../styles/Chat.css"; // ✅ Ensure this file exists
 function Chat() {
   const [messages, setMessages] = useState([
     { sender: "bot", text: "Welcome to CECXAI Chat Support! 🎉" },
-    { sender: "bot", text: "We're currently in beta mode! For support, chat with our customer service on Telegram: @CECXAI https://t.me/CECXAI. Happy trading!" },
+    { sender: "bot", text: "We're currently in beta mode! For support, chat with our customer service on Whatsapp: wa.me/447473392738 Telegram: @CECXAI https://t.me/CECXAI. Happy trading!" },
   ]);
   const [input, setInput] = useState("");
 
