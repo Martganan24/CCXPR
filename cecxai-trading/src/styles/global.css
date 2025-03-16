@@ -248,8 +248,8 @@ body {
 /* 🔥 Sidebar Styles - ADD THIS AT THE BOTTOM */
 .sidebar {
   position: fixed;
-  left: 300;
-  top: -0px; /* Fixed positioning issue */
+  left: 0; /* Reset to the left edge */
+  top: 0; /* Fixed at the top */
   height: 100vh;
   width: 80px;
   background-color: #1e1e1e;
@@ -280,7 +280,7 @@ body {
 }
 
 .sidebar-btn .icon {
-  font-size: 24px;
+  font-size: 24px; /* ✅ Icon size */
 }
 
 /* 🔥 Hover Effect */
@@ -294,57 +294,57 @@ body {
   
   /* 🔥 Toggle Button Adjustments */
   .toggle-btn {
-    position: absolute; /* Ensure it's not part of the flow, allowing custom positioning */
+    position: absolute;
     top: 10%; /* Adjust top position */
     left: 5%; /* Adjust left position */
-    transform: translateY(-50%); /* Keeps it centered vertically if adjusted */
+    transform: translateY(-50%);
     background: none;
     border: none;
     color: white;
-    font-size: 28px; /* Adjustable size */
+    font-size: 28px;
     cursor: pointer;
-    z-index: 1100; /* Ensure the button is above other elements */
-    padding: 10px 15px; /* Adjustable padding */
+    z-index: 1100;
+    padding: 10px 15px;
     transition: all 0.3s ease-in-out;
   }
 
   /* 🔥 Toggle Button Open */
   .sidebar.open .toggle-btn {
     left: 20px; /* Adjust left position when sidebar is open */
-    top: 15%; /* Adjust top position when sidebar is open */
+    top: 15%;
   }
 
   /* 🔥 Toggle Button Close */
   .sidebar.closed .toggle-btn {
-    left: 5%; /* Position when sidebar is closed */
-    top: 10%; /* Position when sidebar is closed */
+    left: 5%;
+    top: 10%;
   }
 
   /* 🔥 Make the Trading Chart width max to the right and bigger by 10% */
   .trading-chart {
     width: 110%; /* Increase width by 10% */
     height: 90%; /* Keep height the same */
-    margin-bottom: 20px; /* Add space below the chart */
-    margin-left: -5%; /* Shift left by 5% to adjust for the increased width */
-    margin-right: 0; /* Remove right margin */
+    margin-bottom: 20px;
+    margin-left: -5%; /* Adjust margin */
+    margin-right: 0;
   }
 
   /* 🔥 Adjust Navbar Right Section */
   .navbar-right {
-    width: 60%; /* Reduce the right section width by 40% */
+    width: 60%;
   }
 
   /* 🔥 Reduce the left margin by 75% */
   .dashboard-container {
-    padding-left: 5%; /* Reduced by 75% from the original margin */
-    padding-right: 5%; /* Balanced right margin */
+    padding-left: 5%;
+    padding-right: 5%;
   }
 
-  /* 🔥 Ensure that sections are spaced out properly on mobile */
+  /* 🔥 Ensure sections are spaced out properly on mobile */
   .dashboard-layout {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Space between Trading Chart, Order Form, and Trading History */
-    width: 100%; /* Ensure they fit the full width */
+    gap: 20px;
+    width: 100%;
   }
 }
