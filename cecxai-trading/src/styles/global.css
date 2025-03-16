@@ -245,12 +245,12 @@ body {
   }
 }
 
-/* 🔥 Sidebar Styles - ADD THIS AT THE BOTTOM */
+/* 🔥 Sidebar Styles */
 .sidebar {
   position: fixed;
-  left: -100%; /* Start off-screen */
-  top: 0; /* Fixed at the top */
-  height: 100vh;
+  left: 0;
+  top: 20%; /* Move sidebar down by 20% */
+  height: 80vh; /* Adjust the height of the sidebar to fit properly */
   width: 80px;
   background-color: #1e1e1e;
   display: flex;
@@ -267,6 +267,7 @@ body {
 .sidebar.open {
   left: 0; /* Sidebar slides in */
 }
+
 
 /* 🔥 Sidebar Buttons */
 .sidebar-btn {
