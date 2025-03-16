@@ -248,7 +248,7 @@ body {
 /* 🔥 Sidebar Styles - ADD THIS AT THE BOTTOM */
 .sidebar {
   position: fixed;
-  left: 0; /* Reset to the left edge */
+  left: -100%; /* Start off-screen */
   top: 0; /* Fixed at the top */
   height: 100vh;
   width: 80px;
@@ -260,6 +260,12 @@ body {
   padding-bottom: 20px;
   gap: 15px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  transition: left 0.3s ease-in-out; /* Smooth transition for sliding in/out */
+}
+
+/* When the sidebar is open */
+.sidebar.open {
+  left: 0; /* Sidebar slides in */
 }
 
 /* 🔥 Sidebar Buttons */
@@ -280,71 +286,41 @@ body {
 }
 
 .sidebar-btn .icon {
-  font-size: 24px; /* ✅ Icon size */
+  font-size: 24px; /* Icon size */
 }
 
-/* 🔥 Hover Effect */
+/* 🔥 Hover Effect for Sidebar Buttons */
 .sidebar-btn:hover {
   background-color: #333;
   transform: scale(1.1);
 }
 
-/* 🔥 Media Query for Small Screens (max-width: 768px) */
+/* 🔥 Toggle Button Styles */
+.toggle-btn {
+  position: absolute;
+  top: 10%; /* Adjust top position */
+  left: 5%; /* Adjust left position */
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 1100;
+  padding: 10px 15px;
+  transition: all 0.3s ease-in-out;
+}
+
 @media (max-width: 768px) {
-  
-  /* 🔥 Toggle Button Adjustments */
+  /* 🔥 Toggle Button Adjustments for Mobile */
   .toggle-btn {
-    position: absolute;
-    top: 10%; /* Adjust top position */
-    left: 5%; /* Adjust left position */
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: white;
-    font-size: 28px;
-    cursor: pointer;
-    z-index: 1100;
-    padding: 10px 15px;
-    transition: all 0.3s ease-in-out;
-  }
-
-  /* 🔥 Toggle Button Open */
-  .sidebar.open .toggle-btn {
-    left: 20px; /* Adjust left position when sidebar is open */
-    top: 15%;
-  }
-
-  /* 🔥 Toggle Button Close */
-  .sidebar.closed .toggle-btn {
-    left: 5%;
     top: 10%;
+    left: 5%;
+    font-size: 28px;
   }
 
-  /* 🔥 Make the Trading Chart width max to the right and bigger by 10% */
-  .trading-chart {
-    width: 110%; /* Increase width by 10% */
-    height: 90%; /* Keep height the same */
-    margin-bottom: 20px;
-    margin-left: -5%; /* Adjust margin */
-    margin-right: 0;
-  }
-
-  /* 🔥 Adjust Navbar Right Section */
-  .navbar-right {
-    width: 60%;
-  }
-
-  /* 🔥 Reduce the left margin by 75% */
-  .dashboard-container {
-    padding-left: 5%;
-    padding-right: 5%;
-  }
-
-  /* 🔥 Ensure sections are spaced out properly on mobile */
-  .dashboard-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
+  /* 🔥 Sidebar layout for smaller screens */
+  .sidebar {
+    width: 250px; /* Adjust sidebar width for mobile */
   }
 }
