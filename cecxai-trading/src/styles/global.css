@@ -5,6 +5,14 @@ body {
   font-family: Arial, sans-serif;
   background-color: #121212; /* Dark mode */
   color: #ffffff;
+  max-width: 100vw; /* Prevents horizontal overflow */
+  overflow-x: hidden; /* Disables horizontal scrolling */
+}
+
+/* ✅ Prevent content from being hidden behind the fixed navbar */
+.dashboard-container {
+  padding-top: 60px;
+  overflow-y: auto; /* Allows vertical scrolling */
 }
 
 /* 🔥 Navbar Styles */
@@ -22,23 +30,11 @@ body {
   z-index: 1000;
 }
 
-/* ✅ Prevent content from being hidden behind the fixed navbar */
-.dashboard-container {
-  padding-top: 60px;
-}
-
-/* 🔥 Navbar Buttons */
-.navbar h2 {
-  margin: 0;
-  font-size: 24px;
-}
-
-/* ✅ Move Balance, Deposit, and Bell further to the left */
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 15px;
-  transform: translateX(-15%);
+  margin-right: 20px; /* Adjusted for consistent spacing */
 }
 
 .navbar-right button {
@@ -54,212 +50,23 @@ body {
   background-color: #e68900;
 }
 
-/* 🔥 Dashboard Layout */
-.dashboard-layout {
-  display: grid;
-  grid-template-columns: 75% 25%;
-  gap: 10px;
-  align-items: start;
-  width: 100%;
-  max-width: 1600px;
-  margin: 10px auto;
-  padding: 10px;
-}
-
-/* 🔥 Trading Chart */
-.trading-chart {
-  background-color: #181818;
-  padding: 0;
-  border-radius: 8px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: stretch;
-  border: 2px solid #333;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-/* 🔥 Order Form */
-.order-form {
-  background-color: #181818;
-  padding: 20px;
-  border-radius: 2px;
-  width: 100%;
-  height: 93%;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* ✅ Center Everything */
-  justify-content: center; /* ✅ Center Everything */
-  border: 2px solid #333;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-/* 🔥 Amount Input Section (Centered) */
-.amount-container {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* ✅ Center "-" Input "+" */
-  gap: 10px;
-  margin-bottom: 20px;
-  width: 100%;
-  max-width: 400px;
-}
-
-/* 🔥 Adjustable Input */
-.amount-input {
-  width: 100%;
-  max-width: 400px;
-  height: 50px;
-  padding: 10px;
-  text-align: center;
-  font-size: 20px;
-  border: 2px solid #555;
-  border-radius: 8px;
-  background-color: #222;
-  color: #ffffff;
-}
-
-/* 🔥 Adjustable - & + Buttons */
-.amount-btn {
-  border: none;
-  padding: 12px 20px;
-  font-size: 24px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  width: 50px;
-  height: 50px;
-  transition: all 0.2s ease-in-out;
-}
-
-/* 🔥 - Button */
-.amount-btn:first-child {
-  background-color: #7c7776;
-  color: white;
-}
-
-.amount-btn:first-child:hover {
-  background-color: #b28e8e;
-}
-
-/* 🔥 + Button */
-.amount-btn:last-child {
-  background-color: #7c7776;
-  color: white;
-}
-
-.amount-btn:last-child:hover {
-  background-color: #b28e8e;
-}
-
-/* 🔥 Profit Section (Centered) */
-.profit-section {
-  text-align: center; /* ✅ Centered */
-  margin-top: 10px;
-}
-
-/* 🔥 Earnings Indicator */
-.profit-indicator {
-  font-size: 14px;
-  color: #9ca3af;
-  font-weight: bold;
-  margin-bottom: 3px;
-}
-
-/* 🔥 +95% (Dark Green & Shining Effect) */
-.profit-percent {
-  color: #008000;
-  font-weight: bold;
-  font-size: 14px;
-  animation: shine 2s infinite alternate;
-}
-
-/* 🔥 Total Earnings ($XX.XX) - 200% Bigger, Centered & Shining Effect */
-.profit-total {
-  font-size: 48px;
-  font-weight: bold;
-  color: #008000;
-  text-align: center;
-  margin: 0;
-  padding: 5px;
-  animation: shine 2s infinite alternate;
-}
-
-/* 🔥 Order Buttons (Centered & Moved Down by 30%) */
-.order-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* ✅ Centered */
-  justify-content: center; /* ✅ Centered */
-  gap: 10px;
-  width: 100%;
-  max-width: 300px;
-  margin-top: 30%;
-}
-
-/* 🔥 Buy & Sell Buttons */
-.buy-button,
-.sell-button {
-  width: 100%;
-  padding: 15px 30px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 18px;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-/* 🔥 Buy Button */
-.buy-button {
-  background-color: #00c853;
-}
-
-.buy-button:hover {
-  background-color: #009624;
-  transform: scale(1.05);
-}
-
-/* 🔥 Sell Button */
-.sell-button {
-  background-color: #d32f2f;
-}
-
-.sell-button:hover {
-  background-color: #b71c1c;
-  transform: scale(1.05);
-}
-
-/* 🔥 Shining Effect */
-@keyframes shine {
-  0% {
-    text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff;
-  }
-  30% {
-    text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
-  }
-}
-/* 🔥 Sidebar Styles - ADD THIS AT THE BOTTOM */
+/* 🔥 Sidebar Styles */
 .sidebar {
   position: fixed;
   left: 0;
   top: 0;
   height: 100vh;
-  width: 80px; /* ✅ Fixed width */
+  width: 80px;
   background-color: #1e1e1e;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 20px; /* ✅ Enough spacing */
-  padding-bottom: 20px;
+  padding: 20px 0;
   gap: 15px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  overflow-y: auto; /* Enables vertical scrolling for overflow */
 }
 
-/* 🔥 Sidebar Buttons */
 .sidebar-btn {
   background: none;
   border: none;
@@ -277,249 +84,92 @@ body {
 }
 
 .sidebar-btn .icon {
-  font-size: 24px; /* ✅ Icon size */
+  font-size: 24px;
 }
 
-/* 🔥 Hover Effect */
 .sidebar-btn:hover {
   background-color: #333;
   transform: scale(1.1);
 }
-/* 🔥 Fix Sidebar on Mobile */
-@media (max-width: 768px) {
-  .sidebar {
-    position: absolute; /* ✅ Prevents overlapping */
-    width: 70px; /* ✅ Smaller size */
-    height: 100vh; /* ✅ Full height */
-    left: 0;
-    top: 0;
-    z-index: 999; /* ✅ Keeps sidebar above other elements */
-  }
 
-  .dashboard-container {
-    padding-left: 80px; /* ✅ Prevents content from being hidden under sidebar */
-  }
-
-  .sidebar-btn {
-    padding: 10px; /* ✅ Adjust button spacing */
-    font-size: 12px; /* ✅ Reduce text size */
-  }
-
-  .sidebar .icon {
-    font-size: 20px; /* ✅ Smaller icons */
-  }
+/* 🔥 Dashboard Layout */
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 20px;
+  overflow-y: auto;
 }
-/* 🔥 Sidebar Toggle (Show/Hide) */
+
+.trading-chart,
+.order-form {
+  background-color: #181818;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  border: 2px solid #333;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* 🔥 Buy & Sell Buttons */
+.buy-button,
+.sell-button {
+  width: 100%;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 18px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.buy-button {
+  background-color: #00c853;
+}
+
+.buy-button:hover {
+  background-color: #009624;
+  transform: scale(1.05);
+}
+
+.sell-button {
+  background-color: #d32f2f;
+}
+
+.sell-button:hover {
+  background-color: #b71c1c;
+  transform: scale(1.05);
+}
+
+/* ✅ Prevent Sidebar from Expanding Too Much */
 .sidebar {
   transition: width 0.3s ease-in-out;
 }
 
 .sidebar.collapsed {
-  width: 0; /* ✅ Sidebar hidden when collapsed */
+  width: 0;
   overflow: hidden;
 }
-/* 🔥 Fix Sidebar Toggle Button */
+
 .toggle-btn {
   position: fixed;
   top: 20px;
-  left: 90px; /* ✅ Moves outside the sidebar */
+  left: 90px;
   background: none;
   border: none;
   color: white;
   font-size: 22px;
   cursor: pointer;
-  z-index: 1100; /* ✅ Always above sidebar */
+  z-index: 1100;
   transition: all 0.3s ease-in-out;
 }
 
-/* ✅ Toggle Button Click Effect */
 .toggle-btn:active {
   transform: scale(0.9);
-}
-
-/* 🔥 Ensure Sidebar Opens/Closes Correctly */
-.sidebar {
-  transition: transform 0.3s ease-in-out;
-}
-
-.sidebar.open {
-  transform: translateX(-205%);
-}
-
-.sidebar.closed {
-  transform: translateX(-420%);
-}
-/* 🔥 Move Sidebar Toggle to Navbar */
-.toggle-btn {
-  position: absolute;
-  top: 9%;
-  left: 25px; /* ✅ Before the logo */
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-  z-index: 8100; /* ✅ Ensures it's always visible */
-  transition: all 0.3s ease-in-out;
-}
-
-/* ✅ Toggle Button Click Effect */
-.toggle-btn:active {
-  transform: translateY(-0%) scale(0.9);
-}
-/* 🔥 Sidebar Styling */
-.sidebar {
-  position: fixed;
-  left: 155px;
-  top: 80px; /* ✅ Moved Down to Show "Trade" */
-  width: 50px;
-  height: calc(100vh - 80px); /* ✅ Adjusted Height */
-  background: rgba(30, 30, 30, 0.8);
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease-in-out;
-  opacity: 1;
-  z-index: 1000;
-}
-
-/* 🔥 Fully Customizable Responsive Styles - @media Queries */
-
-/* ✅ Adjust everything for screens 1024px and below */
-@media (max-width: 1024px) {
-  /* 🔥 Navbar */
-  .navbar {
-    position: relative;
-    top: -69px; /* ✅ Move down */
-    bottom: 1000px; /* ✅ Move up */
-    left: -90px; /* ✅ Move right */
-    right: 200px; /* ✅ Move left */
-    width: 580px; /* ✅ Adjustable width */
-    height: 30px; /* ✅ Adjustable height */
-    padding: 20px; /* ✅ Adjustable padding */
-    margin: 10px; /* ✅ Adjustable margin */
-    background-color: #1a1a1a; /* ✅ Customizable background */
-    border-bottom: 2px solid #333; /* ✅ Customizable border */
-  }
-
-  /* 🔥 Logo */
-  .logo {
-    position: relative;
-    top: 10px; /* ✅ Move down */
-    bottom: 0px; /* ✅ Move up */
-    left: 10px; /* ✅ Move right */
-    right: 0px; /* ✅ Move left */
-    width: 200px; /* ✅ Adjustable width */
-    height: 100px; /* ✅ Adjustable height */
-    margin: 20px auto; /* ✅ Adjustable margin */
-    padding: 10px; /* ✅ Adjustable padding */
-  }
-
-  /* 🔥 Sidebar */
-  .sidebar {
-    position: fixed;
-    top: 10px; /* ✅ Move down */
-    bottom: 0px; /* ✅ Move up */
-    left: 10px; /* ✅ Move right */
-    right: 0px; /* ✅ Move left */
-    width: 100px; /* ✅ Adjustable width */
-    height: 90vh; /* ✅ Adjustable height */
-    margin: 10px; /* ✅ Adjustable margin */
-    padding: 20px; /* ✅ Adjustable padding */
-    background-color: #252525; /* ✅ Adjustable background */
-    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.3); /* ✅ Adjustable shadow */
-  }
-
-  /* 🔥 Dashboard Layout */
-  .dashboard-layout {
-    display: flex;
-    flex-direction: column; /* ✅ Stack elements vertically */
-    gap: 20px; /* ✅ Adjustable gap */
-    width: 200%; /* ✅ Adjustable width */
-    height: 1000px; /* ✅ Adjustable height */
-    padding: 20px; /* ✅ Adjustable padding */
-    margin: 20px auto; /* ✅ Move up/down */
-    position: relative;
-    top: -170px; /* ✅ Move down */
-    bottom: 0px; /* ✅ Move up */
-    left: -89px; /* ✅ Move right */
-    right: 0px; /* ✅ Move left */
-  }
-
-  /* 🔥 Trading Chart */
-  .trading-chart {
-    width: 90%; /* ✅ Adjustable width */
-    height: 500px; /* ✅ Adjustable height */
-    padding: 30px; /* ✅ Adjustable padding */
-    margin: 30px auto; /* ✅ Move up/down */
-    background-color: #181818; /* ✅ Adjustable background */
-    border: 3px solid #333; /* ✅ Customizable border */
-    position: relative;
-    top: -17px; /* ✅ Move down */
-    bottom: 0px; /* ✅ Move up */
-    left: -1px; /* ✅ Move right */
-    right: 0px; /* ✅ Move left */
-  }
-
-  /* 🔥 Trading History */
-  .trading-history {
-    width: 30%; /* ✅ Adjustable width */
-    height: auto; /* ✅ Adjustable height */
-    padding: 0px; /* ✅ Adjustable padding */
-    margin: 0px auto; /* ✅ Move up/down */
-    background-color: #222; /* ✅ Adjustable background */
-    border: 2px solid #555; /* ✅ Adjustable border */
-    position: relative;
-    top: 25px; /* ✅ Move down */
-    bottom: 0px; /* ✅ Move up */
-    left: -187px; /* ✅ Move right */
-    right: 0px; /* ✅ Move left */
-  }
-
-  /* 🔥 Order Form */
-  .order-form {
-    order: 2; /* ✅ Moves below the trading chart */
-    width: 100%; /* ✅ Adjustable width */
-    height: auto; /* ✅ Adjustable height */
-    padding: 20px; /* ✅ Adjustable padding */
-    margin: 20px auto; /* ✅ Move up/down */
-    background-color: #222; /* ✅ Adjustable background */
-    border: 2px solid #555; /* ✅ Adjustable border */
-    position: relative;
-    top: -8px; /* ✅ Move down */
-    bottom: 0px; /* ✅ Move up */
-    left: -128px; /* ✅ Move left */
-    right: 0px; /* ✅ Move right */
-  }
-
-  /* 🔥 Buy & Sell Buttons */
-  .buy-button, .sell-button {
-    width: 100%; /* ✅ Adjustable width */
-    height: 50px; /* ✅ Adjustable height */
-    font-size: 18px; /* ✅ Adjustable font size */
-    padding: 15px; /* ✅ Adjustable padding */
-    margin: 10px; /* ✅ Move up/down */
-    position: relative;
-    top: -150px; /* ✅ Move down */
-    bottom: 0px; /* ✅ Move up */
-    left: 2.5px; /* ✅ Move right */
-    right: 0px; /* ✅ Move left */
-  }
-
-  /* 🔥 Sidebar Button */
-  .sidebar-btn {
-    padding: 0px; /* ✅ Adjustable padding */
-    font-size: 10px; /* ✅ Adjustable font size */
-    width: auto; /* ✅ Adjustable width */
-    height: auto; /* ✅ Adjustable height */
-    margin: 5px; /* ✅ Move up/down */
-    background-color: #333; /* ✅ Customizable button color */
-    position: relative;
-    top: 100px; /* ✅ Move down */
-    bottom: 0px; /* ✅ Move up */
-    left: 220px; /* ✅ Move right */
-    right: 0px; /* ✅ Move left */
-  }
 }
