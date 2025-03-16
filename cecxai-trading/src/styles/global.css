@@ -286,91 +286,6 @@ body {
   background-color: #333;
   transform: scale(1.1);
 }
-/* 🔥 Fix Sidebar on Mobile */
-@media (max-width: 768px) {
-  .sidebar {
-    position: absolute; /* ✅ Prevents overlapping */
-    width: 70px; /* ✅ Smaller size */
-    height: 100vh; /* ✅ Full height */
-    left: 0;
-    top: 0;
-    z-index: 999; /* ✅ Keeps sidebar above other elements */
-  }
-
-  .dashboard-container {
-    padding-left: 80px; /* ✅ Prevents content from being hidden under sidebar */
-  }
-
-  .sidebar-btn {
-    padding: 10px; /* ✅ Adjust button spacing */
-    font-size: 12px; /* ✅ Reduce text size */
-  }
-
-  .sidebar .icon {
-    font-size: 20px; /* ✅ Smaller icons */
-  }
-}
-/* 🔥 Sidebar Toggle (Show/Hide) */
-.sidebar {
-  transition: width 0.3s ease-in-out;
-}
-
-.sidebar.collapsed {
-  width: 0; /* ✅ Sidebar hidden when collapsed */
-  overflow: hidden;
-}
-/* 🔥 Fix Sidebar Toggle Button */
-.toggle-btn {
-  position: fixed;
-  top: 20px;
-  left: 90px; /* ✅ Moves outside the sidebar */
-  background: none;
-  border: none;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-  z-index: 1100; /* ✅ Always above sidebar */
-  transition: all 0.3s ease-in-out;
-}
-
-/* ✅ Toggle Button Click Effect */
-.toggle-btn:active {
-  transform: scale(0.9);
-}
-
-/* 🔥 Ensure Sidebar Opens/Closes Correctly */
-.sidebar {
-  transition: transform 0.3s ease-in-out;
-}
-
-.sidebar.open {
-  transform: translateX(-205%);
-}
-
-.sidebar.closed {
-  transform: translateX(-420%);
-}
-
-/* 🔥 Move Sidebar Toggle to Navbar */
-.toggle-btn {
-  position: absolute;
-  top: 9%;
-  left: 25px; /* ✅ Before the logo */
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-  z-index: 8100; /* ✅ Ensures it's always visible */
-  transition: all 0.3s ease-in-out;
-}
-
-/* ✅ Toggle Button Click Effect */
-.toggle-btn:active {
-  transform: translateY(-0%) scale(0.9);
-}
-
 /* 🔥 Media Query for Small Screens (max-width: 768px) */
 @media (max-width: 768px) {
   
@@ -408,6 +323,7 @@ body {
     height: 100%; /* Increase height by 10% */
     margin-bottom: 20px; /* Add space below the chart */
     margin-left: -5%; /* Shift left by 5% to adjust for the increased width */
+    margin-right: 0; /* Remove right margin */
   }
 
   /* 🔥 Adjust Navbar Right Section */
