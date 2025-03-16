@@ -21,8 +21,8 @@ const TradingChart = () => {
     script.innerHTML = JSON.stringify({
       symbols: [["Bitcoin", "BINANCE:BTCUSDT"]],
       theme: "dark",
-      width: "100%", // ✅ Keep width same
-      height: 600, // 🔥 Reduce height to half
+      width: "100%", // Full width
+      height: 600, // Height can stay same
       locale: "en",
       timezone: "Etc/UTC",
       interval: "30",
@@ -30,7 +30,7 @@ const TradingChart = () => {
       toolbar_bg: "#131722",
       hide_top_toolbar: false,
       hide_side_toolbar: false,
-      allow_symbol_change: true, // ✅ Allows searching for any crypto
+      allow_symbol_change: true, // Allows searching for any crypto
       save_image: false,
     });
 
@@ -42,7 +42,7 @@ const TradingChart = () => {
   }, []);
 
   return (
-    <div className="trading-chart"> {/* ✅ Keeps the same styling */}
+    <div className="trading-chart">
       <div ref={containerRef} />
     </div>
   );

@@ -242,6 +242,7 @@ body {
     text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
   }
 }
+
 /* 🔥 Sidebar Styles - ADD THIS AT THE BOTTOM */
 .sidebar {
   position: fixed;
@@ -349,6 +350,7 @@ body {
 .sidebar.closed {
   transform: translateX(-420%);
 }
+
 /* 🔥 Move Sidebar Toggle to Navbar */
 .toggle-btn {
   position: absolute;
@@ -368,19 +370,10 @@ body {
 .toggle-btn:active {
   transform: translateY(-0%) scale(0.9);
 }
-/* 🔥 Sidebar Styling */
-.sidebar {
-  position: fixed;
-  left: 155px;
-  top: 80px; /* ✅ Moved Down to Show "Trade" */
-  width: 50px;
-  height: calc(100vh - 80px); /* ✅ Adjusted Height */
-  background: rgba(30, 30, 30, 0.8);
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease-in-out;
-  opacity: 1;
-  z-index: 1000;
+
+/* 🔥 Trading Chart Responsiveness */
+@media (max-width: 768px) {
+  .trading-chart > div {
+    height: 400px; /* Adjust height for smaller screens */
+  }
 }
