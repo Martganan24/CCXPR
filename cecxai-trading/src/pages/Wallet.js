@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import "../styles/Wallet.css"; // ✅ Ensure this file exists
-import Deposit from "../components/Deposit"; // ✅ Replacing DepositWithdrawPopup with Deposit
-import Withdraw from "../components/Withdraw"; // ✅ Replacing DepositWithdrawPopup with Withdraw
+import DepositWithdrawPopup from "../components/DepositWithdrawPopup"; // ✅ Popup Import
 import { useUser } from "../context/UserContext"; // Importing useUser from UserContext
 import { supabase } from "./supabase"; // Importing Supabase client
 
@@ -17,8 +16,8 @@ const Wallet = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
-  const [isDepositPopupVisible, setIsDepositPopupVisible] = useState(false); // State for deposit popup
-  const [isWithdrawPopupVisible, setIsWithdrawPopupVisible] = useState(false); // State for withdraw popup
+  const [isPopupVisible, setIsPopupVisible] = useState(false); // State for popup visibility
+  const [popupType, setPopupType] = useState(null); // Type for the popup (deposit or withdraw)
 
   useEffect(() => {
     // Fetch transactions from 'withdrawals' and 'deposits' tables
@@ -60,6 +59,21 @@ const Wallet = () => {
     setCurrentPage(pageNumber);
   };
 
+  const handleDepositClick = () => {
+    setPopupType("deposit"); // Set type to deposit
+    setIsPopupVisible(true); // Show the popup
+  };
+
+  const handleWithdrawClick = () => {
+    setPopupType("withdraw"); // Set type to withdraw
+    setIsPopupVisible(true); // Show the popup
+  };
+
+  const closePopup = () => {
+    setIsPopupVisible(false); // Close the popup
+    setPopupType(null); // Reset popup type
+  };
+
   return (
     <motion.div
       className="wallet-container"
@@ -79,8 +93,8 @@ const Wallet = () => {
           <h2>Main Wallet</h2>
           <p className="balance">${balance}</p> {/* Display balance from UserContext */}
           <div className="wallet-actions">
-            <button className="wallet-btn" onClick={() => setIsDepositPopupVisible(true)}>Deposit</button>
-            <button className="wallet-btn" onClick={() => setIsWithdrawPopupVisible(true)}>Withdraw</button>
+            <button className="wallet-btn" onClick={handleDepositClick}>Deposit</button>
+            <button className="wallet-btn" onClick={handleWithdrawClick}>Withdraw</button>
           </div>
         </motion.div>
 
@@ -93,7 +107,7 @@ const Wallet = () => {
           <h2>Commission</h2>
           <p className="balance">${commissionBalance}</p> {/* Display commission balance from UserContext */}
           <div className="wallet-actions">
-            <button className="wallet-btn" onClick={() => setIsWithdrawPopupVisible(true)}>Withdraw</button>
+            <button className="wallet-btn" onClick={handleWithdrawClick}>Withdraw</button>
           </div>
         </motion.div>
       </div>
@@ -152,9 +166,10 @@ const Wallet = () => {
         )}
       </div>
 
-      {/* Render Popups */}
-      {isDepositPopupVisible && <Deposit onClose={() => setIsDepositPopupVisible(false)} />}
-      {isWithdrawPopupVisible && <Withdraw onClose={() => setIsWithdrawPopupVisible(false)} />}
+      {/* Render Popup if visible */}
+      {isPopupVisible && (
+        <DepositWithdrawPopup type={popupType} onClose={closePopup} />
+      )}
     </motion.div>
   );
 };

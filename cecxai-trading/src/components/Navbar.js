@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext"; // ✅ Import User Context
-import Deposit from "./Deposit"; // ✅ Updated to use Deposit.js
+import DepositWithdrawPopup from "./DepositWithdrawPopup"; // ✅ Import popup
 
 // Customizable Logo Component
 const Logo = ({ logoStyle }) => {
@@ -36,13 +36,13 @@ const NotificationBell = ({ bellStyle }) => {
 };
 
 function Navbar() {
-  const [showDepositPopup, setShowDepositPopup] = useState(false); // ✅ State to show/hide deposit popup
+  const [showDepositPopup, setShowDepositPopup] = useState(false); // ✅ State to show/hide popup
 
   // Define styles for customization (these can be passed as props)
-  const logoStyle = {}; // Placeholder for logo styles
-  const balanceStyle = {}; // Placeholder for balance button styles
-  const buttonStyle = {}; // Placeholder for deposit button styles
-  const bellStyle = {}; // Placeholder for notification bell styles
+  const logoStyle = { /* Default styling for the logo */ };
+  const balanceStyle = { /* Default styling for the balance button */ };
+  const buttonStyle = { /* Default styling for the deposit button */ };
+  const bellStyle = { /* Default styling for the notification bell */ };
 
   return (
     <div className="navbar">
@@ -63,7 +63,7 @@ function Navbar() {
 
       {/* Deposit Popup */}
       {showDepositPopup && (
-        <Deposit onClose={() => setShowDepositPopup(false)} />
+        <DepositWithdrawPopup type="deposit" onClose={() => setShowDepositPopup(false)} />
       )}
     </div>
   );
