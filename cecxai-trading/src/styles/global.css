@@ -286,21 +286,58 @@ body {
   background-color: #333;
   transform: scale(1.1);
 }
-/* 🔥 Trading Chart, Order Form, Trading History Responsiveness for Small Screens */
+/* 🔥 Media Query for Small Screens (max-width: 768px) */
 @media (max-width: 768px) {
-  /* Ensure the Trading Chart, Order Form, and Trading History fit 90% of the screen height */
-  .trading-chart, .order-form, .trading-history {
-    height: 90%; /* Fit 90% of the screen height */
-    margin-bottom: 20px; /* Add space between each section */
+  
+  /* 🔥 Toggle Button Adjustments */
+  .toggle-btn {
+    position: absolute; /* Ensure it's not part of the flow, allowing custom positioning */
+    top: 10%; /* Adjustable top position */
+    left: 5%; /* Adjustable left position */
+    transform: translateY(-50%); /* Keeps it centered vertically if adjusted */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px; /* Adjustable size */
+    cursor: pointer;
+    z-index: 1100; /* Ensure the button is above other elements */
+    padding: 10px 15px; /* Adjustable padding */
+    transition: all 0.3s ease-in-out;
   }
 
-  /* Reduce the left margin by 75% */
+  /* 🔥 Toggle Button Open */
+  .sidebar.open .toggle-btn {
+    left: 20px; /* Adjust left position when sidebar is open */
+    top: 15%; /* Adjust top position when sidebar is open */
+  }
+
+  /* 🔥 Toggle Button Close */
+  .sidebar.closed .toggle-btn {
+    left: 5%; /* Position when sidebar is closed */
+    top: 10%; /* Position when sidebar is closed */
+  }
+
+  /* 🔥 Make the Trading Chart width max to the right and bigger by 10% */
+  .trading-chart {
+    width: 110%; /* Increase width by 10% */
+    height: 100%; /* Increase height by 10% */
+    margin-bottom: 20px; /* Add space below the chart */
+    margin-left: -5%; /* Shift left by 5% to adjust for the increased width */
+    margin-right: 0; /* Remove right margin */
+  }
+
+  /* 🔥 Adjust Navbar Right Section */
+  .navbar-right {
+    width: 60%; /* Reduce the right section width by 40% */
+  }
+
+  /* 🔥 Reduce the left margin by 75% */
   .dashboard-container {
-    padding-left: 5%; /* Reduced by 75% from 20% (25% margin) */
-    padding-right: 5%; /* Ensure the right margin is balanced too */
+    padding-left: 5%; /* Reduced by 75% from the original margin */
+    padding-right: 5%; /* Balanced right margin */
   }
 
-  /* Ensure that sections are spaced out properly on mobile */
+  /* 🔥 Ensure that sections are spaced out properly on mobile */
   .dashboard-layout {
     display: flex;
     flex-direction: column;
