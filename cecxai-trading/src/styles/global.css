@@ -314,13 +314,6 @@ body {
 /* 🔥 Media Query for Small Screens (max-width: 768px) */
 @media (max-width: 768px) {
   
-  /* 🔥 Toggle Button Adjustments */
-  .toggle-btn {
-    top: 10%;
-    left: 5%;
-    font-size: 28px;
-  }
-
   /* 🔥 Sidebar layout for smaller screens */
   .sidebar {
     width: 80px; /* Adjust sidebar width for mobile */
