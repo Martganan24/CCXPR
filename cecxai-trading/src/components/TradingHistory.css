@@ -1,58 +1,66 @@
 .profit-row {
-  background-color: #222; /* Light Green */
+  background-color: #222;
   color: green;
 }
 
 .loss-row {
-  background-color: #222; /* Light Red */
+  background-color: #222;
   color: red;
 }
 
 .trading-history {
-    background-color: #181818;
-    padding: 20px;
-    border-radius: 8px;
-    border: 2px solid #333;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    color: white;
-    margin-top: 20px;
-  }
-  
-  .trading-history h2 {
-    font-size: 20px;
-    margin-bottom: 15px;
-  }
-  
+  background-color: #181818;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #333;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  color: white;
+  margin-top: 20px;
+  width: 100%; /* ✅ Make it responsive */
+  max-width: 1200px; /* ✅ Prevent it from being too wide */
+  margin-left: auto; /* ✅ Center it properly */
+  margin-right: auto; /* ✅ Center it properly */
+  overflow-x: auto; /* ✅ Prevent horizontal scrolling */
+}
+
+.trading-history h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.trading-history table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.trading-history th,
+.trading-history td {
+  padding: 10px;
+  border: 1px solid #444;
+  word-wrap: break-word; /* ✅ Prevents overflow */
+  text-align: center; /* ✅ Keep content readable */
+}
+
+.trading-history th {
+  background-color: #222;
+}
+
+.trading-history .buy {
+  color: #00c853;
+}
+
+.trading-history .sell {
+  color: #d32f2f;
+}
+
+/* ✅ Ensure it scales well on small screens */
+@media (max-width: 768px) {
   .trading-history table {
-    width: 100%;
-    border-collapse: collapse;
+    font-size: 14px; /* ✅ Make text slightly smaller */
   }
-  
   .trading-history th,
   .trading-history td {
-    padding: 10px;
-    border: 1px solid #444;
+    padding: 8px; /* ✅ Reduce padding to fit */
   }
-  
-  .trading-history th {
-    background-color: #222;
-  }
-  
-  .trading-history .buy {
-    color: #00c853;
-  }
-  
-  .trading-history .sell {
-    color: #d32f2f;
-  }
-  /* 🔥 Reduce Trading History Width by 25% */
-/* 🔥 Make Trading History Adjustable with Margin */
-.trading-history {
-  width: 90%; /* ✅ Default width (adjustable) */
-  max-width: 1612px; /* ✅ Prevents it from getting too big */
-  min-width: 30px; /* ✅ Prevents it from getting too small */
-  margin-left: 152px; /* ✅ Allows adjusting left margin */
-  margin-right: 10; /* ✅ Allows adjusting right margin */
-  transition: all 0.3s ease-in-out; /* ✅ Smooth adjustments */
 }
