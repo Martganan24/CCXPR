@@ -292,7 +292,7 @@ body {
   /* 🔥 Toggle Button Adjustments */
   .toggle-btn {
     position: absolute; /* Ensure it's not part of the flow, allowing custom positioning */
-    top: 10%; /* Adjustable top position */
+    top: 0%; /* Adjustable top position */
     left: 5%; /* Adjustable left position */
     transform: translateY(-50%); /* Keeps it centered vertically if adjusted */
     background: none;
