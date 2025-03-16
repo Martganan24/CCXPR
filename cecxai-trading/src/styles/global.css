@@ -402,11 +402,12 @@ body {
     top: 10%; /* Position when sidebar is closed */
   }
 
-  /* 🔥 Make the Trading Chart width max to the right */
+  /* 🔥 Make the Trading Chart width max to the right and bigger by 10% */
   .trading-chart {
-    width: 100%; /* Full width of the screen */
-    height: 90%; /* Takes 90% of screen height */
+    width: 110%; /* Increase width by 10% */
+    height: 100%; /* Increase height by 10% */
     margin-bottom: 20px; /* Add space below the chart */
+    margin-left: -5%; /* Shift left by 5% to adjust for the increased width */
   }
 
   /* 🔥 Adjust Navbar Right Section */
