@@ -379,6 +379,12 @@ body {
     margin-bottom: 20px; /* Add space between each section */
   }
 
+  /* Reduce the left margin by 75% */
+  .dashboard-container {
+    padding-left: 5%; /* Reduced by 75% from 20% (25% margin) */
+    padding-right: 5%; /* Ensure the right margin is balanced too */
+  }
+
   /* Ensure that sections are spaced out properly on mobile */
   .dashboard-layout {
     display: flex;
