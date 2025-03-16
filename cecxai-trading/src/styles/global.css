@@ -383,7 +383,10 @@ body {
     gap: 20px;
   }
 
+  /* Add margin-top to the Order Form for space */
   .order-form {
     width: 100%; /* Full width for Order Form */
+    margin-top: 20px; /* Add margin to create space */
   }
 }
+
