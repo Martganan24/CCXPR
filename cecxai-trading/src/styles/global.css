@@ -72,13 +72,14 @@ body {
   padding: 0;
   border-radius: 8px;
   width: 100%;
-  height: 100%;
+  height: 90%;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: stretch;
   border: 2px solid #333;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
 }
 
 /* 🔥 Order Form */
@@ -87,13 +88,14 @@ body {
   padding: 20px;
   border-radius: 2px;
   width: 100%;
-  height: 93%;
+  height: 90%;
   display: flex;
   flex-direction: column;
   align-items: center; /* ✅ Center Everything */
   justify-content: center; /* ✅ Center Everything */
   border: 2px solid #333;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px; /* Added space between Order Form and Trading History */
 }
 
 /* 🔥 Amount Input Section (Centered) */
@@ -246,15 +248,15 @@ body {
 /* 🔥 Sidebar Styles - ADD THIS AT THE BOTTOM */
 .sidebar {
   position: fixed;
-  left: 0;
-  top: 0;
+  left: 300;
+  top: -0px; /* Fixed positioning issue */
   height: 100vh;
-  width: 80px; /* ✅ Fixed width */
+  width: 80px;
   background-color: #1e1e1e;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 20px; /* ✅ Enough spacing */
+  padding-top: 20px;
   padding-bottom: 20px;
   gap: 15px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
@@ -278,7 +280,7 @@ body {
 }
 
 .sidebar-btn .icon {
-  font-size: 24px; /* ✅ Icon size */
+  font-size: 24px;
 }
 
 /* 🔥 Hover Effect */
@@ -286,108 +288,63 @@ body {
   background-color: #333;
   transform: scale(1.1);
 }
-/* 🔥 Fix Sidebar on Mobile */
+
+/* 🔥 Media Query for Small Screens (max-width: 768px) */
 @media (max-width: 768px) {
-  .sidebar {
-    position: absolute; /* ✅ Prevents overlapping */
-    width: 70px; /* ✅ Smaller size */
-    height: 100vh; /* ✅ Full height */
-    left: 0;
-    top: 0;
-    z-index: 999; /* ✅ Keeps sidebar above other elements */
+  
+  /* 🔥 Toggle Button Adjustments */
+  .toggle-btn {
+    position: absolute; /* Ensure it's not part of the flow, allowing custom positioning */
+    top: 10%; /* Adjust top position */
+    left: 5%; /* Adjust left position */
+    transform: translateY(-50%); /* Keeps it centered vertically if adjusted */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px; /* Adjustable size */
+    cursor: pointer;
+    z-index: 1100; /* Ensure the button is above other elements */
+    padding: 10px 15px; /* Adjustable padding */
+    transition: all 0.3s ease-in-out;
   }
 
+  /* 🔥 Toggle Button Open */
+  .sidebar.open .toggle-btn {
+    left: 20px; /* Adjust left position when sidebar is open */
+    top: 15%; /* Adjust top position when sidebar is open */
+  }
+
+  /* 🔥 Toggle Button Close */
+  .sidebar.closed .toggle-btn {
+    left: 5%; /* Position when sidebar is closed */
+    top: 10%; /* Position when sidebar is closed */
+  }
+
+  /* 🔥 Make the Trading Chart width max to the right and bigger by 10% */
+  .trading-chart {
+    width: 110%; /* Increase width by 10% */
+    height: 90%; /* Keep height the same */
+    margin-bottom: 20px; /* Add space below the chart */
+    margin-left: -5%; /* Shift left by 5% to adjust for the increased width */
+    margin-right: 0; /* Remove right margin */
+  }
+
+  /* 🔥 Adjust Navbar Right Section */
+  .navbar-right {
+    width: 60%; /* Reduce the right section width by 40% */
+  }
+
+  /* 🔥 Reduce the left margin by 75% */
   .dashboard-container {
-    padding-left: 80px; /* ✅ Prevents content from being hidden under sidebar */
+    padding-left: 5%; /* Reduced by 75% from the original margin */
+    padding-right: 5%; /* Balanced right margin */
   }
 
-  .sidebar-btn {
-    padding: 10px; /* ✅ Adjust button spacing */
-    font-size: 12px; /* ✅ Reduce text size */
-  }
-
-  .sidebar .icon {
-    font-size: 20px; /* ✅ Smaller icons */
-  }
-}
-/* 🔥 Sidebar Toggle (Show/Hide) */
-.sidebar {
-  transition: width 0.3s ease-in-out;
-}
-
-.sidebar.collapsed {
-  width: 0; /* ✅ Sidebar hidden when collapsed */
-  overflow: hidden;
-}
-/* 🔥 Fix Sidebar Toggle Button */
-.toggle-btn {
-  position: fixed;
-  top: 20px;
-  left: 90px; /* ✅ Moves outside the sidebar */
-  background: none;
-  border: none;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-  z-index: 1100; /* ✅ Always above sidebar */
-  transition: all 0.3s ease-in-out;
-}
-
-/* ✅ Toggle Button Click Effect */
-.toggle-btn:active {
-  transform: scale(0.9);
-}
-
-/* 🔥 Ensure Sidebar Opens/Closes Correctly */
-.sidebar {
-  transition: transform 0.3s ease-in-out;
-}
-
-.sidebar.open {
-  transform: translateX(-205%);
-}
-
-.sidebar.closed {
-  transform: translateX(-420%);
-}
-
-/* 🔥 Move Sidebar Toggle to Navbar */
-.toggle-btn {
-  position: absolute;
-  top: 9%;
-  left: 25px; /* ✅ Before the logo */
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-  z-index: 8100; /* ✅ Ensures it's always visible */
-  transition: all 0.3s ease-in-out;
-}
-
-/* ✅ Toggle Button Click Effect */
-.toggle-btn:active {
-  transform: translateY(-0%) scale(0.9);
-}
-
-
-/* 🔥 Trading Chart Responsiveness */
-@media (max-width: 768px) {
-  .trading-chart > div {
-    height: 400px; /* Adjust height for smaller screens */
-  }
-
-  /* Move the Order Form below the Trading Chart on small screens */
+  /* 🔥 Ensure that sections are spaced out properly on mobile */
   .dashboard-layout {
-    grid-template-columns: 1fr; /* Single column layout */
-    gap: 20px;
-  }
-
-  /* Add margin-top to the Order Form for space */
-  .order-form {
-    width: 100%; /* Full width for Order Form */
-    margin-top: 20px; /* Add margin to create space */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between Trading Chart, Order Form, and Trading History */
+    width: 100%; /* Ensure they fit the full width */
   }
 }
-
