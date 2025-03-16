@@ -1,154 +1,146 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify"; // Import toast notifications
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/Popup.css"; // Ensure this file exists
-import { supabase } from "../supabaseClient"; // Make sure to initialize supabase client correctly
+import { supabase } from "../supabaseClient"; // Ensure Supabase is correctly initialized
+
+// Initialize toast notifications
+import { ToastContainer } from "react-toastify";
+toast.configure();
 
 const DepositWithdrawPopup = ({ type, onClose }) => {
   const [selectedToken, setSelectedToken] = useState("BTC");
   const [walletAddress, setWalletAddress] = useState("15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9"); // Default BTC address
   const [amount, setAmount] = useState("");
   const [recipientWallet, setRecipientWallet] = useState("");
-  const [txid, setTxid] = useState(""); // New state for TxID Hash input
-  const [copied, setCopied] = useState(false); // State for tracking copy status
+  const [txid, setTxid] = useState("");
+  const [copied, setCopied] = useState(false);
 
-  // Dummy wallet addresses
   const walletAddresses = {
     BTC: "15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9",
     ETH: "0xdff3195fef04d5531614c1461c48ae55e0a2e7ed",
     USDT: "TM78QTsBXxDmLRMvMxTfsBRLUek1SgPfcU",
   };
 
-  // Handle token selection
   const handleTokenChange = (token) => {
     setSelectedToken(token);
     setWalletAddress(walletAddresses[token]);
   };
 
-  // Handle copy function with auto update to "Copied!"
   const handleCopy = () => {
     navigator.clipboard.writeText(walletAddress);
-    setCopied(true); // Update button text to "Copied!"
-    setTimeout(() => setCopied(false), 2000); // Reset to original text after 2 seconds
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  // Handle submit (single handler for both deposit and withdrawal)
   const handleSubmit = async () => {
     if (!amount) {
-      console.log("Please enter amount.");
+      toast.error("Please enter an amount."); // Show error notification
       return;
     }
 
     const transactionData = {
       token: selectedToken,
       amount,
-      status: "pending", // Default status
-      ...(type === "withdraw" && { recipient_wallet: recipientWallet }), // Include recipient wallet for withdrawals
-      ...(type === "deposit" && { txid }) // Add txid for deposits
+      status: "pending",
+      ...(type === "withdraw" && { recipient_wallet: recipientWallet }),
+      ...(type === "deposit" && { txid })
     };
 
-    console.log("Submitting transaction data:", transactionData);
-
     try {
-      // Insert transaction data into Supabase (or other database)
       const { data, error } = await supabase
-        .from(type === "deposit" ? 'deposits' : 'withdrawals') // Use different tables for deposit and withdrawal
+        .from(type === "deposit" ? 'deposits' : 'withdrawals')
         .insert([transactionData]);
 
       if (error) {
-        console.error("Error submitting transaction:", error.message); // Display detailed error message
+        toast.error(`Error submitting ${type}: ${error.message}`); // Show error notification
       } else {
-        console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
-        // Optionally clear fields or close popup
-        onClose(); // Close the popup after successful submission
+        toast.success(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully!`); // Show success notification
+        onClose();
       }
     } catch (err) {
-      console.error("Unexpected error during submit:", err); // Catch any unexpected errors during submission
+      toast.error("Unexpected error occurred. Please try again.");
     }
   };
 
   return (
-    <motion.div
-      className="popup-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       <motion.div
-        className="popup-box glassmorphism"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="popup-overlay"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
       >
-        <h2 className="popup-title">{type === "deposit" ? "Deposit Funds" : "Withdraw Funds"}</h2>
+        <motion.div
+          className="popup-box glassmorphism"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+          <h2 className="popup-title">{type === "deposit" ? "Deposit Funds" : "Withdraw Funds"}</h2>
 
-        {/* Token Selection */}
-        <label>Select Token:</label>
-        <div className="token-options">
-          {["BTC", "ETH", "USDT"].map((token) => (
-            <button
-              key={token}
-              className={`token-btn ${selectedToken === token ? "active" : ""}`}
-              onClick={() => handleTokenChange(token)}
-            >
-              {token}
-            </button>
-          ))}
-        </div>
-
-        {/* Show wallet address if deposit */}
-        {type === "deposit" && (
-          <>
-            <label>Wallet Address:</label>
-            <div className="wallet-address">
-              <input type="text" value={walletAddress} readOnly />
-              <button onClick={handleCopy}>
-                {copied ? "Copied!" : "Copy"}
+          <label>Select Token:</label>
+          <div className="token-options">
+            {["BTC", "ETH", "USDT"].map((token) => (
+              <button
+                key={token}
+                className={`token-btn ${selectedToken === token ? "active" : ""}`}
+                onClick={() => handleTokenChange(token)}
+              >
+                {token}
               </button>
-            </div>
+            ))}
+          </div>
 
-            {/* Add TxID Hash input field for deposit */}
-            <label>Transaction Receipt TxID Hash:</label>
-            <input
-              type="text"
-              value={txid}
-              onChange={(e) => setTxid(e.target.value)} // Update TxID state
-              placeholder="Enter TxID Hash"
-            />
-          </>
-        )}
+          {type === "deposit" && (
+            <>
+              <label>Wallet Address:</label>
+              <div className="wallet-address">
+                <input type="text" value={walletAddress} readOnly />
+                <button onClick={handleCopy}>{copied ? "Copied!" : "Copy"}</button>
+              </div>
+              <label>Transaction Receipt TxID Hash:</label>
+              <input
+                type="text"
+                value={txid}
+                onChange={(e) => setTxid(e.target.value)}
+                placeholder="Enter TxID Hash"
+              />
+            </>
+          )}
 
-        {/* Show recipient wallet input if withdrawal */}
-        {type === "withdraw" && (
-          <>
-            <label>Enter Your Wallet Address:</label>
-            <input
-              type="text"
-              value={recipientWallet}
-              onChange={(e) => setRecipientWallet(e.target.value)}
-              placeholder="Enter your wallet address"
-            />
-          </>
-        )}
+          {type === "withdraw" && (
+            <>
+              <label>Enter Your Wallet Address:</label>
+              <input
+                type="text"
+                value={recipientWallet}
+                onChange={(e) => setRecipientWallet(e.target.value)}
+                placeholder="Enter your wallet address"
+              />
+            </>
+          )}
 
-        {/* Amount Input */}
-        <label>Enter Amount:</label>
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Enter amount"
-        />
+          <label>Enter Amount:</label>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Enter amount"
+          />
 
-        {/* Action Buttons moved up here */}
-        <div className="popup-actions">
-          <button className="submit-btn" onClick={handleSubmit}>
-            {type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}
-          </button>
-          <button className="close-btn" onClick={onClose}>Close</button>
-        </div>
+          <div className="popup-actions">
+            <button className="submit-btn" onClick={handleSubmit}>
+              {type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}
+            </button>
+            <button className="close-btn" onClick={onClose}>Close</button>
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </>
   );
 };
 
