@@ -52,6 +52,10 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
         setSuccessMessage(`Error submitting ${type}: ${error.message}`);
       } else {
         setSuccessMessage(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully!`);
+        setTimeout(() => {
+          setSuccessMessage("");
+          onClose();
+        }, 2000); // Delay closing so user sees success message
       }
     } catch (err) {
       setSuccessMessage("Unexpected error occurred. Please try again.");
