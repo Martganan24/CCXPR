@@ -7,7 +7,6 @@ import { supabase } from "../supabaseClient"; // Ensure Supabase is correctly in
 
 // Initialize toast notifications
 import { ToastContainer } from "react-toastify";
-toast.configure();
 
 const DepositWithdrawPopup = ({ type, onClose }) => {
   const [selectedToken, setSelectedToken] = useState("BTC");
