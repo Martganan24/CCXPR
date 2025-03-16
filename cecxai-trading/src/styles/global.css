@@ -72,13 +72,14 @@ body {
   padding: 0;
   border-radius: 8px;
   width: 100%;
-  height: 100%;
+  height: 90%;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: stretch;
   border: 2px solid #333;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
 }
 
 /* 🔥 Order Form */
@@ -87,13 +88,14 @@ body {
   padding: 20px;
   border-radius: 2px;
   width: 100%;
-  height: 93%;
+  height: 90%;
   display: flex;
   flex-direction: column;
   align-items: center; /* ✅ Center Everything */
   justify-content: center; /* ✅ Center Everything */
   border: 2px solid #333;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px; /* Added space between Order Form and Trading History */
 }
 
 /* 🔥 Amount Input Section (Centered) */
@@ -246,8 +248,8 @@ body {
 /* 🔥 Sidebar Styles - ADD THIS AT THE BOTTOM */
 .sidebar {
   position: fixed;
-  left: 0;
-  top: -100px; /* Fixed positioning issue */
+  left: 300;
+  top: -0px; /* Fixed positioning issue */
   height: 100vh;
   width: 80px;
   background-color: #1e1e1e;
@@ -278,7 +280,7 @@ body {
 }
 
 .sidebar-btn .icon {
-  font-size: 24px; /* ✅ Icon size */
+  font-size: 24px;
 }
 
 /* 🔥 Hover Effect */
@@ -293,8 +295,8 @@ body {
   /* 🔥 Toggle Button Adjustments */
   .toggle-btn {
     position: absolute; /* Ensure it's not part of the flow, allowing custom positioning */
-    top: 10%; /* Adjustable top position */
-    left: 5%; /* Adjustable left position */
+    top: 10%; /* Adjust top position */
+    left: 5%; /* Adjust left position */
     transform: translateY(-50%); /* Keeps it centered vertically if adjusted */
     background: none;
     border: none;
@@ -321,7 +323,7 @@ body {
   /* 🔥 Make the Trading Chart width max to the right and bigger by 10% */
   .trading-chart {
     width: 110%; /* Increase width by 10% */
-    height: 100%; /* Increase height by 10% */
+    height: 90%; /* Keep height the same */
     margin-bottom: 20px; /* Add space below the chart */
     margin-left: -5%; /* Shift left by 5% to adjust for the increased width */
     margin-right: 0; /* Remove right margin */
