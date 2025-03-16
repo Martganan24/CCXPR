@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import "../styles/Wallet.css";
-import Deposit from "../components/Deposit";
-import Withdraw from "../components/Withdraw";
-import { useUser } from "../context/UserContext";
-import { supabase } from "./supabase";
+import "../styles/Wallet.css"; // ✅ Ensure this file exists
+import Deposit from "../components/Deposit"; // ✅ Replacing DepositWithdrawPopup with Deposit
+import Withdraw from "../components/Withdraw"; // ✅ Replacing DepositWithdrawPopup with Withdraw
+import { useUser } from "../context/UserContext"; // Importing useUser from UserContext
+import { supabase } from "./supabase"; // Importing Supabase client
 
 const Wallet = () => {
-  const { user } = useUser();
-  const balance = user ? user.balance : 0;
-  const commissionBalance = user ? user.commission_balance : 0;
+  const { user } = useUser(); // Access the user object from UserContext
 
-  const [transactions, setTransactions] = useState([]);
+  // Get the balance and commission_balance from the user context
+  const balance = user ? user.balance : 0; // Assuming balance exists in the user object
+  const commissionBalance = user ? user.commission_balance : 0; // Commission balance from the user context
+
+  const [transactions, setTransactions] = useState([]); // State to hold transaction data
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
-  const [isDepositPopupVisible, setIsDepositPopupVisible] = useState(false);
-  const [isWithdrawPopupVisible, setIsWithdrawPopupVisible] = useState(false);
+  const [isDepositPopupVisible, setIsDepositPopupVisible] = useState(false); // State for deposit popup
+  const [isWithdrawPopupVisible, setIsWithdrawPopupVisible] = useState(false); // State for withdraw popup
 
   useEffect(() => {
+    // Fetch transactions from 'withdrawals' and 'deposits' tables
     const fetchTransactions = async () => {
       const { data: withdrawals, error: withdrawalsError } = await supabase
         .from("withdrawals")
@@ -33,18 +36,22 @@ const Wallet = () => {
         return;
       }
 
+      // Combine withdrawals and deposits data
       const combinedTransactions = [
-        ...withdrawals.map((tx) => ({ ...tx, type: "Withdraw", status: tx.status })),
-        ...deposits.map((tx) => ({ ...tx, type: "Deposit", status: tx.status })),
+        ...withdrawals.map(tx => ({ ...tx, type: "Withdraw", status: tx.status })),
+        ...deposits.map(tx => ({ ...tx, type: "Deposit", status: tx.status })),
       ];
 
+      // Sort transactions by date
       const sortedTransactions = combinedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-      setTransactions(sortedTransactions);
+
+      setTransactions(sortedTransactions); // Set transactions state with sorted data
     };
 
     fetchTransactions();
   }, []);
 
+  // Get the current page's transactions
   const indexOfLastTransaction = currentPage * rowsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
   const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
@@ -54,31 +61,60 @@ const Wallet = () => {
   };
 
   return (
-    <motion.div className="wallet-container" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+    <motion.div
+      className="wallet-container"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <h1 className="wallet-title">Wallet Overview</h1>
+
       <div className="wallet-grid">
-        <motion.div className="wallet-box main-wallet" whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+        {/* Main Wallet */}
+        <motion.div
+          className="wallet-box main-wallet"
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.3 }}
+        >
           <h2>Main Wallet</h2>
-          <p className="balance">${balance}</p>
+          <p className="balance">${balance}</p> {/* Display balance from UserContext */}
           <div className="wallet-actions">
             <button className="wallet-btn" onClick={() => setIsDepositPopupVisible(true)}>Deposit</button>
             <button className="wallet-btn" onClick={() => setIsWithdrawPopupVisible(true)}>Withdraw</button>
           </div>
         </motion.div>
-        <motion.div className="wallet-box commission-wallet" whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+
+        {/* Commission Wallet */}
+        <motion.div
+          className="wallet-box commission-wallet"
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.3 }}
+        >
           <h2>Commission</h2>
-          <p className="balance">${commissionBalance}</p>
+          <p className="balance">${commissionBalance}</p> {/* Display commission balance from UserContext */}
           <div className="wallet-actions">
             <button className="wallet-btn" onClick={() => setIsWithdrawPopupVisible(true)}>Withdraw</button>
           </div>
         </motion.div>
       </div>
-      <motion.div className="transaction-history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+
+      {/* Transaction History */}
+      <motion.div
+        className="transaction-history"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <h2>Transaction History</h2>
         <div className="transaction-list">
           {currentTransactions.length > 0 ? (
             currentTransactions.map((tx) => (
-              <motion.div key={tx.id} className={`transaction-item ${tx.type.toLowerCase()}`} whileHover={{ scale: 1.02 }} transition={{ duration: 0.3 }}>
+              <motion.div
+                key={tx.id}
+                className={`transaction-item ${tx.type.toLowerCase()}`}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
                 <span className="tx-type">{tx.type}</span>
                 <span className="tx-amount">${tx.amount}</span>
                 <span className="tx-date">{tx.date} - {tx.time}</span>
@@ -90,17 +126,33 @@ const Wallet = () => {
           )}
         </div>
       </motion.div>
+
+      {/* Pagination */}
       <div className="pagination">
         {transactions.length > rowsPerPage && (
-          <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
         )}
         {Array.from({ length: Math.ceil(transactions.length / rowsPerPage) }, (_, index) => (
-          <button key={index} onClick={() => handlePageChange(index + 1)}>{index + 1}</button>
+          <button key={index} onClick={() => handlePageChange(index + 1)}>
+            {index + 1}
+          </button>
         ))}
         {transactions.length > rowsPerPage && (
-          <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === Math.ceil(transactions.length / rowsPerPage)}>Next</button>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === Math.ceil(transactions.length / rowsPerPage)}
+          >
+            Next
+          </button>
         )}
       </div>
+
+      {/* Render Popups */}
       {isDepositPopupVisible && <Deposit onClose={() => setIsDepositPopupVisible(false)} />}
       {isWithdrawPopupVisible && <Withdraw onClose={() => setIsWithdrawPopupVisible(false)} />}
     </motion.div>
