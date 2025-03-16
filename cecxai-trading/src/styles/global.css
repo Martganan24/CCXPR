@@ -248,7 +248,7 @@ body {
 /* 🔥 Sidebar Styles - ADD THIS AT THE BOTTOM */
 .sidebar {
   position: fixed;
-  left: 0;
+  left: 300;
   top: -100px; /* Fixed positioning issue */
   height: 100vh;
   width: 80px;
