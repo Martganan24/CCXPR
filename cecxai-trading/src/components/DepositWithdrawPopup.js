@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import "../styles/Popup.css"; // Ensure this file exists
 import { supabase } from "../supabaseClient"; // Make sure to initialize supabase client correctly
+import { useUser } from "../context/UserContext"; // Import User Context
 
 const DepositWithdrawPopup = ({ type, onClose }) => {
+  const { user } = useUser(); // Get the logged-in user
   const [selectedToken, setSelectedToken] = useState("BTC");
   const [walletAddress, setWalletAddress] = useState("15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9"); // Default BTC address
   const [amount, setAmount] = useState("");
@@ -35,7 +37,13 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
       return;
     }
 
+    if (!user || !user.id) {
+      setSuccessMessage("User not found. Please log in again.");
+      return;
+    }
+
     const transactionData = {
+      user_id: user.id, // Include user ID in the transaction
       token: selectedToken,
       amount,
       status: "pending",
@@ -55,7 +63,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
         setTimeout(() => {
           setSuccessMessage("");
           onClose();
-        }, 10000); // Delay closing for 10 seconds // Delay closing so user sees success message
+        }, 10000); // Delay closing for 10 seconds
       }
     } catch (err) {
       setSuccessMessage("Unexpected error occurred. Please try again.");
