@@ -39,8 +39,8 @@ const Wallet = () => {
       }
 
       const combinedTransactions = [
-        ...withdrawals.map(tx => ({ ...tx, type: "Withdraw", status: tx.status, date: tx.date })),
-        ...deposits.map(tx => ({ ...tx, type: "Deposit", status: tx.status, date: tx.date })),
+        ...withdrawals.map(tx => ({ ...tx, type: "Withdraw", status: tx.status, date: tx.created_at })),
+        ...deposits.map(tx => ({ ...tx, type: "Deposit", status: tx.status, date: tx.created_at })),
       ];
 
       const sortedTransactions = combinedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -127,7 +127,7 @@ const Wallet = () => {
               >
                 <span className="tx-type">{tx.type}</span>
                 <span className="tx-amount">${tx.amount}</span>
-                <span className="tx-date">{new Date(tx.date).toLocaleDateString()}</span>
+                <span className="tx-date">{tx.date ? new Date(tx.date).toLocaleDateString() : "Unknown Date"}</span>
                 <span className="tx-status">{tx.status}</span>
               </motion.div>
             ))
