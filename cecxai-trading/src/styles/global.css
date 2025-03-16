@@ -376,4 +376,14 @@ body {
   .trading-chart > div {
     height: 400px; /* Adjust height for smaller screens */
   }
+
+  /* Move the Order Form below the Trading Chart on small screens */
+  .dashboard-layout {
+    grid-template-columns: 1fr; /* Single column layout */
+    gap: 20px;
+  }
+
+  .order-form {
+    width: 100%; /* Full width for Order Form */
+  }
 }
