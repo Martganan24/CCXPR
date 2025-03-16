@@ -55,7 +55,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
         setTimeout(() => {
           setSuccessMessage("");
           onClose();
-        }, 2000); // Delay closing so user sees success message
+        }, 10000); // Delay closing for 10 seconds // Delay closing so user sees success message
       }
     } catch (err) {
       setSuccessMessage("Unexpected error occurred. Please try again.");
@@ -78,7 +78,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
       >
         <h2 className="popup-title">{type === "deposit" ? "Deposit Funds" : "Withdraw Funds"}</h2>
 
-        {successMessage && <p className="success-message">{successMessage}</p>}
+        {successMessage && <p className="success-message" style={{ color: 'black', fontWeight: 'bold' }}>{successMessage}</p>}
 
         <label>Select Token:</label>
         <div className="token-options">
