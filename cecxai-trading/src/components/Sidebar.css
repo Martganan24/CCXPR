@@ -53,7 +53,7 @@
 /* ✅ Toggle Button (Always Visible & Movable) */
 .toggle-btn {
   position: fixed;
-  top: 70px; /* ✅ Moves Below Navbar */
+  top: 50px; /* ✅ Moves Below Navbar */
   left: 15px;
   background: none;
   border: none;
