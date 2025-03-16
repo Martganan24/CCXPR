@@ -321,6 +321,6 @@ body {
 
   /* 🔥 Sidebar layout for smaller screens */
   .sidebar {
-    width: 250px; /* Adjust sidebar width for mobile */
+    width: 100px; /* Adjust sidebar width for mobile */
   }
 }
