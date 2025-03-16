@@ -8,10 +8,14 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null); // Store User Data
   const [chatHistory, setChatHistory] = useState([]); // Store Chat History
+  const [loading, setLoading] = useState(true); // Track loading state
 
   useEffect(() => {
     const token = localStorage.getItem("authToken"); // Get Token
-    if (!token) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
     try {
       // Decode JWT to get user ID
@@ -29,15 +33,16 @@ export const UserProvider = ({ children }) => {
               total_referrals,
               commission_balance,
             });
-            // Fetch Chat History after user is fetched
-            fetchChatHistory(userId); // Call fetchChatHistory when user is set
+            fetchChatHistory(userId); // Fetch chat history
           } else {
             console.error("Error fetching user:", data.message);
           }
         })
-        .catch((error) => console.error("Error fetching user:", error));
+        .catch((error) => console.error("Error fetching user:", error))
+        .finally(() => setLoading(false)); // Set loading to false after fetch
     } catch (error) {
       console.error("Invalid token:", error);
+      setLoading(false);
     }
   }, []);
 
@@ -47,7 +52,7 @@ export const UserProvider = ({ children }) => {
       const response = await fetch(`https://console-cecxai-ed25296a7384.herokuapp.com/api/chat/history/${userId}`);
       const result = await response.json();
       if (response.ok) {
-        setChatHistory(result.chatHistory || []); // Set the chat history
+        setChatHistory(result.chatHistory || []);
       }
     } catch (error) {
       console.error("Error fetching chat history:", error);
@@ -59,6 +64,12 @@ export const UserProvider = ({ children }) => {
     localStorage.removeItem("authToken");
     window.location.href = "https://ceccxai-frontend-b334232d6e3e.herokuapp.com/"; // Redirect to Frontend
   };
+
+  useEffect(() => {
+    if (!loading && !user) {
+      window.location.href = "https://ceccxai-frontend-b334232d6e3e.herokuapp.com/"; // Redirect only if user is not logged in
+    }
+  }, [loading, user]);
 
   return (
     <UserContext.Provider value={{ user, chatHistory, setUser, logout }}>
