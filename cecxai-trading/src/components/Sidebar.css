@@ -1,7 +1,7 @@
 /* 🔥 Sidebar Styling */
 .sidebar {
   position: fixed;
-  left: 0;
+  left: 300;
   top: 60px; /* ✅ Below Navbar */
   width: 140px;
   height: calc(100vh - 60px); /* ✅ Prevents Overlapping Navbar */
