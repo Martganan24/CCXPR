@@ -115,3 +115,4 @@ const TradingHistory = () => {
 };
 
 export default TradingHistory;
+ 
