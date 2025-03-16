@@ -373,16 +373,22 @@ body {
 
 /* 🔥 Trading Chart, Order Form, Trading History Responsiveness for Small Screens */
 @media (max-width: 768px) {
-  /* Ensure the Trading Chart, Order Form, and Trading History fit 90% of the screen height */
-  .trading-chart, .order-form, .trading-history {
+  /* Make the Trading Chart width max to the right */
+  .trading-chart {
+    width: 100%; /* Stretch Trading Chart to full width */
     height: 90%; /* Fit 90% of the screen height */
-    margin-bottom: 20px; /* Add space between each section */
+    margin-bottom: 20px; /* Add space below the chart */
+  }
+
+  /* Make the Navbar's right section smaller by 40% */
+  .navbar-right {
+    width: 60%; /* Reduce the right section width by 40% */
   }
 
   /* Reduce the left margin by 75% */
   .dashboard-container {
-    padding-left: 5%; /* Reduced by 75% from 20% (25% margin) */
-    padding-right: 5%; /* Ensure the right margin is balanced too */
+    padding-left: 5%; /* Reduced by 75% from previous margin */
+    padding-right: 5%; /* Balanced right margin */
   }
 
   /* Ensure that sections are spaced out properly on mobile */
