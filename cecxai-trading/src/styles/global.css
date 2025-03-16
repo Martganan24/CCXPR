@@ -248,10 +248,10 @@ body {
 /* 🔥 Sidebar Styles - ADD THIS AT THE BOTTOM */
 .sidebar {
   position: fixed;
-  left: -100%; /* Start off-screen */
+  left: 0;
   top: 0; /* Fixed at the top */
   height: 100vh;
-  width: 80px;
+  width: 20%; /* Reduced width by 80% */
   background-color: #1e1e1e;
   display: flex;
   flex-direction: column;
@@ -311,7 +311,9 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
+/* 🔥 Media Query for Small Screens (max-width: 768px) */
 @media (max-width: 768px) {
+
   /* 🔥 Toggle Button Adjustments for Mobile */
   .toggle-btn {
     top: 10%;
@@ -322,5 +324,21 @@ body {
   /* 🔥 Sidebar layout for smaller screens */
   .sidebar {
     width: 250px; /* Adjust sidebar width for mobile */
+  }
+
+  /* 🔥 Move the Order Form below the Trading Chart on smaller screens */
+  .dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .order-form {
+    width: 100%; /* Ensure order form fits screen */
+  }
+
+  /* 🔥 Ensure Trading Chart width is 100% */
+  .trading-chart {
+    width: 100%;
   }
 }
