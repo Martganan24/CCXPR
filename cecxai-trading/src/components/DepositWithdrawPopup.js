@@ -9,60 +9,52 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const [amount, setAmount] = useState("");
   const [recipientWallet, setRecipientWallet] = useState("");
   const [txid, setTxid] = useState(""); // New state for TxID Hash input
-  const [copied, setCopied] = useState(false); // State for tracking copy status
+  const [copied, setCopied] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(""); // State for success message
 
-  // Dummy wallet addresses
   const walletAddresses = {
     BTC: "15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9",
     ETH: "0xdff3195fef04d5531614c1461c48ae55e0a2e7ed",
     USDT: "TM78QTsBXxDmLRMvMxTfsBRLUek1SgPfcU",
   };
 
-  // Handle token selection
   const handleTokenChange = (token) => {
     setSelectedToken(token);
     setWalletAddress(walletAddresses[token]);
   };
 
-  // Handle copy function with auto update to "Copied!"
   const handleCopy = () => {
     navigator.clipboard.writeText(walletAddress);
-    setCopied(true); // Update button text to "Copied!"
-    setTimeout(() => setCopied(false), 2000); // Reset to original text after 2 seconds
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  // Handle submit (single handler for both deposit and withdrawal)
   const handleSubmit = async () => {
     if (!amount) {
-      console.log("Please enter amount.");
+      setSuccessMessage("Please enter an amount.");
       return;
     }
 
     const transactionData = {
       token: selectedToken,
       amount,
-      status: "pending", // Default status
-      ...(type === "withdraw" && { recipient_wallet: recipientWallet }), // Include recipient wallet for withdrawals
-      ...(type === "deposit" && { txid }) // Add txid for deposits
+      status: "pending",
+      ...(type === "withdraw" && { recipient_wallet: recipientWallet }),
+      ...(type === "deposit" && { txid })
     };
 
-    console.log("Submitting transaction data:", transactionData);
-
     try {
-      // Insert transaction data into Supabase (or other database)
       const { data, error } = await supabase
-        .from(type === "deposit" ? 'deposits' : 'withdrawals') // Use different tables for deposit and withdrawal
+        .from(type === "deposit" ? 'deposits' : 'withdrawals')
         .insert([transactionData]);
 
       if (error) {
-        console.error("Error submitting transaction:", error.message); // Display detailed error message
+        setSuccessMessage(`Error submitting ${type}: ${error.message}`);
       } else {
-        console.log(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully:`, data);
-        // Optionally clear fields or close popup
-        onClose(); // Close the popup after successful submission
+        setSuccessMessage(`${type === "deposit" ? "Deposit" : "Withdrawal"} submitted successfully!`);
       }
     } catch (err) {
-      console.error("Unexpected error during submit:", err); // Catch any unexpected errors during submission
+      setSuccessMessage("Unexpected error occurred. Please try again.");
     }
   };
 
@@ -82,7 +74,8 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
       >
         <h2 className="popup-title">{type === "deposit" ? "Deposit Funds" : "Withdraw Funds"}</h2>
 
-        {/* Token Selection */}
+        {successMessage && <p className="success-message">{successMessage}</p>}
+
         <label>Select Token:</label>
         <div className="token-options">
           {["BTC", "ETH", "USDT"].map((token) => (
@@ -96,29 +89,23 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
           ))}
         </div>
 
-        {/* Show wallet address if deposit */}
         {type === "deposit" && (
           <>
             <label>Wallet Address:</label>
             <div className="wallet-address">
               <input type="text" value={walletAddress} readOnly />
-              <button onClick={handleCopy}>
-                {copied ? "Copied!" : "Copy"}
-              </button>
+              <button onClick={handleCopy}>{copied ? "Copied!" : "Copy"}</button>
             </div>
-
-            {/* Add TxID Hash input field for deposit */}
             <label>Transaction Receipt TxID Hash:</label>
             <input
               type="text"
               value={txid}
-              onChange={(e) => setTxid(e.target.value)} // Update TxID state
+              onChange={(e) => setTxid(e.target.value)}
               placeholder="Enter TxID Hash"
             />
           </>
         )}
 
-        {/* Show recipient wallet input if withdrawal */}
         {type === "withdraw" && (
           <>
             <label>Enter Your Wallet Address:</label>
@@ -131,7 +118,6 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
           </>
         )}
 
-        {/* Amount Input */}
         <label>Enter Amount:</label>
         <input
           type="number"
@@ -140,7 +126,6 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
           placeholder="Enter amount"
         />
 
-        {/* Action Buttons moved up here */}
         <div className="popup-actions">
           <button className="submit-btn" onClick={handleSubmit}>
             {type === "deposit" ? "Submit Deposit" : "Submit Withdrawal"}
