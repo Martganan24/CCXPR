@@ -15,7 +15,7 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const [successMessage, setSuccessMessage] = useState(""); // State for success message
 
   const walletAddresses = {
-    BTC: "15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9",
+    BTC: "TQRvoutep3szeXKXWnwNJvdxz3g3wEpi1N",
     ETH: "0xdff3195fef04d5531614c1461c48ae55e0a2e7ed",
     USDT: "TM78QTsBXxDmLRMvMxTfsBRLUek1SgPfcU",
   };

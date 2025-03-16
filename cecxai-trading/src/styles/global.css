@@ -311,16 +311,29 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
+/* 🔥 Media Query for Small Screens (max-width: 768px) */
 @media (max-width: 768px) {
-  /* 🔥 Toggle Button Adjustments for Mobile */
-  .toggle-btn {
-    top: 10%;
-    left: 5%;
-    font-size: 28px;
+
+  /* 🔥 Ensure the layout stacks vertically */
+  .dashboard-layout {
+    display: flex;
+    flex-direction: column; /* Stack Trading Chart, Order Form, and Trading History */
+    gap: 10px; /* Small space between the Trading Chart, Order Form, and Trading History */
   }
 
-  /* 🔥 Sidebar layout for smaller screens */
-  .sidebar {
-    width: 100px; /* Adjust sidebar width for mobile */
+  /* 🔥 Order Form Styles */
+  .order-form {
+    margin-top: 10px; /* Add small space between Trading Chart and Order Form */
+    width: 100%; /* Ensure Order Form fits within the layout */
+  }
+
+  /* 🔥 Ensure Trading Chart is 100% width */
+  .trading-chart {
+    width: 100%;
+  }
+  
+  /* 🔥 Ensure Trading History (if applicable) has space from Order Form */
+  .trading-history {
+    margin-top: 10px; /* Small space between Order Form and Trading History */
   }
 }
