@@ -20,37 +20,36 @@ const Wallet = () => {
   const [popupType, setPopupType] = useState(null); // Type for the popup (deposit or withdraw)
 
   useEffect(() => {
-    // Fetch transactions from 'withdrawals' and 'deposits' tables
     const fetchTransactions = async () => {
+      if (!user || !user.id) return; // Ensure user is loaded
+
       const { data: withdrawals, error: withdrawalsError } = await supabase
         .from("withdrawals")
-        .select("*");
+        .select("*")
+        .eq("user_id", user.id); // Filter withdrawals by user_id
 
       const { data: deposits, error: depositsError } = await supabase
         .from("deposits")
-        .select("*");
+        .select("*")
+        .eq("user_id", user.id); // Filter deposits by user_id
 
       if (withdrawalsError || depositsError) {
         console.error("Error fetching transactions:", withdrawalsError || depositsError);
         return;
       }
 
-      // Combine withdrawals and deposits data
       const combinedTransactions = [
         ...withdrawals.map(tx => ({ ...tx, type: "Withdraw", status: tx.status })),
         ...deposits.map(tx => ({ ...tx, type: "Deposit", status: tx.status })),
       ];
 
-      // Sort transactions by date
       const sortedTransactions = combinedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      setTransactions(sortedTransactions); // Set transactions state with sorted data
+      setTransactions(sortedTransactions);
     };
 
     fetchTransactions();
-  }, []);
+  }, [user]);
 
-  // Get the current page's transactions
   const indexOfLastTransaction = currentPage * rowsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
   const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
@@ -60,18 +59,18 @@ const Wallet = () => {
   };
 
   const handleDepositClick = () => {
-    setPopupType("deposit"); // Set type to deposit
-    setIsPopupVisible(true); // Show the popup
+    setPopupType("deposit");
+    setIsPopupVisible(true);
   };
 
   const handleWithdrawClick = () => {
-    setPopupType("withdraw"); // Set type to withdraw
-    setIsPopupVisible(true); // Show the popup
+    setPopupType("withdraw");
+    setIsPopupVisible(true);
   };
 
   const closePopup = () => {
-    setIsPopupVisible(false); // Close the popup
-    setPopupType(null); // Reset popup type
+    setIsPopupVisible(false);
+    setPopupType(null);
   };
 
   return (
@@ -84,35 +83,32 @@ const Wallet = () => {
       <h1 className="wallet-title">Wallet Overview</h1>
 
       <div className="wallet-grid">
-        {/* Main Wallet */}
         <motion.div
           className="wallet-box main-wallet"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.3 }}
         >
           <h2>Main Wallet</h2>
-          <p className="balance">${balance}</p> {/* Display balance from UserContext */}
+          <p className="balance">${balance}</p>
           <div className="wallet-actions">
             <button className="wallet-btn" onClick={handleDepositClick}>Deposit</button>
             <button className="wallet-btn" onClick={handleWithdrawClick}>Withdraw</button>
           </div>
         </motion.div>
 
-        {/* Commission Wallet */}
         <motion.div
           className="wallet-box commission-wallet"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.3 }}
         >
           <h2>Commission</h2>
-          <p className="balance">${commissionBalance}</p> {/* Display commission balance from UserContext */}
+          <p className="balance">${commissionBalance}</p>
           <div className="wallet-actions">
             <button className="wallet-btn" onClick={handleWithdrawClick}>Withdraw</button>
           </div>
         </motion.div>
       </div>
 
-      {/* Transaction History */}
       <motion.div
         className="transaction-history"
         initial={{ opacity: 0 }}
@@ -141,32 +137,18 @@ const Wallet = () => {
         </div>
       </motion.div>
 
-      {/* Pagination */}
       <div className="pagination">
         {transactions.length > rowsPerPage && (
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
+          <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
         )}
         {Array.from({ length: Math.ceil(transactions.length / rowsPerPage) }, (_, index) => (
-          <button key={index} onClick={() => handlePageChange(index + 1)}>
-            {index + 1}
-          </button>
+          <button key={index} onClick={() => handlePageChange(index + 1)}>{index + 1}</button>
         ))}
         {transactions.length > rowsPerPage && (
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === Math.ceil(transactions.length / rowsPerPage)}
-          >
-            Next
-          </button>
+          <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === Math.ceil(transactions.length / rowsPerPage)}>Next</button>
         )}
       </div>
 
-      {/* Render Popup if visible */}
       {isPopupVisible && (
         <DepositWithdrawPopup type={popupType} onClose={closePopup} />
       )}
