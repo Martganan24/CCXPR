@@ -247,7 +247,7 @@ body {
 .sidebar {
   position: fixed;
   left: 0;
-  top: 0;
+  top: -50;
   height: 100vh;
   width: 80px; /* ✅ Fixed width */
   background-color: #1e1e1e;
