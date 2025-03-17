@@ -6,12 +6,13 @@ body {
   background-color: #121212; /* Dark mode */
   color: #ffffff;
   overflow-x: hidden; /* ✅ Prevent Horizontal Scrolling */
+  max-width: 100vw; /* ✅ Ensure No Overflow */
 }
 
 /* ✅ Mobile Screens: Limit width & Disable Left/Right Scrolling */
 @media screen and (max-width: 767px) {
   html, body {
-    width: 480px;
+    max-width: 100vw;
     overflow-x: hidden; /* ✅ Strictly Prevent Left/Right Scrolling */
   }
 }
@@ -70,7 +71,7 @@ body {
   gap: 10px;
   align-items: start;
   width: 100%;
-  max-width: 1600px;
+  max-width: 1400px; /* ✅ Reduce Width for Better Fit */
   margin: 10px auto;
   padding: 10px;
 }
@@ -95,7 +96,7 @@ body {
 .order-form {
   background-color: #181818;
   padding: 20px;
-  border-radius: 2px;
+  border-radius: 8px;
   width: 100%;
   height: 90%;
   display: flex;
@@ -258,6 +259,7 @@ body {
 @media screen and (max-width: 768px) {
   .dashboard-layout {
     grid-template-columns: 1fr; /* Change to single-column layout */
+    max-width: 480px; /* ✅ Ensure it fits mobile screens */
   }
 
   .trading-chart {
