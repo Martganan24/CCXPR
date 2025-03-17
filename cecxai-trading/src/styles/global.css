@@ -312,6 +312,7 @@ body {
 }
 
 /* 🔥 Media Query for Small Screens (max-width: 480px) */
+/* 🔥 Media Query for Small Screens (max-width: 480px) */
 @media (max-width: 480px) {
 
   /* 🔥 Hide the Deposit Button in the navbar-right (only on small screens) */
@@ -321,8 +322,9 @@ body {
 
   /* 🔥 Make the Trading Chart Bigger by 10% */
   .trading-chart {
-    transform: scale(1.1); /* Increase by 10% */
-    width: 100%; /* Ensure the Trading Chart takes full width */
+    transform: scale(0.95); /* Reduce size by 5% */
+    width: 100%; /* Ensure Trading Chart takes full width */
+    margin-left: 5%; /* Move Trading Chart 5% to the right */
   }
 
   /* 🔥 Place the Order Form Below the Trading Chart */
@@ -346,5 +348,10 @@ body {
     display: flex;
     flex-direction: column; /* Stack Trading Chart, Order Form, and Trading History */
     gap: 10px; /* Small space between the Trading Chart, Order Form, and Trading History */
+  }
+
+  /* 🔥 Move Trading Chart Below Sidebar and Adjust Layout */
+  .dashboard-layout {
+    grid-template-columns: 100%; /* Make sure content stacks without side-by-side */
   }
 }
