@@ -330,17 +330,10 @@ body {
   /* 🔥 Ensure Trading Chart is 100% width */
   .trading-chart {
     width: 100%;
-    transform: scale(0.9); /* Shrink by 10% */
   }
   
   /* 🔥 Ensure Trading History (if applicable) has space from Order Form */
   .trading-history {
     margin-top: 10px; /* Small space between Order Form and Trading History */
-    transform: scale(0.9); /* Shrink by 10% */
-  }
-
-  /* 🔥 Hide Deposit Button on Small Screens */
-  .navbar-right button:contains("Deposit") {
-    display: none; /* Hide the Deposit button */
   }
 }
