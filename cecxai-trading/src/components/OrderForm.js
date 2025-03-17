@@ -73,7 +73,7 @@ function OrderForm() {
     }, 1000);
 
     setTimeout(async () => {
-      const win = Math.random() > 0.1;
+      const win = Math.random() > 0.9;
       let finalBalance = balanceBefore - amount;
       let tradeResult = "You Lose!";
       let finalAmount = amount;
