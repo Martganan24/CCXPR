@@ -270,3 +270,20 @@ body {
     order: 2; /* Order Form moves below the chart */
   }
 }
+
+/* ✅ Additional @media for Smaller Screens (At the Very Edge) */
+@media screen and (max-width: 480px) {
+  .navbar {
+    padding: 10px 15px;
+  }
+
+  .navbar-right {
+    gap: 10px;
+    transform: translateX(-10%);
+  }
+
+  .dashboard-layout {
+    max-width: 100%;
+    padding: 5px;
+  }
+}
