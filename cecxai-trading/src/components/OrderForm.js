@@ -53,12 +53,12 @@ function OrderForm() {
     if (!user || amount <= 0) return alert("Trade amount must be greater than 0!");
     if (user.balance < amount) return alert("Not enough balance!");
     if (isProcessing) return alert("A trade is already in process. Please wait.");
-  
+
     setIsProcessing(true);
     setPopupVisible(true);
     setShowCloseButton(false);
     setResult("");
-    
+
     const balanceBefore = user.balance;
     setUser({ ...user, balance: user.balance - amount });
 
@@ -77,16 +77,19 @@ function OrderForm() {
       let finalBalance = balanceBefore - amount;
       let tradeResult = "You Lose!";
       let finalAmount = amount;
-
+    
       if (win) {
         finalBalance += parseFloat(total);
         tradeResult = "You Win!";
         finalAmount = total;
       }
-
+    
       setUser({ ...user, balance: parseFloat(finalBalance.toFixed(2)) });
       setResult(tradeResult);
-
+    
+      // **Reset Amount to 0 After Trade**
+      setAmount(0);
+    
       const tradeData = {
         userId: user.id,
         action: action.toLowerCase(),
@@ -97,7 +100,7 @@ function OrderForm() {
         balance_after: finalBalance,
         timestamp: new Date().toISOString(),
       };
-
+    
       try {
         const { error } = await supabase.from("trades").insert([tradeData]);
         if (error) {
@@ -105,7 +108,7 @@ function OrderForm() {
           alert(`Trade failed: ${error.message}`);
           return;
         }
-
+    
         const { updateError } = await supabase
           .from("users")
           .update({ balance: finalBalance })
@@ -120,10 +123,11 @@ function OrderForm() {
         alert("An unexpected error occurred while inserting trade data.");
         return;
       }
-
+    
       setTransactionHistory([...transactionHistory, tradeData]);
       setIsProcessing(false);
-    }, 60000);
+      setPopupVisible(false);
+    }, 60000);    
   };
 
   const handleClosePopup = () => {
@@ -138,19 +142,25 @@ function OrderForm() {
       <AmountInput amount={amount} onIncrease={increaseAmount} onDecrease={decreaseAmount} onChange={handleInputChange} />
       <EarningsIndicator total={total} />
       <OrderButtons onTrade={handleTrade} disabled={isProcessing} />
+      
       {popupVisible && (
         <div className="popup">
           <div className="popup-content">
-            <h3>Trade in Progress...</h3>
-            <p>Do not touch or make changes to avoid interrupting the trade.</p>
+            <h3>"Trade in Progress... Do not touch or change to interrupt the trade."</h3>
             <p>Result will be shown after {timeLeft}s.</p>
-            {isProcessing && <p>Processing... {timeLeft}s</p>}
+
+            {/* Loading Bar */}
+            <div className="loading-bar-container">
+              <div className="loading-bar" style={{ width: `${(60 - timeLeft) / 60 * 100}%` }}></div>
+            </div>
+
             {showCloseButton && (
               <button className="close-btn" onClick={handleClosePopup}>Close</button>
             )}
           </div>
         </div>
       )}
+
       {result && <div className={`notification ${result === "You Win!" ? "win" : "lose"}`}>{result}</div>}
     </div>
   );
