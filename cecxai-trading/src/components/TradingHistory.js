@@ -11,14 +11,14 @@ const TradingHistory = () => {
   useEffect(() => {
     const fetchTradeHistory = async () => {
       try {
-        // ✅ Fetch the authenticated user
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        if (userError || !userData?.user) {
-          console.error("❌ Error fetching user:", userError?.message || "No user found!");
+        // ✅ Ensure user session exists
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !sessionData?.session) {
+          console.error("❌ Auth session missing! Please log in.");
           return;
         }
 
-        const user = userData.user; // ✅ Logged-in user
+        const user = sessionData.session.user; // ✅ Get authenticated user
 
         // ✅ Fetch only the logged-in user's trades
         const { data, error } = await supabase
