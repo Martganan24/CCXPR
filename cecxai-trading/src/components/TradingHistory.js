@@ -2,42 +2,42 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient"; // ✅ Ensure correct import
 import "./TradingHistory.css"; // ✅ Ensure this file exists
 
-const TradingHistory = ({ userId }) => { // ✅ Accept userId as a prop
+const TradingHistory = () => {
   const [tradeHistory, setTradeHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
-  // ✅ Fetch trade history from Supabase
+  // ✅ Fetch trade history from Supabase with Debugging
   useEffect(() => {
     const fetchTradeHistory = async () => {
-      if (!userId) return; // ✅ Ensure userId is provided before fetching
-      
+      console.log("Fetching trade history...");
+
       const { data, error } = await supabase
         .from("trades")
         .select("*")
-        .eq("userId", userId) // ✅ Filter trades by userId
-        .order("timestamp", { ascending: false }) // ✅ Sorting by timestamp
-        .limit(100); // ✅ Limit for performance
+        .order("timestamp", { ascending: false })
+        .limit(100);
 
       if (error) {
-        console.error("Error fetching trade history:", error.message);
+        console.error("❌ Error fetching trade history:", error.message);
       } else {
+        console.log("✅ Trade history fetched:", data);
         setTradeHistory(data || []);
       }
     };
 
     fetchTradeHistory();
-  }, [userId]); // ✅ Refetch when userId changes
+  }, []);
 
   // ✅ Pagination logic
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = tradeHistory.slice(indexOfFirstRow, indexOfLastRow);
 
-  // ✅ Calculate price from trade amount
-  const getPrice = (trade) => `$${trade.amount.toFixed(2)}`;
+  // ✅ Get Price
+  const getPrice = (trade) => `$${trade.amount?.toFixed(2) || "0.00"}`;
 
-  // ✅ Correct Profit/Loss calculation
+  // ✅ Calculate Profit/Loss
   const calculateProfitOrLoss = (trade) => {
     if (!trade.balance_before || !trade.balance_after) return "0.00 USD";
     const profitOrLoss = trade.balance_after - trade.balance_before;
@@ -46,7 +46,7 @@ const TradingHistory = ({ userId }) => { // ✅ Accept userId as a prop
       : `${profitOrLoss.toFixed(2)} USD`;
   };
 
-  // ✅ Handle page change
+  // ✅ Handle Pagination
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -68,11 +68,13 @@ const TradingHistory = ({ userId }) => { // ✅ Accept userId as a prop
           {currentRows.length > 0 ? (
             currentRows.map((trade) => {
               const profitOrLoss = calculateProfitOrLoss(trade);
-              const rowClass = profitOrLoss.includes("+") ? "profit-row" : "loss-row";
+              const rowClass = profitOrLoss.includes("+")
+                ? "profit-row"
+                : "loss-row";
 
               return (
                 <tr key={trade.id} className={rowClass}>
-                  <td>{trade.action.toUpperCase()}</td> 
+                  <td>{trade.action?.toUpperCase()}</td>
                   <td>{trade.asset}</td>
                   <td>{getPrice(trade)}</td>
                   <td>{new Date(trade.timestamp).toLocaleString()}</td>
@@ -98,11 +100,18 @@ const TradingHistory = ({ userId }) => { // ✅ Accept userId as a prop
             Previous
           </button>
         )}
-        {Array.from({ length: Math.ceil(tradeHistory.length / rowsPerPage) }, (_, index) => (
-          <button key={index} onClick={() => handlePageChange(index + 1)}>
-            {index + 1}
-          </button>
-        ))}
+        {Array.from(
+          { length: Math.ceil(tradeHistory.length / rowsPerPage) },
+          (_, index) => (
+            <button
+              key={index}
+              onClick={() => handlePageChange(index + 1)}
+              className={index + 1 === currentPage ? "active-page" : ""}
+            >
+              {index + 1}
+            </button>
+          )
+        )}
         {tradeHistory.length > rowsPerPage && (
           <button
             onClick={() => handlePageChange(currentPage + 1)}
