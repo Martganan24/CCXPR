@@ -8,6 +8,14 @@ body {
   overflow-x: hidden; /* ✅ Prevent Horizontal Scrolling */
 }
 
+/* ✅ Mobile Screens: Limit width & Disable Left/Right Scrolling */
+@media screen and (max-width: 767px) {
+  html, body {
+    width: 480px;
+    overflow-x: hidden; /* ✅ Strictly Prevent Left/Right Scrolling */
+  }
+}
+
 /* 🔥 Navbar Styles */
 .navbar {
   position: fixed;
