@@ -1,22 +1,16 @@
-/* 🔥 Sidebar Styling */
-.sidebar {
-  position: relative;
+/* 🔥 Horizontal Sidebar Styling */
+.horizontal-sidebar {
+  position: fixed;
+  top: 60px; /* ✅ Sticks Below Navbar */
   left: 0;
-  top: 5px;
-  width: 140px;
-  height: calc(100vh - 60px);
-  background: rgba(30, 30, 30, 0.8);
-  padding: 15px;
+  width: 100%;
+  height: 50px;
+  background: rgba(30, 30, 30, 0.9); /* ✅ Transparent Background */
   display: flex;
-  flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease-in-out;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
   z-index: 1000;
-}
-
-/* ✅ Sidebar Open & Close */
-.sidebar.open {
-  transform: translateX(0%);
 }
 
 /* 🔥 Sidebar Buttons */
@@ -24,13 +18,11 @@
   background: none;
   border: none;
   color: white;
-  font-size: 12px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 0;
-  width: 100%;
-  text-align: left;
+  padding: 10px 15px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
 }
@@ -41,36 +33,19 @@
 
 /* ✅ Hover Effect */
 .sidebar-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: translateX(4px);
-}
-
-/* ✅ Toggle Button */
-.toggle-btn {
-  position: fixed;
-  top: 50px;
-  left: 15px;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-  z-index: 2000;
-  transition: all 0.3s ease-in-out;
-}
-
-.toggle-btn:active {
-  transform: scale(0.9);
+  background-color: rgba(255, 255, 255, 0.1); /* ✅ Subtle Hover */
+  transform: translateY(-2px);
 }
 
 /* 🔥 Logout Button */
-.logout-btn {
-  color: #ff4d4d;
-  font-weight: bold;
+.sidebar-btn.logout-btn {
+  color: #ff4d4d; /* Red color for Logout */
+  font-weight: bold; /* Bold text */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.logout-btn:hover {
-  background-color: rgba(255, 77, 77, 0.1);
-  color: #ff3333;
+/* ✅ Hover Effect */
+.sidebar-btn.logout-btn:hover {
+  background-color: rgba(255, 77, 77, 0.1); /* Light red background */
+  color: #ff3333; /* Darker red when hovered */
 }
