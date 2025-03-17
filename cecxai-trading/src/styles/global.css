@@ -5,6 +5,7 @@ body {
   font-family: Arial, sans-serif;
   background-color: #121212; /* Dark mode */
   color: #ffffff;
+  overflow-x: hidden; /* ✅ Prevent Horizontal Scrolling */
 }
 
 /* 🔥 Navbar Styles */
@@ -242,5 +243,20 @@ body {
   }
   30% {
     text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
+  }
+}
+
+/* ✅ Responsive Layout: Move Order Form Below Trading Chart */
+@media screen and (max-width: 768px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr; /* Change to single-column layout */
+  }
+
+  .trading-chart {
+    order: 1; /* Trading Chart stays on top */
+  }
+
+  .order-form {
+    order: 2; /* Order Form moves below the chart */
   }
 }
