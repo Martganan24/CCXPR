@@ -1,55 +1,67 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
-import "./TradingHistory.css";
+import { supabase } from "../supabaseClient"; // ✅ Ensure correct import
+import "./TradingHistory.css"; // ✅ Ensure this file exists
 
 const TradingHistory = () => {
   const [tradeHistory, setTradeHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
+  // ✅ Fetch trade history only for the logged-in user
   useEffect(() => {
     const fetchTradeHistory = async () => {
-      // ✅ Get the current session first
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
+      try {
+        // ✅ Fetch the authenticated user
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError || !userData?.user) {
+          console.error("❌ Error fetching user:", userError?.message || "No user found!");
+          return;
+        }
 
-      if (sessionError || !session) {
-        console.error("❌ Error fetching session:", sessionError?.message || "No session found!");
-        return;
-      }
+        const user = userData.user; // ✅ Logged-in user
 
-      const user = session.user;
-      if (!user) {
-        console.error("❌ No user found in session!");
-        return;
-      }
+        // ✅ Fetch only the logged-in user's trades
+        const { data, error } = await supabase
+          .from("trades")
+          .select("*")
+          .eq("user_id", user.id) // ✅ Only show user's trades
+          .order("timestamp", { ascending: false })
+          .limit(100);
 
-      console.log("✅ Logged-in User ID:", user.id); // Debug log
-
-      // ✅ Fetch trade history for the logged-in user
-      const { data, error } = await supabase
-        .from("trades")
-        .select("*")
-        .eq("user_id", user.id) // ✅ Filter by user ID
-        .order("timestamp", { ascending: false })
-        .limit(100);
-
-      if (error) {
-        console.error("❌ Error fetching trade history:", error.message);
-      } else {
-        console.log("✅ Trade History Data:", data); // Debug log
-        setTradeHistory(data || []);
+        if (error) {
+          console.error("❌ Error fetching trade history:", error.message);
+        } else {
+          setTradeHistory(data || []);
+        }
+      } catch (err) {
+        console.error("❌ Unexpected error:", err.message);
       }
     };
 
     fetchTradeHistory();
   }, []);
 
+  // ✅ Pagination logic
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = tradeHistory.slice(indexOfFirstRow, indexOfLastRow);
+
+  // ✅ Calculate price from trade amount
+  const getPrice = (trade) => `$${trade.amount.toFixed(2)}`;
+
+  // ✅ Correct Profit/Loss calculation
+  const calculateProfitOrLoss = (trade) => {
+    if (!trade.balance_before || !trade.balance_after) return "0.00 USD";
+    const profitOrLoss = trade.balance_after - trade.balance_before;
+    return profitOrLoss > 0
+      ? `+${profitOrLoss.toFixed(2)} USD`
+      : `${profitOrLoss.toFixed(2)} USD`;
+  };
+
+  // ✅ Handle page change
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <div className="trading-history">
@@ -66,15 +78,20 @@ const TradingHistory = () => {
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
-            currentRows.map((trade) => (
-              <tr key={trade.id} className={trade.balance_after > trade.balance_before ? "profit-row" : "loss-row"}>
-                <td>{trade.action.toUpperCase()}</td>
-                <td>{trade.asset}</td>
-                <td>${trade.amount.toFixed(2)}</td>
-                <td>{new Date(trade.timestamp).toLocaleString()}</td>
-                <td>{(trade.balance_after - trade.balance_before).toFixed(2)} USD</td>
-              </tr>
-            ))
+            currentRows.map((trade) => {
+              const profitOrLoss = calculateProfitOrLoss(trade);
+              const rowClass = profitOrLoss.includes("+") ? "profit-row" : "loss-row";
+
+              return (
+                <tr key={trade.id} className={rowClass}>
+                  <td>{trade.action.toUpperCase()}</td> 
+                  <td>{trade.asset}</td>
+                  <td>{getPrice(trade)}</td>
+                  <td>{new Date(trade.timestamp).toLocaleString()}</td>
+                  <td>{profitOrLoss}</td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
               <td colSpan="5">No trading history available.</td>
@@ -82,6 +99,31 @@ const TradingHistory = () => {
           )}
         </tbody>
       </table>
+
+      {/* ✅ Pagination */}
+      <div className="pagination">
+        {tradeHistory.length > rowsPerPage && (
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+        )}
+        {Array.from({ length: Math.ceil(tradeHistory.length / rowsPerPage) }, (_, index) => (
+          <button key={index} onClick={() => handlePageChange(index + 1)}>
+            {index + 1}
+          </button>
+        ))}
+        {tradeHistory.length > rowsPerPage && (
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === Math.ceil(tradeHistory.length / rowsPerPage)}
+          >
+            Next
+          </button>
+        )}
+      </div>
     </div>
   );
 };
