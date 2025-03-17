@@ -7,7 +7,7 @@ import { useUser } from "../context/UserContext"; // Import User Context
 const DepositWithdrawPopup = ({ type, onClose }) => {
   const { user } = useUser(); // Get the logged-in user
   const [selectedToken, setSelectedToken] = useState("BTC");
-  const [walletAddress, setWalletAddress] = useState("15UwrDBZhrNcgJVnx6xTLNepQg69dPnay9"); // Default BTC address
+  const [walletAddress, setWalletAddress] = useState("1M4bijYjaVAQAHBrr7GJ5zpKXbYao6uPR1"); // Default BTC address
   const [amount, setAmount] = useState("");
   const [recipientWallet, setRecipientWallet] = useState("");
   const [txid, setTxid] = useState(""); // New state for TxID Hash input
@@ -15,9 +15,9 @@ const DepositWithdrawPopup = ({ type, onClose }) => {
   const [successMessage, setSuccessMessage] = useState(""); // State for success message
 
   const walletAddresses = {
-    BTC: "TQRvoutep3szeXKXWnwNJvdxz3g3wEpi1N",
-    ETH: "0xdff3195fef04d5531614c1461c48ae55e0a2e7ed",
-    USDT: "TM78QTsBXxDmLRMvMxTfsBRLUek1SgPfcU",
+    BTC: "1M4bijYjaVAQAHBrr7GJ5zpKXbYao6uPR1",
+    ETH: "0x60b7e7f8ec86e34651fe88dda66446d2c14477c3",
+    USDT: "TQRvoutep3szeXKXWnwNJvdxz3g3wEpi1N",
   };
 
   const handleTokenChange = (token) => {
