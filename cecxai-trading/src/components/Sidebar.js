@@ -29,7 +29,7 @@ function Sidebar() {
         <FaBars />
       </button>
 
-      <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
+      <div className={`sidebar ${isOpen ? "open" : ""}`}>
         <button className="sidebar-btn" onClick={() => navigate("/")}>
           <FaChartLine className="icon" /> Trade
         </button>
@@ -46,7 +46,7 @@ function Sidebar() {
           <FaCog className="icon" /> Settings
         </button>
 
-        {/* ✅ Logout is Now Styled Properly */}
+        {/* ✅ Logout Button (Styled Correctly) */}
         <button className="sidebar-btn logout-btn" onClick={handleLogout}>
           <FaSignOutAlt className="icon" /> Logout
         </button>

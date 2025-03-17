@@ -1,27 +1,22 @@
 /* 🔥 Sidebar Styling */
 .sidebar {
   position: fixed;
-  left: 0; /* ✅ Fixed issue (was 300, should be 0) */
-  top: 60px; /* ✅ Below Navbar */
+  left: 0;
+  top: 60px;
   width: 140px;
-  height: calc(100vh - 60px); /* ✅ Prevents Overlapping Navbar */
-  background: rgba(30, 30, 30, 0.8); /* ✅ Transparent Background */
+  height: calc(100vh - 60px);
+  background: rgba(30, 30, 30, 0.8);
   padding: 15px;
   display: flex;
   flex-direction: column;
   transform: translateX(-100%);
   transition: transform 0.3s ease-in-out;
-  opacity: 1; /* ✅ Sidebar remains visible */
   z-index: 1000;
 }
 
 /* ✅ Sidebar Open & Close */
 .sidebar.open {
   transform: translateX(0%);
-}
-
-.sidebar.closed {
-  transform: translateX(-100%);
 }
 
 /* 🔥 Sidebar Buttons */
@@ -46,38 +41,36 @@
 
 /* ✅ Hover Effect */
 .sidebar-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* ✅ Subtle Hover */
+  background-color: rgba(255, 255, 255, 0.1);
   transform: translateX(4px);
 }
 
-/* ✅ Toggle Button (Always Visible & Movable) */
+/* ✅ Toggle Button */
 .toggle-btn {
   position: fixed;
-  top: 50px; /* ✅ Moves Below Navbar */
+  top: 50px;
   left: 15px;
   background: none;
   border: none;
   color: white;
   font-size: 22px;
   cursor: pointer;
-  z-index: 2000; /* ✅ Ensures Visibility */
+  z-index: 2000;
   transition: all 0.3s ease-in-out;
 }
 
-/* ✅ Toggle Button Click Effect */
 .toggle-btn:active {
   transform: scale(0.9);
 }
 
-/* 🔥 Logout Button (Consistent with Sidebar Buttons) */
-.sidebar-btn.logout {
-  color: #ff4d4d; /* Red color for Logout */
-  font-weight: bold; /* Bold text */
+/* 🔥 Logout Button */
+.logout-btn {
+  color: #ff4d4d;
+  font-weight: bold;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ✅ Hover Effect */
-.sidebar-btn.logout:hover {
-  background-color: rgba(255, 77, 77, 0.1); /* Light red background */
-  color: #ff3333; /* Darker red when hovered */
+.logout-btn:hover {
+  background-color: rgba(255, 77, 77, 0.1);
+  color: #ff3333;
 }
