@@ -17,7 +17,7 @@
   text-align: center;
   color: white;
   margin-top: 20px;
-  width: 80%; /* ✅ Make it responsive */
+  width: 100%; /* ✅ Make it responsive */
   max-width: 1200px; /* ✅ Prevent it from being too wide */
   margin-left: auto; /* ✅ Center it properly */
   margin-right: auto; /* ✅ Center it properly */
