@@ -1,25 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient"; // ✅ Ensure correct import
-import "./TradingHistory.css"; // ✅ Ensure this file exists
+import { supabase } from "../supabaseClient";
+import "./TradingHistory.css";
 
 const TradingHistory = () => {
   const [tradeHistory, setTradeHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
-  // ✅ Fetch trade history for the logged-in user
   useEffect(() => {
     const fetchTradeHistory = async () => {
+      // ✅ Get the logged-in user
       const {
         data: { user },
         error: userError,
-      } = await supabase.auth.getUser(); // ✅ Get logged-in user
+      } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        console.error("Error fetching user:", userError?.message);
+        console.error("❌ Error fetching user:", userError?.message);
         return;
       }
 
+      console.log("✅ Logged-in User ID:", user.id); // Debug log
+
+      // ✅ Fetch trade history for the logged-in user
       const { data, error } = await supabase
         .from("trades")
         .select("*")
@@ -28,8 +31,9 @@ const TradingHistory = () => {
         .limit(100);
 
       if (error) {
-        console.error("Error fetching trade history:", error.message);
+        console.error("❌ Error fetching trade history:", error.message);
       } else {
+        console.log("✅ Trade History Data:", data); // Debug log
         setTradeHistory(data || []);
       }
     };
@@ -45,7 +49,7 @@ const TradingHistory = () => {
   // ✅ Calculate price from trade amount
   const getPrice = (trade) => `$${trade.amount.toFixed(2)}`;
 
-  // ✅ Correct Profit/Loss calculation
+  // ✅ Profit/Loss calculation
   const calculateProfitOrLoss = (trade) => {
     if (!trade.balance_before || !trade.balance_after) return "0.00 USD";
     const profitOrLoss = trade.balance_after - trade.balance_before;
@@ -80,7 +84,7 @@ const TradingHistory = () => {
 
               return (
                 <tr key={trade.id} className={rowClass}>
-                  <td>{trade.action.toUpperCase()}</td> 
+                  <td>{trade.action.toUpperCase()}</td>
                   <td>{trade.asset}</td>
                   <td>{getPrice(trade)}</td>
                   <td>{new Date(trade.timestamp).toLocaleString()}</td>
