@@ -20,7 +20,7 @@ const TradingHistory = () => {
       const { data, error } = await supabase
         .from("trades")
         .select("*")
-        .eq("user_id", user.id) // ✅ Filter by user_id (same as Wallet.js)
+        .eq("userId", user.id) // ✅ Correct column name
         .order("timestamp", { ascending: false })
         .limit(100);
 
