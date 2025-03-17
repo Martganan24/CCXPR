@@ -287,3 +287,59 @@ body {
     padding: 5px;
   }
 }
+/* 🔥 Global Styles for CECXAI Trading */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #121212; /* Dark mode */
+  color: #ffffff;
+  overflow-x: hidden; /* ✅ Prevent Horizontal Scrolling */
+  max-width: 100vw; /* ✅ Ensure No Overflow */
+}
+
+/* ✅ Mobile Screens: Limit width & Disable Left/Right Scrolling */
+@media screen and (max-width: 767px) {
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden; /* ✅ Strictly Prevent Left/Right Scrolling */
+  }
+}
+
+/* 🔥 Smooth Scroll Bar */
+.scroll-bar {
+  position: fixed;
+  right: 5px; /* ✅ Keep at the full right side */
+  top: 0;
+  width: 6px; /* ✅ Thin and sleek */
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2); /* ✅ Slightly visible */
+  border-radius: 5px;
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0; /* ✅ Hidden when not used */
+  z-index: 9999; /* ✅ Overlaps everything */
+}
+
+.scroll-bar:hover {
+  opacity: 1; /* ✅ Fully visible when hovered */
+}
+
+.scroll-thumb {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.5); /* ✅ Semi-transparent */
+  border-radius: 5px;
+  height: 50px; /* ✅ Scroll handle size */
+  position: absolute;
+  top: 0;
+  transition: background 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); /* ✅ Slight glow */
+}
+
+.scroll-thumb:hover {
+  background: rgba(255, 255, 255, 0.8); /* ✅ Brighter on hover */
+}
+
+/* ✅ Fade out effect when not scrolling */
+body:not(:hover) .scroll-bar {
+  opacity: 0;
+}
