@@ -311,7 +311,6 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
-/* 🔥 Media Query for Small Screens (max-width: 768px) */
 /* 🔥 Media Query for Small Screens (max-width: 480px) */
 @media (max-width: 480px) {
 
@@ -326,6 +325,12 @@ body {
     width: 100%; /* Ensure the Trading Chart takes full width */
   }
 
+  /* 🔥 Place the Order Form Below the Trading Chart */
+  .order-form {
+    margin-top: 10px; /* Add small space between Trading Chart and Order Form */
+    width: 100%; /* Ensure Order Form fits within the layout */
+  }
+
   /* 🔥 Lock Horizontal Scrolling */
   body {
     overflow-x: hidden; /* Disable horizontal scrolling */
@@ -334,5 +339,12 @@ body {
   /* 🔥 Ensure Only Vertical Scrolling is Allowed */
   .dashboard-container {
     overflow-y: auto; /* Allow vertical scrolling */
+  }
+
+  /* 🔥 Ensure the layout stacks vertically */
+  .dashboard-layout {
+    display: flex;
+    flex-direction: column; /* Stack Trading Chart, Order Form, and Trading History */
+    gap: 10px; /* Small space between the Trading Chart, Order Form, and Trading History */
   }
 }
