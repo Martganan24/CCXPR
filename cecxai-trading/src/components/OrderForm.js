@@ -46,8 +46,8 @@ function OrderForm() {
     setAmount(value ? parseInt(value, 10) : 0);
   };
 
-  const profit = (amount * 0.95).toFixed(2);
-  const total = (amount + parseFloat(profit)).toFixed(2);
+  const profit = (amount * 0.95).toFixed(60);
+  const total = (amount + parseFloat(profit)).toFixed(60);
 
   const handleTrade = async (action) => {
     if (!user || amount <= 0) return alert("Trade amount must be greater than 0!");
