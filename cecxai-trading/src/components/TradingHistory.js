@@ -9,14 +9,20 @@ const TradingHistory = () => {
 
   useEffect(() => {
     const fetchTradeHistory = async () => {
-      // ✅ Get the logged-in user
+      // ✅ Get the current session first
       const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-      if (userError || !user) {
-        console.error("❌ Error fetching user:", userError?.message);
+      if (sessionError || !session) {
+        console.error("❌ Error fetching session:", sessionError?.message || "No session found!");
+        return;
+      }
+
+      const user = session.user;
+      if (!user) {
+        console.error("❌ No user found in session!");
         return;
       }
 
@@ -26,7 +32,7 @@ const TradingHistory = () => {
       const { data, error } = await supabase
         .from("trades")
         .select("*")
-        .eq("user_id", user.id) // ✅ Filter trades by logged-in user
+        .eq("user_id", user.id) // ✅ Filter by user ID
         .order("timestamp", { ascending: false })
         .limit(100);
 
@@ -41,27 +47,9 @@ const TradingHistory = () => {
     fetchTradeHistory();
   }, []);
 
-  // ✅ Pagination logic
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = tradeHistory.slice(indexOfFirstRow, indexOfLastRow);
-
-  // ✅ Calculate price from trade amount
-  const getPrice = (trade) => `$${trade.amount.toFixed(2)}`;
-
-  // ✅ Profit/Loss calculation
-  const calculateProfitOrLoss = (trade) => {
-    if (!trade.balance_before || !trade.balance_after) return "0.00 USD";
-    const profitOrLoss = trade.balance_after - trade.balance_before;
-    return profitOrLoss > 0
-      ? `+${profitOrLoss.toFixed(2)} USD`
-      : `${profitOrLoss.toFixed(2)} USD`;
-  };
-
-  // ✅ Handle page change
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
 
   return (
     <div className="trading-history">
@@ -78,20 +66,15 @@ const TradingHistory = () => {
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
-            currentRows.map((trade) => {
-              const profitOrLoss = calculateProfitOrLoss(trade);
-              const rowClass = profitOrLoss.includes("+") ? "profit-row" : "loss-row";
-
-              return (
-                <tr key={trade.id} className={rowClass}>
-                  <td>{trade.action.toUpperCase()}</td>
-                  <td>{trade.asset}</td>
-                  <td>{getPrice(trade)}</td>
-                  <td>{new Date(trade.timestamp).toLocaleString()}</td>
-                  <td>{profitOrLoss}</td>
-                </tr>
-              );
-            })
+            currentRows.map((trade) => (
+              <tr key={trade.id} className={trade.balance_after > trade.balance_before ? "profit-row" : "loss-row"}>
+                <td>{trade.action.toUpperCase()}</td>
+                <td>{trade.asset}</td>
+                <td>${trade.amount.toFixed(2)}</td>
+                <td>{new Date(trade.timestamp).toLocaleString()}</td>
+                <td>{(trade.balance_after - trade.balance_before).toFixed(2)} USD</td>
+              </tr>
+            ))
           ) : (
             <tr>
               <td colSpan="5">No trading history available.</td>
@@ -99,31 +82,6 @@ const TradingHistory = () => {
           )}
         </tbody>
       </table>
-
-      {/* ✅ Pagination */}
-      <div className="pagination">
-        {tradeHistory.length > rowsPerPage && (
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-        )}
-        {Array.from({ length: Math.ceil(tradeHistory.length / rowsPerPage) }, (_, index) => (
-          <button key={index} onClick={() => handlePageChange(index + 1)}>
-            {index + 1}
-          </button>
-        ))}
-        {tradeHistory.length > rowsPerPage && (
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === Math.ceil(tradeHistory.length / rowsPerPage)}
-          >
-            Next
-          </button>
-        )}
-      </div>
     </div>
   );
 };
