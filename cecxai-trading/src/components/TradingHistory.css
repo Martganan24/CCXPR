@@ -19,10 +19,11 @@
   margin-top: 20px;
   width: 100%; /* ✅ Make it responsive */
   max-width: 1200px; /* ✅ Prevent it from being too wide */
-  margin-left: auto; /* ✅ Center it properly */
-  margin-right: auto; /* ✅ Center it properly */
+  margin-left: calc(40% - 605px); /* ✅ Moves slightly to the left */
+  transform: translateX(-10px); /* ✅ Fine-tune adjustment */
   overflow-x: auto; /* ✅ Prevent horizontal scrolling */
 }
+
 
 .trading-history h2 {
   font-size: 20px;
