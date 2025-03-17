@@ -313,6 +313,7 @@ body {
 
 /* 🔥 Media Query for Small Screens (max-width: 480px) */
 /* 🔥 Media Query for Small Screens (max-width: 480px) */
+/* 🔥 Media Query for Small Screens (max-width: 480px) */
 @media (max-width: 480px) {
 
   /* 🔥 Hide the Deposit Button in the navbar-right (only on small screens) */
@@ -320,11 +321,11 @@ body {
     display: none; /* Hide Deposit button */
   }
 
-  /* 🔥 Make the Trading Chart Bigger by 10% */
+  /* 🔥 Make the Trading Chart 5% smaller and move it 5% to the right */
   .trading-chart {
-    transform: scale(0.95); /* Reduce size by 5% */
-    width: 100%; /* Ensure Trading Chart takes full width */
-    margin-left: 5%; /* Move Trading Chart 5% to the right */
+    transform: scale(0.95); /* Shrink by 5% */
+    width: 95%; /* Ensure Trading Chart fits within the layout */
+    margin-left: 5%; /* Move the Trading Chart 5% to the right to avoid covering sidebar */
   }
 
   /* 🔥 Place the Order Form Below the Trading Chart */
@@ -343,15 +344,25 @@ body {
     overflow-y: auto; /* Allow vertical scrolling */
   }
 
+  /* 🔥 Sidebar fixed on the left and not overlapping */
+  .sidebar {
+    position: fixed;
+    left: 0; /* Sidebar stays fixed on the left */
+    top: 0;
+    height: 100vh;
+    width: 80px; /* Sidebar width */
+    z-index: 1000; /* Keep Sidebar on top of content */
+  }
+
+  /* 🔥 Make sure the dashboard layout shifts to the right to accommodate the sidebar */
+  .dashboard-container {
+    margin-left: 80px; /* Add space to the left for the Sidebar */
+  }
+
   /* 🔥 Ensure the layout stacks vertically */
   .dashboard-layout {
     display: flex;
     flex-direction: column; /* Stack Trading Chart, Order Form, and Trading History */
     gap: 10px; /* Small space between the Trading Chart, Order Form, and Trading History */
-  }
-
-  /* 🔥 Move Trading Chart Below Sidebar and Adjust Layout */
-  .dashboard-layout {
-    grid-template-columns: 100%; /* Make sure content stacks without side-by-side */
   }
 }
