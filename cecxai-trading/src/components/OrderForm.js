@@ -37,7 +37,6 @@ function OrderForm() {
   const [result, setResult] = useState("");
   const [popupVisible, setPopupVisible] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
-  const [showCloseButton, setShowCloseButton] = useState(false);
 
   const decreaseAmount = () => setAmount((prev) => Math.max(0, prev - 1));
   const increaseAmount = () => setAmount((prev) => prev + 1);
@@ -56,9 +55,9 @@ function OrderForm() {
   
     setIsProcessing(true);
     setPopupVisible(true);
-    setShowCloseButton(false);
     setResult("");
-    
+    setTimeLeft(60);
+
     const balanceBefore = user.balance;
     setUser({ ...user, balance: user.balance - amount });
 
@@ -66,13 +65,14 @@ function OrderForm() {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(timer);
-          setShowCloseButton(true);
         }
         return prevTime - 1;
       });
     }, 1000);
 
     setTimeout(async () => {
+      clearInterval(timer);
+      
       const win = Math.random() > 0.9;
       let finalBalance = balanceBefore - amount;
       let tradeResult = "You Lose!";
@@ -123,15 +123,7 @@ function OrderForm() {
 
       setTransactionHistory([...transactionHistory, tradeData]);
       setIsProcessing(false);
-      setPopupVisible(false);
-    }, 2000);
-  };
-
-  const handleClosePopup = () => {
-    setPopupVisible(false);
-    setResult("");
-    setTimeLeft(60);
-    setIsProcessing(false);
+    }, 60000);
   };
 
   return (
@@ -142,12 +134,8 @@ function OrderForm() {
       {popupVisible && (
         <div className="popup">
           <div className="popup-content">
-            <h3>"Trade in Progress... Please avoid navigating or making changes."</h3>
+            <h3>Trade in Progress... Please wait.</h3>
             <p>Result will be shown after {timeLeft}s.</p>
-            {isProcessing && <p>Processing... {timeLeft}s</p>}
-            {showCloseButton && (
-              <button className="close-btn" onClick={handleClosePopup}>Close</button>
-            )}
           </div>
         </div>
       )}
