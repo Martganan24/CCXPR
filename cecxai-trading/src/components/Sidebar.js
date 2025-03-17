@@ -46,8 +46,8 @@ function Sidebar() {
           <FaCog className="icon" /> Settings
         </button>
 
-        {/* ✅ Logout is Now Directly Under Settings */}
-        <button className="sidebar-btn logout" onClick={handleLogout}>
+        {/* ✅ Logout is Now Styled Properly */}
+        <button className="sidebar-btn logout-btn" onClick={handleLogout}>
           <FaSignOutAlt className="icon" /> Logout
         </button>
       </div>

@@ -1,7 +1,7 @@
 /* 🔥 Sidebar Styling */
 .sidebar {
   position: fixed;
-  left: 300;
+  left: 0; /* ✅ Fixed issue (was 300, should be 0) */
   top: 60px; /* ✅ Below Navbar */
   width: 140px;
   height: calc(100vh - 60px); /* ✅ Prevents Overlapping Navbar */
@@ -17,7 +17,7 @@
 
 /* ✅ Sidebar Open & Close */
 .sidebar.open {
-  transform: translateX(0.9);
+  transform: translateX(0%);
 }
 
 .sidebar.closed {
@@ -67,4 +67,17 @@
 /* ✅ Toggle Button Click Effect */
 .toggle-btn:active {
   transform: scale(0.9);
+}
+
+/* 🔥 Logout Button (Consistent with Sidebar Buttons) */
+.sidebar-btn.logout {
+  color: #ff4d4d; /* Red color for Logout */
+  font-weight: bold; /* Bold text */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ✅ Hover Effect */
+.sidebar-btn.logout:hover {
+  background-color: rgba(255, 77, 77, 0.1); /* Light red background */
+  color: #ff3333; /* Darker red when hovered */
 }
