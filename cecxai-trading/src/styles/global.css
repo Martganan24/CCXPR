@@ -312,28 +312,27 @@ body {
 }
 
 /* 🔥 Media Query for Small Screens (max-width: 768px) */
-@media (max-width: 768px) {
+/* 🔥 Media Query for Small Screens (max-width: 480px) */
+@media (max-width: 480px) {
 
-  /* 🔥 Ensure the layout stacks vertically */
-  .dashboard-layout {
-    display: flex;
-    flex-direction: column; /* Stack Trading Chart, Order Form, and Trading History */
-    gap: 10px; /* Small space between the Trading Chart, Order Form, and Trading History */
+  /* 🔥 Hide the Deposit Button in the navbar-right (only on small screens) */
+  .navbar-right button:contains("Deposit") {
+    display: none; /* Hide Deposit button */
   }
 
-  /* 🔥 Order Form Styles */
-  .order-form {
-    margin-top: 10px; /* Add small space between Trading Chart and Order Form */
-    width: 100%; /* Ensure Order Form fits within the layout */
-  }
-
-  /* 🔥 Ensure Trading Chart is 100% width */
+  /* 🔥 Make the Trading Chart Bigger by 10% */
   .trading-chart {
-    width: 100%;
+    transform: scale(1.1); /* Increase by 10% */
+    width: 100%; /* Ensure the Trading Chart takes full width */
   }
-  
-  /* 🔥 Ensure Trading History (if applicable) has space from Order Form */
-  .trading-history {
-    margin-top: 10px; /* Small space between Order Form and Trading History */
+
+  /* 🔥 Lock Horizontal Scrolling */
+  body {
+    overflow-x: hidden; /* Disable horizontal scrolling */
+  }
+
+  /* 🔥 Ensure Only Vertical Scrolling is Allowed */
+  .dashboard-container {
+    overflow-y: auto; /* Allow vertical scrolling */
   }
 }
