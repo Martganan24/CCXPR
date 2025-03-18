@@ -1,38 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase"; // ✅ Import Supabase client
+import { useUser } from "../context/UserContext"; // ✅ Import User Context
 import { motion } from "framer-motion";
 import "../styles/Chat.css"; // ✅ Ensure this file exists
 
 function Chat() {
+  const { user } = useUser(); // ✅ Get user data
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [userId, setUserId] = useState(localStorage.getItem("userId"));
 
   useEffect(() => {
-    // ✅ If userId is missing, fetch it from Supabase
-    const fetchUserId = async () => {
-      if (!userId) {
-        const { data: user, error } = await supabase.from("users").select("id").single();
-        if (error) {
-          console.error("❌ Error fetching user ID:", error);
-        } else {
-          setUserId(user.id);
-          localStorage.setItem("userId", user.id);
-        }
-      }
-    };
-
-    fetchUserId();
-  }, [userId]);
-
-  useEffect(() => {
-    if (!userId) return;
+    if (!user) {
+      console.error("❌ No user found! Make sure the user is logged in.");
+      return;
+    }
 
     const fetchMessages = async () => {
       const { data, error } = await supabase
         .from("messages")
         .select("*")
-        .eq("userId", userId)
+        .eq("userId", user.id) // ✅ Load only messages for this user
         .order("timestamp", { ascending: true });
 
       if (error) {
@@ -44,29 +31,25 @@ function Chat() {
 
     fetchMessages();
 
-    // ✅ Real-time subscription for new messages only
+    // ✅ Real-time message updates
     const subscription = supabase
       .channel("messages")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
-        if (payload.new.userId === userId) {
-          setMessages((prev) => [...prev, payload.new]);
-        }
-      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, fetchMessages)
       .subscribe();
 
     return () => {
       supabase.removeChannel(subscription);
     };
-  }, [userId]);
+  }, [user]);
 
   const sendMessage = async () => {
-    if (!input.trim() || !userId) return;
+    if (!input.trim() || !user) return;
 
     const newMessage = {
-      userId,
+      userId: user.id, // ✅ Ensure correct user ID is used
       sender: "user",
       message: input,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(),
     };
 
     setMessages([...messages, newMessage]);
