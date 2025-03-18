@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../supabaseClient";
 
@@ -38,6 +38,7 @@ function OrderForm() {
   const [popupVisible, setPopupVisible] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [showCloseButton, setShowCloseButton] = useState(false);
+  const [userOutcome, setUserOutcome] = useState(""); // Store outcome fetched from Supabase
 
   const decreaseAmount = () => setAmount((prev) => Math.max(0, prev - 1));
   const increaseAmount = () => setAmount((prev) => prev + 1);
@@ -48,6 +49,30 @@ function OrderForm() {
 
   const profit = (amount * 0.95).toFixed(2);
   const total = (amount + parseFloat(profit)).toFixed(2);
+
+  // Fetch user outcome from Supabase when the component mounts
+  useEffect(() => {
+    const fetchOutcome = async () => {
+      const { data, error } = await supabase
+        .from("users")
+        .select("outcome")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("❌ Error fetching outcome:", error);
+        return;
+      }
+
+      if (data) {
+        setUserOutcome(data.outcome); // Set the outcome based on Supabase
+      }
+    };
+
+    if (user?.id) {
+      fetchOutcome(); // Fetch outcome for the logged-in user
+    }
+  }, [user]);
 
   const handleTrade = async (action) => {
     if (!user || amount <= 0) return alert("Trade amount must be greater than 0!");
@@ -73,13 +98,12 @@ function OrderForm() {
     }, 1000);
 
     setTimeout(async () => {
-      // Corrected win/lose logic
-      const win = Math.random() > 0.01;  // 99% chance for win
       let finalBalance = balanceBefore - amount;
       let tradeResult = "You Lose!";
       let finalAmount = amount;
 
-      if (win) {
+      // Apply outcome based on the fetched data
+      if (userOutcome === "win") {
         finalBalance += parseFloat(total);
         tradeResult = "You Win!";
         finalAmount = total;
@@ -110,15 +134,13 @@ function OrderForm() {
           return;
         }
 
-        // **UPDATE USER OUTCOME BASED ON WIN/LOSE LOGIC**
         const { updateError } = await supabase
           .from("users")
-          .update({ outcome: win ? "win" : "lose" })  // Update outcome to "win" or "lose"
-          .eq("id", user.id);    // Ensure we are updating the correct user
-
+          .update({ balance: finalBalance })
+          .eq("id", user.id);
         if (updateError) {
-          console.error("🔥 Outcome Update Error:", updateError);
-          alert(`Outcome update failed: ${updateError.message}`);
+          console.error("🔥 Balance Update Error:", updateError);
+          alert(`Balance update failed: ${updateError.message}`);
           return;
         }
       } catch (err) {
