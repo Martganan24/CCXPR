@@ -81,7 +81,7 @@ function Chat() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="chat-title">Live Chat</h1>
+      <h1 className="chat-title">Live Chat: "Thank you for reaching out. Our admin will respond shortly. Please feel free to share any concerns you may have."</h1>
 
       {/* ✅ Messages Display */}
       <div className="chat-box">
