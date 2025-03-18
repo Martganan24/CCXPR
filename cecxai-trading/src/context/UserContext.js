@@ -10,12 +10,10 @@ export const UserProvider = ({ children }) => {
   const [chatHistory, setChatHistory] = useState([]); // Store Chat History
   const [loading, setLoading] = useState(true); // Track loading state
 
-  useEffect(() => {
+  // Function to restore user session
+  const restoreUserSession = async () => {
     const token = localStorage.getItem("authToken"); // Get Token
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    if (!token) return;
 
     try {
       // Decode JWT to get user ID
@@ -23,28 +21,26 @@ export const UserProvider = ({ children }) => {
       const userId = decoded.userId;
 
       // Fetch User Data from Backend
-      fetch(`https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/user/${userId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            const { total_referrals, commission_balance, ...userData } = data.user;
-            setUser({
-              ...userData,
-              total_referrals,
-              commission_balance,
-            });
-            fetchChatHistory(userId); // Fetch chat history
-          } else {
-            console.error("Error fetching user:", data.message);
-          }
-        })
-        .catch((error) => console.error("Error fetching user:", error))
-        .finally(() => setLoading(false)); // Set loading to false after fetch
+      const response = await fetch(`https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/user/${userId}`);
+      const data = await response.json();
+
+      if (data.success) {
+        const { total_referrals, commission_balance, ...userData } = data.user;
+        setUser({
+          ...userData,
+          total_referrals,
+          commission_balance,
+        });
+        fetchChatHistory(userId); // Fetch chat history
+      } else {
+        console.error("Error fetching user:", data.message);
+      }
     } catch (error) {
       console.error("Invalid token:", error);
-      setLoading(false);
+    } finally {
+      setLoading(false); // Set loading to false after fetch
     }
-  }, []);
+  };
 
   // Function to fetch chat history from Supabase
   const fetchChatHistory = async (userId) => {
@@ -64,6 +60,11 @@ export const UserProvider = ({ children }) => {
     localStorage.removeItem("authToken");
     window.location.href = "https://ceccxai-frontend-b334232d6e3e.herokuapp.com/"; // Redirect to Frontend
   };
+
+  // Ensure user session is restored after refresh
+  useEffect(() => {
+    restoreUserSession(); // ✅ Restore user session on refresh
+  }, []); // Empty dependency array means it runs once when the component mounts
 
   useEffect(() => {
     if (!loading && !user) {
