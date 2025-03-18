@@ -2,22 +2,49 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import "../styles/Wallet.css"; // ✅ Ensure this file exists
 import DepositWithdrawPopup from "../components/DepositWithdrawPopup"; // ✅ Popup Import
-import { useUser } from "../context/UserContext"; // Importing useUser from UserContext
 import { supabase } from "./supabase"; // Importing Supabase client
+import { jwtDecode } from "jwt-decode"; // Import jwt-decode
 
 const Wallet = () => {
-  const { user } = useUser(); // Access the user object from UserContext
-
-  // Get the balance and commission_balance from the user context
-  const balance = user ? user.balance : 0; // Assuming balance exists in the user object
-  const commissionBalance = user ? user.commission_balance : 0; // Commission balance from the user context
-
+  const [user, setUser] = useState(null); // Store user data manually
   const [transactions, setTransactions] = useState([]); // State to hold transaction data
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
   const [isPopupVisible, setIsPopupVisible] = useState(false); // State for popup visibility
   const [popupType, setPopupType] = useState(null); // Type for the popup (deposit or withdraw)
+
+  useEffect(() => {
+    // Function to restore user session manually
+    const restoreUserSession = async () => {
+      const token = localStorage.getItem("authToken"); // Get authToken from localStorage
+      if (!token) return; // If no token, return early
+
+      try {
+        const decoded = jwtDecode(token); // Decode the token to get user info
+        const userId = decoded.userId; // Get userId from decoded token
+
+        // Fetch user data from backend
+        const response = await fetch(`https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/user/${userId}`);
+        const data = await response.json();
+
+        if (data.success) {
+          const { total_referrals, commission_balance, ...userData } = data.user;
+          setUser({
+            ...userData,
+            total_referrals,
+            commission_balance,
+          });
+        } else {
+          console.error("Failed to fetch user data:", data.message);
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    };
+
+    restoreUserSession(); // Call restoreUserSession when the component mounts
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -47,8 +74,8 @@ const Wallet = () => {
       setTransactions(sortedTransactions);
     };
 
-    fetchTransactions();
-  }, [user]);
+    if (user) fetchTransactions(); // Fetch transactions only if user is loaded
+  }, [user]); // Fetch transactions whenever the user changes
 
   const indexOfLastTransaction = currentPage * rowsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
@@ -72,6 +99,9 @@ const Wallet = () => {
     setIsPopupVisible(false);
     setPopupType(null);
   };
+
+  const balance = user ? user.balance : 0; // Assuming balance exists in the user object
+  const commissionBalance = user ? user.commission_balance : 0; // Commission balance from the user context
 
   return (
     <motion.div
