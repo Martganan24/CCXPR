@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { supabase } from "../supabase"; // ✅ Import Supabase client
+import { motion } from "framer-motion";
 import "../styles/Chat.css"; // ✅ Ensure this file exists
 
 function Chat() {
-  const [messages, setMessages] = useState([]); // ✅ Store messages from Supabase
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const userId = "e3f99dad-0e60-4656-8269-483a690e4c35"; // ✅ Replace with actual logged-in user ID
 
-  // ✅ Fetch past messages on load
+  // ✅ Get userId from localStorage
+  const userId = localStorage.getItem("userId");
+
   useEffect(() => {
+    if (!userId) {
+      console.error("❌ No userId found! Make sure the user is logged in.");
+      return;
+    }
+
     const fetchMessages = async () => {
       const { data, error } = await supabase
         .from("messages")
         .select("*")
-        .eq("userId", userId)
+        .eq("userId", userId) // ✅ Load only messages for this user
         .order("timestamp", { ascending: true });
 
       if (error) {
@@ -26,7 +32,7 @@ function Chat() {
 
     fetchMessages();
 
-    // ✅ Listen for new messages in real-time
+    // ✅ Real-time message updates
     const subscription = supabase
       .channel("messages")
       .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, fetchMessages)
@@ -37,9 +43,8 @@ function Chat() {
     };
   }, [userId]);
 
-  // ✅ Send message to Supabase
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !userId) return;
 
     const newMessage = {
       userId,
