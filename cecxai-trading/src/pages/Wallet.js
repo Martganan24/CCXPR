@@ -18,14 +18,25 @@ const Wallet = () => {
     // Function to restore user session manually
     const restoreUserSession = async () => {
       const token = localStorage.getItem("authToken"); // Get authToken from localStorage
-      if (!token) return; // If no token, return early
+      if (!token) {
+        console.error("No token found in localStorage.");
+        return; // If no token, return early
+      }
 
       try {
         const decoded = jwtDecode(token); // Decode the token to get user info
         const userId = decoded.userId; // Get userId from decoded token
 
+        console.log("Decoded user ID:", userId); // Debugging line
+
         // Fetch user data from backend
         const response = await fetch(`https://console-cecxai-ed25296a7384.herokuapp.com/api/auth/user/${userId}`);
+        
+        if (!response.ok) {
+          console.error("Failed to fetch user data:", response.statusText);
+          return; // If fetch fails, log the error and stop
+        }
+
         const data = await response.json();
 
         if (data.success) {
@@ -39,7 +50,7 @@ const Wallet = () => {
           console.error("Failed to fetch user data:", data.message);
         }
       } catch (error) {
-        console.error("Error decoding token:", error);
+        console.error("Error decoding token or fetching user data:", error);
       }
     };
 
