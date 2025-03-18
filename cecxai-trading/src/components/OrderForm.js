@@ -49,28 +49,6 @@ function OrderForm() {
   const profit = (amount * 0.95).toFixed(2);
   const total = (amount + parseFloat(profit)).toFixed(2);
 
-  const updateOutcome = async () => {
-    // Generate win/lose based on the random logic
-    const win = Math.random() > 0.01;  // 99% chance for win
-    const outcome = win ? "win" : "lose";  // If win, outcome is "win", else "lose"
-
-    try {
-      // Update the outcome in Supabase for the given user
-      const { error } = await supabase
-        .from("users")
-        .update({ outcome })  // Update the outcome column with "win" or "lose"
-        .eq("id", user.id);    // Make sure we update the correct user by ID
-
-      if (error) {
-        console.error("❌ Error updating outcome:", error);
-      } else {
-        console.log(`✅ User ${user.id} outcome updated to: ${outcome}`);
-      }
-    } catch (err) {
-      console.error("❌ Error in updateOutcome:", err);
-    }
-  };
-
   const handleTrade = async (action) => {
     if (!user || amount <= 0) return alert("Trade amount must be greater than 0!");
     if (user.balance < amount) return alert("Not enough balance!");
@@ -95,23 +73,24 @@ function OrderForm() {
     }, 1000);
 
     setTimeout(async () => {
-      const win = Math.random() > 0.9;
+      // Corrected win/lose logic
+      const win = Math.random() > 0.01;  // 99% chance for win
       let finalBalance = balanceBefore - amount;
       let tradeResult = "You Lose!";
       let finalAmount = amount;
-    
+
       if (win) {
         finalBalance += parseFloat(total);
         tradeResult = "You Win!";
         finalAmount = total;
       }
-    
+
       setUser({ ...user, balance: parseFloat(finalBalance.toFixed(2)) });
       setResult(tradeResult);
-    
+
       // **Reset Amount to 0 After Trade**
       setAmount(0);
-    
+
       const tradeData = {
         userId: user.id,
         action: action.toLowerCase(),
@@ -122,7 +101,7 @@ function OrderForm() {
         balance_after: finalBalance,
         timestamp: new Date().toISOString(),
       };
-    
+
       try {
         const { error } = await supabase.from("trades").insert([tradeData]);
         if (error) {
@@ -130,14 +109,16 @@ function OrderForm() {
           alert(`Trade failed: ${error.message}`);
           return;
         }
-    
+
+        // **UPDATE USER OUTCOME BASED ON WIN/LOSE LOGIC**
         const { updateError } = await supabase
           .from("users")
-          .update({ balance: finalBalance })
-          .eq("id", user.id);
+          .update({ outcome: win ? "win" : "lose" })  // Update outcome to "win" or "lose"
+          .eq("id", user.id);    // Ensure we are updating the correct user
+
         if (updateError) {
-          console.error("🔥 Balance Update Error:", updateError);
-          alert(`Balance update failed: ${updateError.message}`);
+          console.error("🔥 Outcome Update Error:", updateError);
+          alert(`Outcome update failed: ${updateError.message}`);
           return;
         }
       } catch (err) {
@@ -145,7 +126,7 @@ function OrderForm() {
         alert("An unexpected error occurred while inserting trade data.");
         return;
       }
-    
+
       setTransactionHistory([...transactionHistory, tradeData]);
       setIsProcessing(false);
       setPopupVisible(false);
@@ -165,9 +146,6 @@ function OrderForm() {
       <EarningsIndicator total={total} />
       <OrderButtons onTrade={handleTrade} disabled={isProcessing} />
       
-      {/* Button to manually update outcome */}
-      <button onClick={updateOutcome}>Update Outcome</button>
-
       {popupVisible && (
         <div className="popup">
           <div className="popup-content">
