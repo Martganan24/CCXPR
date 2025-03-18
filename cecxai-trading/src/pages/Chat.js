@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabase"; // ✅ Import Supabase client
-import { useUser } from "../context/UserContext"; // ✅ Import User Context
 import { motion } from "framer-motion";
 import "../styles/Chat.css"; // ✅ Ensure this file exists
+import { useUser } from "../context/UserContext"; // ✅ Import User Context
 
 function Chat() {
   const { user } = useUser(); // ✅ Get user data
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const chatEndRef = useRef(null); // ✅ For auto-scrolling
 
   useEffect(() => {
     if (!user) {
@@ -26,15 +27,21 @@ function Chat() {
         console.error("❌ Error fetching messages:", error);
       } else {
         setMessages(data);
+        scrollToBottom(); // ✅ Scroll after fetching
       }
     };
 
     fetchMessages();
 
-    // ✅ Real-time message updates
+    // ✅ Real-time chat
     const subscription = supabase
       .channel("messages")
-      .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, fetchMessages)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
+        if (payload.new.userId === user.id || payload.new.sender === "admin") {
+          setMessages((prev) => [...prev, payload.new]);
+          scrollToBottom(); // ✅ Scroll after new message
+        }
+      })
       .subscribe();
 
     return () => {
@@ -46,7 +53,7 @@ function Chat() {
     if (!input.trim() || !user) return;
 
     const newMessage = {
-      userId: user.id, // ✅ Ensure correct user ID is used
+      userId: user.id,
       sender: "user",
       message: input,
       timestamp: new Date(),
@@ -54,9 +61,17 @@ function Chat() {
 
     setMessages([...messages, newMessage]);
     setInput("");
+    scrollToBottom(); // ✅ Scroll after sending
 
     const { error } = await supabase.from("messages").insert(newMessage);
     if (error) console.error("❌ Error sending message:", error);
+  };
+
+  // ✅ Scroll to the bottom
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
   };
 
   return (
@@ -81,6 +96,7 @@ function Chat() {
             {msg.message}
           </motion.div>
         ))}
+        <div ref={chatEndRef} /> {/* ✅ Auto-scroll target */}
       </div>
 
       {/* ✅ Chat Input */}
