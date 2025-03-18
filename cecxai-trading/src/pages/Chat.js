@@ -6,21 +6,33 @@ import "../styles/Chat.css"; // ✅ Ensure this file exists
 function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-
-  // ✅ Get userId from localStorage
-  const userId = localStorage.getItem("userId");
+  const [userId, setUserId] = useState(localStorage.getItem("userId"));
 
   useEffect(() => {
-    if (!userId) {
-      console.error("❌ No userId found! Make sure the user is logged in.");
-      return;
-    }
+    // ✅ If userId is missing, fetch it from Supabase
+    const fetchUserId = async () => {
+      if (!userId) {
+        const { data: user, error } = await supabase.from("users").select("id").single();
+        if (error) {
+          console.error("❌ Error fetching user ID:", error);
+        } else {
+          setUserId(user.id);
+          localStorage.setItem("userId", user.id);
+        }
+      }
+    };
+
+    fetchUserId();
+  }, [userId]);
+
+  useEffect(() => {
+    if (!userId) return;
 
     const fetchMessages = async () => {
       const { data, error } = await supabase
         .from("messages")
         .select("*")
-        .eq("userId", userId) // ✅ Load only messages for this user
+        .eq("userId", userId)
         .order("timestamp", { ascending: true });
 
       if (error) {
@@ -32,10 +44,14 @@ function Chat() {
 
     fetchMessages();
 
-    // ✅ Real-time message updates
+    // ✅ Real-time subscription for new messages only
     const subscription = supabase
       .channel("messages")
-      .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, fetchMessages)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
+        if (payload.new.userId === userId) {
+          setMessages((prev) => [...prev, payload.new]);
+        }
+      })
       .subscribe();
 
     return () => {
@@ -50,7 +66,7 @@ function Chat() {
       userId,
       sender: "user",
       message: input,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
     };
 
     setMessages([...messages, newMessage]);
