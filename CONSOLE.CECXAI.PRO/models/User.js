@@ -26,24 +26,35 @@ class User {
         return data;
     }
 
-    // 🆕 Create a new user (Includes Default Role: client)
+    // 🆕 Create a new user (No explicit role needed)
     static async createUser(username, email, password) {
         const { data, error } = await supabase
             .from("users")
-            .insert([{ username, email, password, role: "client" }]) // ✅ Default role: client
+            .insert([{ username, email, password }]) // No role set, defaults to normal user
             .select(); // ✅ Ensure it returns the inserted user
 
         return { data, error };
     }
 
-    // 🆕 Update user details (Allow updating role)
-    static async updateUser(id, updates) {
-        const { error } = await supabase
-            .from("users")
-            .update(updates)
-            .eq("id", id);
-        return { error };
+    // 🆕 Update user details (Allow updating role & balance)
+static async updateUser(id, updates) {
+    console.log(`Updating user ${id} with data:`, updates); // Log update data
+
+    const { data, error } = await supabase
+        .from("users")
+        .update(updates)
+        .eq("id", id)
+        .select("balance"); // Return updated balance
+
+    if (error) {
+        console.error("Balance update failed:", error);
+    } else {
+        console.log("Balance updated successfully:", data);
     }
+
+    return { data, error };
+}
+
 
     // 🆕 Delete user
     static async deleteUser(id) {

@@ -19,9 +19,11 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Routes
 const authRoutes = require("./routes/auth");
 const protectedRoutes = require("./routes/protected");
+const chatRoutes = require("./routes/chat"); // ✅ Added Chat Route
 
 app.use("/api/auth", authRoutes);
 app.use("/api/protected", protectedRoutes);
+app.use("/api/chat", chatRoutes); // ✅ Registered Chat Route
 
 // ✅ Fix for "Cannot GET /"
 app.get("/", (req, res) => {
@@ -39,7 +41,45 @@ app.get("/api/test-supabase", async (req, res) => {
   res.json({ success: true, message: "Supabase is connected!", data });
 });
 
-// 🆕 ✅ Register Route (Now assigns 'client' role)
+// 🆕 ✅ Forgot Password Route
+app.post("/api/auth/forgot-password", async (req, res) => {
+  try {
+    const { fullName, email } = req.body;  // Accept both full name and email
+
+    // Check if user with the provided full name and email exists
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", fullName)  // Match full name
+      .eq("email", email)        // Match email
+      .single();
+
+    if (error || !user) {
+      return res.status(400).json({ message: "Full name and email do not match any user." });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash("password12345", salt);
+
+    // Update password in the database
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ password: hashedPassword })
+      .eq("id", user.id);
+
+    if (updateError) {
+      return res.status(500).json({ message: "Error resetting password." });
+    }
+
+    res.json({ message: "Password reset successfully." });
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// 🆕 ✅ Register Route (Now assigns no role, defaults to normal user)
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { email, password, username } = req.body;
@@ -59,9 +99,9 @@ app.post("/api/auth/register", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Insert new user with default role 'client'
+    // Insert new user without setting role (defaults to normal user)
     const { data, error } = await supabase.from("users").insert([
-      { email, password: hashedPassword, username, role: "client" } // 🆕 Added role
+      { email, password: hashedPassword, username } // No role set
     ]);
 
     if (error) throw error;
@@ -73,13 +113,13 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// 🆕 ✅ Login Route (Now works directly in `server.js`)
+// 🆕 ✅ Login Route (No change needed)
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Find user by email
-    const { data: user, error } = await supabase
+    const { data: user } = await supabase
       .from("users")
       .select("*")
       .eq("email", email)
@@ -95,7 +135,7 @@ app.post("/api/auth/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Generate JWT Token
+    // Generate JWT Token with user details
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
